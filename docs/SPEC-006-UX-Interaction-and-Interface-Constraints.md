@@ -1,4 +1,11 @@
-### SPEC-006 defines the user experience, interaction models, and interface constraints for the FamilyConnect Minimum Viable Product (MVP). It translates the strict API, privacy, and architectural controls established in SPEC-003 through SPEC-005 into trauma-informed, low-bandwidth interfaces optimized for disaster zones.
+# SPEC-006 — UX, INTERACTION MODELS & INTERFACE CONSTRAINTS
+**FamilyConnect: Disaster Family Assistance, Reconnection & Coordination Platform**
+- **Version:** 0.4
+- **Status:** Implemented Baseline — Synchronized with Active Codebase
+- **Parent Specifications:** SPEC-001 v0.4, SPEC-002 v0.4, SPEC-003 v0.4, SPEC-004 v0.4, SPEC-005 v0.4
+- **Date:** 10 September 2026
+
+### SPEC-006 defines the user experience, interaction models, and interface constraints for the FamilyConnect platform. It translates strict API, privacy, and architectural controls into trauma-informed, low-bandwidth interfaces optimized for disaster zones.
 
 ## 1. Core UX Principles
 
@@ -62,6 +69,40 @@ Appendix
 - **Safeguarding Custody (Scenario 3):** PASS. The UI mandates that receiving statutory officers digitally sign or acknowledge the SafeguardingHandover, enforcing an unbroken, auditable chain of custody.
 - **Privacy Preferences (Scenario 19):** CONDITIONAL PASS. While contact preferences are mentioned, the UX must explicitly mandate distinct toggle switches (e.g., "Hide Exact Location", "Hide Phone Number") on the public submission forms so users can request logistical help without broadcasting their coordinates.
 - **Agency Data Masking (Scenarios 10, 11, 12, 13):** CONDITIONAL PASS. The Agency Portal interface must explicitly enforce "Minimum Necessary UI Rendering." For example, a hospital's portal must render physical descriptors and IdentityEvidence but completely hide UI components related to family financial disputes or non-medical history.
-**SPEC-006 Confirmation & Baseline**
+With the above conditional passes integrated, **SPEC-006 is CONFIRMED** and baselined as v0.4. The interaction models successfully translate the strict privacy, safeguarding, and architectural controls of SPEC-003, SPEC-004, and SPEC-005 into trauma-informed interfaces.
 
-With the above conditional passes integrated, **SPEC-006 is CONFIRMED** and baselined as v0.2. The interaction models successfully translate the strict privacy, safeguarding, and architectural controls of SPEC-003, SPEC-004, and SPEC-005 into trauma-informed interfaces.
+---
+
+# 8. Implemented Multi-Disaster User Journeys & Frontend Components (v0.4)
+
+The production user experience implements the following concrete interfaces:
+
+### 8.1 Multi-Disaster Operational Context Switcher
+- **Global Header Partial (`frontend/header.partial.html`)**: Injected into every emergency portal page.
+- **Dynamic Event Switcher**: A high-contrast dropdown (`#event-select`) that switches between active disaster operational theatres:
+  - `EVENT-NP-TIBET-2026`: Nepal–Tibet Border Glacial Outburst Flood
+  - `EVENT-IN-FL-2026-1187`: Assam Brahmaputra Basin Flooding
+- Switching events dynamically maintains the active page (e.g. transitioning from Nepal water points to Assam water points, preserving `?event=` query parameters).
+
+### 8.2 Client-Side Multilingual Engine (6 Languages)
+- **Instant Client-Side i18n (`frontend/js/app.js`)**: Real-time localization dictionary supporting:
+  - English (`en`), Nepali (`ne`), Hindi (`hi`), Bengali (`bn`), Assamese (`as`), and Chinese/Tibetan (`zh`).
+- Translates dynamic navigation, page headings, form placeholders, status badges, and action buttons without incurring network latency.
+
+### 8.3 Specialized Disaster Journeys
+1. **Journey 1: Assam Brahmaputra Flood Inundation (`EVENT-IN-FL-2026-1187`)**:
+   - **CWC River Gauge Telemetry (`water-levels.html`)**: Color-coded badges indicating water level status relative to Warning and Danger Levels across 15 monitoring stations.
+   - **Emergency Assistance Request (`assistance.html`)**: Urgent requests for evacuation rescue boats, SDRF food rations, clean potable water, and infant formula.
+   - **Community Damage Assessment (`report-damage.html`)**: Self-reporting tool allowing villagers and local leaders to document structural, road, and embankment breaches for Revenue Circle Officers.
+   - **Relief Camp Distribution (`relief.html`)**: Schedules for air-drops, ration quotas, and water bowser operating hours.
+2. **Journey 2: Nepal Glacial Outburst Flood (`EVENT-NP-TIBET-2026`)**:
+   - **Hydropower Tunnel Rescue Monitoring (`tunnels.html`)**: Deep-shaft telemetry tracking oxygen percentages, rising water levels, and trapped crews in Upper Trishuli 3A and Rasuwagadhi.
+   - **Forensic DNA Reference Kit Intake (`dna-request.html`)**: Relative intake for buccal swab collection kits with secure, unguessable CSPRNG tracking references.
+3. **Journey 3: Coordinator Operations Console (`console.html`)**:
+   - 1-Click test responder personas for rapid incident triage: ASDMA Authority, Indian Red Cross Caseworker, NDRRMA Authority, NRCS Caseworker, and System Administrator.
+   - Dedicated verification tab allowing coordinators to review, edit, and verify pending AI-crawled news intelligence before public broadcast.
+   - Autonomous Orchestrator staging preview tab showing dynamic module recommendations and deployment gates.
+
+### 8.4 Empathetic RFC 9457 Error Rendering
+- Shared API client (`frontend/js/api.js`) captures RFC 9457 `application/problem+json` error structures and translates technical status codes (400, 404, 409, 412, 429) into comforting, actionable, trauma-informed notifications for distressed citizens.
+

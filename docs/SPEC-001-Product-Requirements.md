@@ -4,7 +4,7 @@
 
 ### Disaster Family Assistance, Reconnection & Coordination Platform
 
-**Version:** 0.3**Status:** Revised Baseline — For Approval**Parent:** Original FamilyConnect concept + disaster-scenario red-team review**Date:** 29 August 2026**Methodology:** Spec-Driven Development
+**Version:** 0.4**Status:** Implemented Baseline — Synchronized with Active Codebase**Parent:** Original FamilyConnect concept + disaster-scenario red-team review**Date:** 10 September 2026**Methodology:** Spec-Driven Development
 
 # 1. Executive Summary
 
@@ -13,26 +13,30 @@ FamilyConnect is a humanitarian coordination platform designed to help people an
 - declare themselves safe;
 - report someone missing;
 - establish and track a case;
-- receive verified information;
+- receive verified ground-truth intelligence;
 - communicate with authorised family members;
-- coordinate assistance;
+- coordinate practical assistance (boat evacuation, food rations, clean water, medical aid);
 - connect with relevant authorities and humanitarian organisations;
-- support families who travel to the affected area;
-- support families who cannot travel;
-- coordinate longer-term assistance, including consular and repatriation support where appropriate.
-The platform is initially intended for the current Nepal–Tibet/China-border disaster context and should support:
+- monitor specialized disaster telemetry (river levels, tunnel rescue shafts);
+- report community damage assessments;
+- request forensic reference DNA buccal swab kits;
+- support families who travel to the affected area or remain remote;
+- coordinate longer-term assistance, including consular and repatriation support.
 
-- local Nepali communities;
-- Tibetan communities;
-- international tourists;
-- pilgrims;
-- tour groups;
-- guides and support workers;
-- families located in Nepal;
-- families located overseas.
-The MVP will initially operate in **English**.
+### Multi-Disaster Operational Scope (Implemented in v0.4):
+The platform actively supports concurrent, strictly isolated multi-disaster event operations:
 
-Multilingual interaction is a Phase 2 requirement.
+1. **Nepal–Tibet Border Glacial Outburst Flood (`EVENT-NP-TIBET-2026`)**: High-altitude flash flood, landslips, deep-shaft hydropower tunnel rescue monitoring (Upper Trishuli 3A and Rasuwagadhi), forensic DNA reference kits, and consular repatriation desks.
+2. **Assam Brahmaputra Basin Flooding (`EVENT-IN-FL-2026-1187`)**: Widespread monsoon inundation across 15 districts, real-time Central Water Commission (CWC) river gauge telemetry, multi-agency relief distribution schedules, and community flood damage assessment for Circle Officers.
+
+### Multilingual Support:
+The platform operates natively with client-side localization across 6 languages:
+- English (`en`)
+- Nepali (`ne`)
+- Hindi (`hi`)
+- Bengali (`bn`)
+- Assamese (`as`)
+- Tibetan / Mandarin (`zh`)
 
 # 2. Problem Statement
 
@@ -784,6 +788,36 @@ and then:
 
 # 35. SPEC-001 STATUS
 
-**Version:** 0.3**Status:** Revised Baseline — Recommended for Approval
+**Version:** 0.4**Status:** Implemented Baseline — Synchronized with Active Codebase
 
-The red-team scenarios have been incorporated into the product requirements.
+The red-team scenarios and multi-disaster architecture have been fully incorporated into the production platform.
+
+# 36. Implemented Architectural Refinements (v0.4 Delta)
+
+In the active production release, the following critical requirements have been realized:
+
+### 36.1 Multi-Disaster Event Model & Dynamic Scoping
+- Complete isolation between disaster operational theatres:
+  - `EVENT-NP-TIBET-2026`: Nepal Glacial Outburst Flood.
+  - `EVENT-IN-FL-2026-1187`: Assam Brahmaputra Floods.
+- All cases, assistance requests, news items, and telemetry are strictly bound to `disaster_event_id`.
+- Dynamic event switching across all public portal pages and coordinator operations consoles.
+
+### 36.2 Autonomous AI News Agent & Verification Hub
+- Autonomous crawler ingesting ground truth intelligence from authorized disaster feeds (ASDMA, CWC, NDRF, NDRRMA, NRCS, Police, Meteorological departments).
+- Dual crawling schedule: 6-hour emergency burst mode vs. 24-hour routine monitoring mode.
+- Mandatory Human-in-the-Loop coordinator verification queue (`PENDING`, `VERIFIED`, `REJECTED`) before publication to public feeds.
+
+### 36.3 Autonomous Agentic Disaster Orchestrator
+- Autonomous GDACS (Global Disaster Alert and Coordination System) feed monitoring.
+- Dynamic Module Planner recommending event-specific feature modules (`MOD-WATER-LVL`, `MOD-DAMAGE`, `MOD-RELIEF`, `MOD-TUNNEL`, `MOD-DNA`).
+- Automated staging preview and two-person governance gates with Identity Assurance Level 2 (IAL-2) step-up authentication.
+
+### 36.4 Specialized Disaster Relief & Telemetry Modules
+- **Hydrological Telemetry (`water-levels.html`)**: Real-time river gauges tracking water levels against official Danger Levels (CWC).
+- **Relief Schedules (`relief.html`)**: Multi-agency food ration quotas, water supply times, and air-drop locations.
+- **Community Damage Assessment (`report-damage.html`)**: Field damage reporting (structural, embankment, agricultural) for Revenue Circle Officers.
+- **Hydropower Tunnel Telemetry (`tunnels.html`)**: Deep-shaft rescue monitoring with real-time water and oxygen metrics.
+- **Forensic DNA Reference Kit Requests (`dna-request.html`)**: Public buccal swab kit requests with CSPRNG tracking references.
+- **Misinformation Debunker (`rumours.html`)**: Rumor reporting and authoritative fact-check statements.
+

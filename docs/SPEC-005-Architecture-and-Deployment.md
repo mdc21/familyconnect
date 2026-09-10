@@ -1,10 +1,14 @@
-**SPEC-005 ****— ARCHITECTURE & DEPLOYMENT SPECIFICATION**
+**SPEC-005 — ARCHITECTURE & DEPLOYMENT SPECIFICATION**
 
 **FamilyConnect: Disaster Family Assistance, Reconnection & Coordination Platform**
 
-**Version:** 0.1
+**Version:** 0.4
 
-**Status:** Draft Baseline — MVP First
+**Status:** Implemented Baseline — Synchronized with Active Codebase
+
+**Parent Specifications:** SPEC-001 v0.4, SPEC-002 v0.4, SPEC-003 v0.4, SPEC-004 v0.4
+
+**Date:** 10 September 2026
 
 **Methodology:** Spec-Driven Development
 
@@ -203,3 +207,48 @@ You do not need to procure any paid third-party enterprise software licenses to 
 - ***SMS Testing Balance:****** $20 (One-time top-up)***
 - ***Total Initial Outlay:****** ******~$40 – $60 total***
 ***You do not need commercial licenses or upfront cloud commitments to build the full SPEC-001 through SPEC-005 capability. Starting with a PostgreSQL-centric modular architecture allows you to scale out to dedicated event brokers (Kafka) or standalone search clusters (OpenSearch) later when institutional deployment funding is granted. ***
+
+---
+
+# 10. Implemented System Architecture & Multi-Agent Infrastructure (v0.4)
+
+The implemented FamilyConnect production platform is built on an ultra-resilient, open-source modular architecture:
+
+### 10.1 Modular Monolith Backend
+- **Framework**: Node.js (v18+) with Express 4.
+- **Domain Modules**: Structured in strictly decoupled domains (`src/modules/*`):
+  - `cases`, `submissions`, `assistance`, `news`, `orchestrator`, `tunnels`, `dna`, `rumours`, `events`, `safeguarding`, `families`, `organisations`, `auth`, `audit`.
+- **Database Connection Pooling**: PostgreSQL 16 managed via `pg.Pool` with automatic transaction management.
+- **Error Standard**: RFC 9457 `application/problem+json` with humanized empathetic copy.
+
+### 10.2 Autonomous Multi-Agent Disaster Orchestrator
+The platform features an autonomous multi-agent disaster coordination system (`src/services/orchestrator/`):
+```
+  [ Sentinel Agent ] ──► [ Planner Agent ] ──► [ Builder Agent ] ──► [ Deployer Agent ]
+  Polls GDACS Feeds      Recommends Modules    Compiles Staging       Enforces 2-Person
+  Hazard Detection       Disaster Geometry     Preview Slots          Governance Gate
+```
+1. **Sentinel Agent**: Ingests disaster alerts from Global Disaster Alert and Coordination System (GDACS).
+2. **Planner Agent**: Evaluates coordinates, population density, and hazard type to select relevant portal modules from `portal_module_registry` (`MOD-WATER-LVL`, `MOD-DAMAGE`, `MOD-RELIEF`, `MOD-TUNNEL`, `MOD-DNA`).
+3. **Builder Agent**: Compiles HTML/CSS templates into isolated staging preview slots.
+4. **Deployer Agent**: Promotes staging slots to production following two-person administrative authorization with Identity Assurance Level 2 (IAL-2).
+
+### 10.3 Autonomous AI News Agent Pipeline
+- **Hybrid LLM Pipeline**: Supports both local offline-capable models (Ollama running `llama3` or `mistral`) and cloud AI (Google Gemini 1.5 Flash).
+- **Feed Harvesters**: Scrapes official RSS/APIs from disaster response agencies (ASDMA, CWC, NDRF, NDRRMA, NRCS, Police).
+- **Dual Crawling Cadence**:
+  - Emergency Burst Mode (6h): Active during rapid-onset phases.
+  - Routine Monitoring Mode (24h): Active during recovery/monitoring phases.
+- **Verification Queue**: Extracted articles enter a human-in-the-loop review queue (`src/modules/news/routes.js`) before reaching the public portal.
+
+### 10.4 Low-Bandwidth Zero-Build Frontend (<50KB Payload)
+- **Zero-Build Architecture**: Vanilla HTML5, CSS3 custom properties, and native ES6 JavaScript without Node build steps, Webpack, or large client-side frameworks.
+- **Emergency Bandwidth Footprint**: Initial page load is < 50 KB, ensuring instant rendering over degraded 2G/3G cellular data in disaster areas.
+- **Runtime Partial Injection**: `header.partial.html` is injected at build and dynamically synchronized at runtime (`frontend/js/app.js`), maintaining consistent disaster event and language context.
+- **Client-Side i18n**: Real-time localization dictionary supporting 6 languages (`en`, `ne`, `hi`, `bn`, `as`, `zh`) with zero additional server roundtrips.
+- **PWA Offline Resilience**: Service Worker (`frontend/sw.js`) caches emergency guides, safe declarations, and shelters for offline use.
+
+### 10.5 Deployment & Database Provisioning
+- **Docker Compose**: Containerized PostgreSQL 16 with automatic volume entrypoint mounts executing all baseline schemas, orchestrator migrations, and multi-event seeds.
+- **Automated Seeder (`scripts/seed.js`)**: Single-command provisioning runner executing all migrations and seeding initial disaster data for both Nepal and Assam events.
+

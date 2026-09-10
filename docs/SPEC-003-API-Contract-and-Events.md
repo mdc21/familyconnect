@@ -9,11 +9,11 @@ A review of **SPEC-003 v0.1** against the domain requirements in SPEC-002 v0.2 a
 
 **FamilyConnect: Disaster Family Assistance, Reconnection & Coordination Platform**
 
-- **Version:** 0.2
-- **Status:** Revised Baseline — Recommended for Approval
-- **Parent Specifications:** SPEC-001 v0.3 & SPEC-002 v0.2
-- **Date:** 29 August 2026
-- **API Style:** REST/JSON (HTTPS) + Asynchronous Domain Events
+- **Version:** 0.4
+- **Status:** Implemented Baseline — Synchronized with Active Codebase
+- **Parent Specifications:** SPEC-001 v0.4 & SPEC-002 v0.4
+- **Date:** 10 September 2026
+- **API Style:** REST/JSON (HTTPS) + RFC 9457 Problem Details + Asynchronous Domain Events
 - **Base Path:** /api/v1
 ### 1. Architectural & Protocol Standards
 
@@ -280,3 +280,45 @@ JSON
 ### SPEC-001 (Requirements) ──► SPEC-002 (Domain Model) ──► SPEC-003 (API Contracts)┌───────────────────────┐   ┌────────────────────────┐   ┌──────────────────────────────────────────────┐│ FR-002 (Safe Decl.)   │──►│ SafetyDeclaration      │──►│ POST /api/v1/submissions/safety              ││ FR-004 (Report Miss.) │──►│ MissingReport          │──►│ POST /api/v1/submissions/missing             ││ FR-011 (Dispute Mgt.) │──►│ CaseDispute            │──►│ POST /api/v1/cases/{id}/disputes             ││ FR-012 (Assistance)   │──►│ AssistanceRequest      │──►│ POST /api/v1/cases/{id}/assistance           ││ FR-013 (Family Loc.)  │──►│ FamilyLocation         │──►│ POST /api/v1/families/{id}/locations         ││ FR-014 (Proxy Mgt.)   │──►│ ProxyContact           │──►│ POST /api/v1/cases/{id}/proxies              ││ FR-015 (Comm Tracking)│──►│ CommunicationAttempt   │──►│ POST /api/v1/cases/{id}/communications       ││ FR-016 (Safeguarding) │──►│ SafeguardingHandover   │──►│ POST /api/v1/safeguarding/{id}/handover      ││ FR-018 (Rumours)      │──►│ DisasterRumour         │──►│ POST /api/v1/events/{id}/rumours/{r}/correct ││ FR-021 (Handover)     │──►│ CaseHandover           │──►│ POST /api/v1/cases/{id}/handovers            │└───────────────────────┘   └────────────────────────┘   └──────────────────────────────────────────────┘
 
 With **SPEC-003 v0.2** established as the approved baseline, the engineering surface is defined and traceable to humanitarian acceptance criteria. The next logical document in the spec-driven pipeline is **SPEC-004: Security, Privacy, Governance & Safeguarding Specification**.
+
+# 8. Implemented Production API Endpoints (v0.4 Extension)
+
+The production codebase implements the following specialized endpoint groups:
+
+### 8.1 Autonomous AI News Agent & Verification Hub (`/api/v1/news`)
+- **`GET /api/v1/news/public`**: Public feed of coordinator-verified disaster intelligence filtered by `disaster_event_id`.
+- **`GET /api/v1/news/queue`**: Coordinator verification queue returning pending crawler intelligence (`PENDING` status).
+  - Actor: `CASE_WORKER`, `AUTHORITY`, `ADMIN`.
+- **`POST /api/v1/news/queue/:id/review`**: Human-in-the-loop review decision (`VERIFIED` or `REJECTED`) with optional coordinator editorial notes.
+- **`POST /api/v1/news/agent/run`**: Triggers immediate crawl cycle across configured authority RSS/API feeds.
+- **`GET /api/v1/news/schedule`** & **`PUT /api/v1/news/schedule`**: Controls crawl cadence (`mode`: `6h` emergency burst vs `24h` routine monitoring). Requires `ADMIN` actor.
+
+### 8.2 Autonomous Agentic Disaster Orchestrator (`/api/v1/orchestrator`)
+- **`POST /api/v1/orchestrator/scan`**: Scans external GDACS feeds for new disaster declarations within geographic bounds.
+  - Requires: Actor `ADMIN` with **IAL-2** assurance.
+- **`POST /api/v1/orchestrator/plan`**: Planner Agent evaluates terrain, hazard type, and affected population to recommend portal modules (`MOD-WATER-LVL`, `MOD-DAMAGE`, etc.).
+- **`POST /api/v1/orchestrator/build`**: Builder Agent compiles HTML/CSS templates into staging preview slots.
+- **`POST /api/v1/orchestrator/stage`**: Generates isolated staging URLs for authority review.
+- **`POST /api/v1/orchestrator/deploy`**: Rollout to production portal under two-person review governance.
+- **`POST /api/v1/orchestrator/rollback`**: Immediate reversion to prior stable module configuration.
+
+### 8.3 Infrastructure & Hydropower Tunnel Telemetry (`/api/v1/tunnels`)
+- **`GET /api/v1/tunnels/:siteId/status`**: Returns real-time sensor metrics (water level, oxygen %, trapped crew counts, structural status).
+- **`PUT /api/v1/tunnels/:siteId/status`**: Authorized engineer/operator telemetry update.
+  - Actor: `AUTHORITY`, `CASE_WORKER`.
+- **`POST /api/v1/tunnels/agent/run`**: Automated sensor anomaly detector and alert generator.
+
+### 8.4 Forensic Reference DNA Buccal Swab Requests (`/api/v1/dna`)
+- **`POST /api/v1/dna/requests`**: Relatives submit requests for reference DNA buccal swab sampling kits.
+  - Generates CSPRNG tracking reference (`crypto.randomBytes(3).toString('hex')` -> `DNA-XXXXXX`).
+- **`GET /api/v1/dna/track/:trackingRef`**: Public status tracking without leaking victim medical records.
+
+### 8.5 Rumour Debunking & Truth Shield (`/api/v1/rumours`)
+- **`GET /api/v1/rumours/:eventId/rumours`**: Public list of debunked rumors and verified claims.
+- **`POST /api/v1/rumours/:eventId/rumours`**: Public / partner rumor intake reporting false claims.
+- **`POST /api/v1/rumours/:eventId/information`**: Official authority fact-checking broadcast statement.
+
+### 8.6 Disaster Event Management (`/api/v1/events`)
+- **`GET /api/v1/events`**: Lists active disaster events (`EVENT-NP-TIBET-2026`, `EVENT-IN-FL-2026-1187`) with bounding boxes and active status.
+- **`GET /api/v1/events/:eventId`**: Event metadata, participating agencies, and activated modules.
+

@@ -4,7 +4,7 @@
 
 ### Disaster Family Assistance, Reconnection & Coordination Platform
 
-**Version:** 0.2**Status:** Revised Baseline — Recommended for Approval**Parent:** SPEC-001 v0.3**Date:** 29 August 2026**Methodology:** Spec-Driven Development
+**Version:** 0.4**Status:** Implemented Baseline — Synchronized with Active Codebase**Parent:** SPEC-001 v0.4**Date:** 10 September 2026**Methodology:** Spec-Driven Development
 
 # 1. Purpose
 
@@ -1203,3 +1203,50 @@ Each API shall be classified as:
 and every state transition shall identify the permitted actor:
 
 **PERSON / FAMILY / CASE WORKER / PARTNER / AUTHORITY / SYSTEM / AI-ASSISTED HUMAN**
+
+# 61. Implemented Production Entities & Extended Domain Model (v0.4)
+
+The implemented database schema (`src/db/schema.sql`, `migration-orchestrator.sql`, `seed_assam.sql`) extends the baseline domain model with 37+ production tables supporting multi-event crisis operations:
+
+### 61.1 Multi-Disaster Partitioning Model
+- **`disaster_event`**: Core disaster entity defining operational boundaries:
+  - `id` (VARCHAR PK, e.g. `EVENT-NP-TIBET-2026`, `EVENT-IN-FL-2026-1187`)
+  - `name` (VARCHAR), `event_type` (GLOF, FLOOD, EARTHQUAKE), `country_code` (NPL, IND)
+  - `status` (ACTIVE, CLOSED), `bounding_box` (JSONB GPS coordinates)
+  - **Foreign Key Binding**: All operational entities (`case_record`, `safety_declaration`, `assistance_request`, `information_update`, `water_level_gauge`, `relief_distribution_schedule`, `damage_assessment`, `news_article`) carry a mandatory `disaster_event_id` foreign key.
+
+### 61.2 Hydrological & Emergency Relief Entities
+- **`water_level_gauge`**: Real-time river gauge telemetry:
+  - `id` (UUID PK), `disaster_event_id` (FK), `station_name`, `river_name`, `district`
+  - `current_level_m` (DECIMAL), `warning_level_m` (DECIMAL), `danger_level_m` (DECIMAL)
+  - `highest_flood_level_m` (DECIMAL), `trend` (RISING, FALLING, STEADY), `status` (NORMAL, ABOVE_WARNING, ABOVE_DANGER)
+  - `recorded_at` (TIMESTAMPTZ), `source_authority` (e.g. CWC, DHM)
+- **`relief_distribution_schedule`**: Multi-agency humanitarian distribution:
+  - `id` (UUID PK), `disaster_event_id` (FK), `centre_name`, `district`, `distribution_time`
+  - `distributing_agency` (ASDMA, NDRF, RED_CROSS), `ration_scale` (JSONB)
+  - `airdrop_coordinates` (JSONB), `status` (SCHEDULED, IN_PROGRESS, COMPLETED)
+- **`damage_assessment`**: Community field damage reports:
+  - `id` (UUID PK), `disaster_event_id` (FK), `reporter_name`, `reporter_role` (VILLAGE_HEAD, CITIZEN, REVENUE_OFFICER)
+  - `damage_type` (RESIDENTIAL, AGRICULTURAL, EMBANKMENT, INFRASTRUCTURE)
+  - `severity` (LOW, MEDIUM, HIGH, TOTAL_LOSS), `description`, `coordinates` (JSONB), `village_circle`
+
+### 61.3 Infrastructure & Forensic Rescue Entities
+- **`tunnel_site` & `tunnel_telemetry`**: Deep-shaft hydropower tunnel rescue monitoring:
+  - `site_id` (PK, e.g. `UT3A-MAIN-SHAFT`, `RASUWAGADHI-INTAKE`), `disaster_event_id` (FK)
+  - `name`, `operator`, `trapped_person_count`, `water_level_m`, `oxygen_percent`, `structural_integrity`
+- **`dna_kit_request`**: Reference sample kit management:
+  - `id` (UUID PK), `case_id` (FK), `tracking_ref` (CSPRNG hex format `DNA-XXXXXX`)
+  - `requester_name`, `requester_relationship`, `dispatch_address`, `status` (DISPATCHED, SAMPLES_RETURNED, SEQUENCING)
+
+### 61.4 Autonomous AI Intelligence & News Pipeline
+- **`news_article`**: Ground truth disaster intelligence:
+  - `id` (UUID PK), `disaster_event_id` (FK), `source_id` (FK), `title`, `url`, `content`
+  - `verification_status` (`PENDING`, `VERIFIED`, `REJECTED`), `verified_by` (FK), `published_at`
+- **`news_source` & `news_schedule`**: Feed management:
+  - Source authority URLs, scrapers, and crawling cadence (`mode`: `6h` emergency burst vs. `24h` routine monitoring).
+
+### 61.5 Autonomous Agentic Orchestrator Registry
+- **`portal_module_registry`**: Dynamic modular components (`MOD-WATER-LVL`, `MOD-DAMAGE`, `MOD-RELIEF`, `MOD-TUNNEL`, `MOD-DNA`).
+- **`orchestrator_event_plan`**: Planner recommendations based on GDACS disaster geometry.
+- **`orchestrator_deployment`**: Staging preview, two-person authorization log, and live deployment state.
+
