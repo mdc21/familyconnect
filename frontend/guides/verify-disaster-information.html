@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to check whether disaster information is verified — FamilyConnect</title>
+<meta name="description" content="How to read source and verification labels, how rumours are assessed, and what an unverified update does not mean.">
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+.guide-steps {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+}
+.guide-step-card {
+    border-left: 4px solid var(--primary);
+    background: var(--bg-card);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-subtle);
+    border-left-width: 4px;
+    border-left-color: var(--primary);
+}
+.guide-step-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+.guide-step-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0;
+}
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="../index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="../console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="../index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="../safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="../missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="../track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="../assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="../water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="../shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="../information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="../partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="../agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="../guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="../for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+
+<main class="container wide" id="main">
+
+    <p style="margin-bottom:1rem;"><a href="/guides.html" class="btn-outline-primary" style="font-size:0.85rem; padding:0.3rem 0.6rem;">← Back to Guides</a></p>
+
+    <div class="page-intro">
+        <h1>How to check whether disaster information is verified</h1>
+        <p class="lede">During a major flash flood emergency, rumors and false predictions circulate rapidly on social media. Understanding how to evaluate information prevents panic and ensures families act on ground facts.</p>
+    </div>
+
+    <div class="safe-panel safe-panel--info" style="margin-bottom:1.5rem;">
+        <p class="safe-panel-title">Verification Levels Explained</p>
+        <p>FamilyConnect strictly labels every piece of news with source attribution and verification status. An unverified update is not a confirmation.</p>
+    </div>
+
+    <ol class="guide-steps">
+        <li class="guide-step-card">
+            <h2 class="guide-step-title">VERIFIED / CONFIRMED</h2>
+            <p class="guide-step-desc">Information verified directly by official authorities (NDRRMA, Nepal Police, Red Cross, Ministry of Health) or satellite sensing data. You can rely on this for decision-making.</p>
+        </li>
+        <li class="guide-step-card">
+            <h2 class="guide-step-title">UNVERIFIED</h2>
+            <p class="guide-step-desc">Reports gathered from media outlets or eye-witnesses that are currently under review by ground coordinators. They provide early awareness but must not be treated as confirmed fact.</p>
+        </li>
+        <li class="guide-step-card">
+            <h2 class="guide-step-title">FALSE / DEBUNKED</h2>
+            <p class="guide-step-desc">Claims that have been checked against official hydrological data, authorities, or field teams and found to be untrue (e.g. false dam collapse warnings or precise flood hour predictions).</p>
+        </li>
+        <li class="guide-step-card">
+            <h2 class="guide-step-title">MISLEADING / PARTIAL FACT</h2>
+            <p class="guide-step-desc">Messages that contain a element of truth but exaggerate scope or misrepresent dates, locations, or casualties.</p>
+        </li>
+    </ol>
+
+    <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem;">
+        <a href="/information.html" class="btn btn-primary">Browse Verified Information</a>
+        <a href="/rumours.html" class="btn-outline-primary">Check Rumour Shield</a>
+    </div>
+
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+        <p>In an emergency contact the local emergency services. Information shown here always carries its source and verification state. Unverified information is never a confirmation.</p>
+        <p>Translations are provided to help you understand. Where a translation and the English record differ, coordinators work from the original record, which is language-neutral.</p>
+    </div>
+</footer>
+
+<script src="/js/app.js"></script>
+<script src="/js/api.js?v=20260906"></script>
+</body>
+</html>

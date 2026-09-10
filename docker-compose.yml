@@ -1,0 +1,35 @@
+version: '3.8'
+
+# Brings up a real PostgreSQL instance, loads the actual production
+# schema (including the pg_trgm extension and the audit-immutability
+# PL/pgSQL trigger), and seeds the disaster_event the integration suite
+# expects. This is what test/integration/spec007-gates.test.js requires —
+# those are NOT unit tests; they run real HTTP requests against a real
+# app instance backed by a real database, per SPEC-007 §2's mandate that
+# these gates be run before the Humanitarian Agency Review.
+#
+# Usage:
+#   docker compose up -d
+#   npm run test:integration
+#   docker compose down -v
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: familyconnect
+      POSTGRES_USER: familyconnect
+      POSTGRES_PASSWORD: familyconnect
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./src/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./src/db/migration-orchestrator.sql:/docker-entrypoint-initdb.d/02-orchestrator.sql:ro
+      - ./src/db/seed-modules.sql:/docker-entrypoint-initdb.d/03-modules.sql:ro
+      - ./src/db/seed.sql:/docker-entrypoint-initdb.d/04-seed-general.sql:ro
+      - ./src/db/seed_assam.sql:/docker-entrypoint-initdb.d/05-seed-assam.sql:ro
+      - ./test/integration/seed.sql:/docker-entrypoint-initdb.d/06-seed-tests.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U familyconnect -d familyconnect"]
+      interval: 2s
+      timeout: 5s
+      retries: 15

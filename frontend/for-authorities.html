@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For authorities and partner organisations — FamilyConnect</title>
+<meta name="description" content="One verified channel for official updates on missing people: named sources, own reference numbers, audit trail, no automatic matching.">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.auth-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin: 2rem 0;
+}
+.auth-card {
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+    padding: 1.25rem;
+    border-top: 4px solid var(--primary);
+}
+.auth-card-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+.auth-card-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0;
+}
+.step-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+}
+.step-item {
+    border-left: 4px solid var(--primary);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-left-width: 4px;
+    border-left-color: var(--primary);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+
+<main class="container wide" id="main">
+
+    <div class="page-intro">
+        <h1>For authorities and partner organisations</h1>
+        <p class="lede">
+            FamilyConnect is a coordination layer for the family-facing side of the response. It does not replace your systems, your authority, or your decisions — it makes your verified information reachable by the families who need it.
+        </p>
+    </div>
+
+    <div class="safe-panel safe-panel--info" style="margin-bottom: 2rem;">
+        <p class="safe-panel-title">Your authority is never transferred</p>
+        <p>Every submission is attributed to your organization by name, carries your internal reference number, and remains subject to your verification. Nothing is merged or confirmed by a computer alone.</p>
+    </div>
+
+    <h2>Core Principles for Responding Agencies</h2>
+
+    <div class="auth-grid">
+        <div class="auth-card">
+            <h3 class="auth-card-title">1. One verified channel instead of many unverified ones</h3>
+            <p class="auth-card-desc">Your updates are published once, with your organisation named as the source, your own reference number, and a timestamp. Families see them next to every unverified claim, clearly labelled — which reduces repeated phone calls and duplicated reports.</p>
+        </div>
+
+        <div class="auth-card">
+            <h3 class="auth-card-title">2. Structured case data, not ad-hoc messages</h3>
+            <p class="auth-card-desc">Missing person reports, safe declarations and hospital admission updates arrive in a consistent format with the fields coordinators actually need. Nothing is merged or matched automatically — staff review every suggestion.</p>
+        </div>
+
+        <div class="auth-card">
+            <h3 class="auth-card-title">3. Rumour control with your authority behind it</h3>
+            <p class="auth-card-desc">When false claims circulate about casualty numbers, road access or rescue status, coordinators publish counter-statements that cite the responsible authority by name. Confirmed information is never attributed to FamilyConnect itself.</p>
+        </div>
+
+        <div class="auth-card">
+            <h3 class="auth-card-title">4. Minimum data, clear accountability</h3>
+            <p class="auth-card-desc">The platform holds only the information needed to locate and assist people. Every read and change by staff is recorded in an immutable audit trail you can ask to review.</p>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 2.5rem;">How Onboarding Works for Agencies</h2>
+
+    <ol class="step-list">
+        <li class="step-item">
+            <h3 style="margin-top:0; font-size:1.1rem;">1. Register your organisation</h3>
+            <p style="margin:0.25rem 0 0; font-size:0.9rem; color:var(--text-muted);">Submit your organisation name, role in the response (police, hospital, NGO, embassy, tour operator), and an official contact. Administrators verify credentials before granting access.</p>
+        </li>
+        <li class="step-item">
+            <h3 style="margin-top:0; font-size:1.1rem;">2. Nominate authorised users</h3>
+            <p style="margin:0.25rem 0 0; font-size:0.9rem; color:var(--text-muted);">Each user receives an individual partner account linked to your organisation. There are no shared logins, and every submission is attributed to a named responder.</p>
+        </li>
+        <li class="step-item">
+            <h3 style="margin-top:0; font-size:1.1rem;">3. Submit updates with your own internal reference</h3>
+            <p style="margin:0.25rem 0 0; font-size:0.9rem; color:var(--text-muted);">Partners submit information against a case with a source type and your internal case/hospital reference number. Submissions are verified before broadcast.</p>
+        </li>
+        <li class="step-item">
+            <h3 style="margin-top:0; font-size:1.1rem;">4. Strict scoping &amp; privacy control</h3>
+            <p style="margin:0.25rem 0 0; font-size:0.9rem; color:var(--text-muted);">Partner accounts see only the cases they are authorized to access. Safeguarding and restricted case notes are strictly protected by role-based access control.</p>
+        </li>
+    </ol>
+
+    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:2.5rem; margin-bottom:3rem;">
+        <a href="/register-organisation.html" class="btn btn-primary">Register your organisation</a>
+        <a href="/console/overview" class="btn-outline-primary">Responder Console Sign-in</a>
+        <a href="/agencies.html" class="btn-outline-primary">Browse Active Agencies Directory</a>
+        <a href="/partner-updates.html" class="btn-outline-primary">See How Verified Updates Appear</a>
+    </div>
+
+    <div class="safe-panel safe-panel--info" style="margin-bottom:2rem;">
+        <h3 style="margin-top:0;">DNA Reference Samples from Families</h3>
+        <p>Where remains are buried or hard to identify, relatives can apply to give a DNA reference sample. Direct families to the Family DNA Request form. Comparisons are sorted by similarity for human review; only your authority can confirm a match.</p>
+        <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <a href="/dna-request.html" class="btn btn-primary" style="font-size:0.85rem;">Family DNA sample request form</a>
+            <a href="/guides/dna-identification-glacial-flood.html" class="btn-outline-primary" style="font-size:0.85rem;">DNA guide for families</a>
+        </div>
+    </div>
+
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+        <p>In an emergency contact the local emergency services. Information shown here always carries its source and verification state. Unverified information is never a confirmation.</p>
+        <p>Translations are provided to help you understand. Where a translation and the English record differ, coordinators work from the original record, which is language-neutral.</p>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="js/api.js?v=20260906"></script>
+</body>
+</html>

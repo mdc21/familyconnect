@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FamilyConnect | Disaster Coordination & Family Reconnection</title>
+    <meta name="theme-color" content="#005eb8">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+
+
+
+    <main class="container">
+        <!-- Immediate Action Triage for Families & Affected People -->
+        <section class="triage-grid">
+            <article class="card-action success">
+                <div>
+                    <h3>I Am Safe</h3>
+                    <p>Directly report your current well-being, establish contact channels, and notify your relatives
+                        while controlling your location privacy.</p>
+                </div>
+                <a href="safe.html" class="btn btn-primary">Declare Safety Status</a>
+            </article>
+
+            <article class="card-action danger">
+                <div>
+                    <h3>Report Missing Person</h3>
+                    <p>Register an unaccounted-for relative. Creates a unified coordination record accessible across
+                        relief agencies.</p>
+                </div>
+                <a href="missing.html" class="btn btn-danger">Initiate Tracing Case</a>
+            </article>
+
+            <article class="card-action">
+                <div>
+                    <h3>Track Active Case</h3>
+                    <p>Query verified updates, schedule human reviews, attach physical identity evidence, or register an
+                        urgent logistical need.</p>
+                </div>
+                <a href="track.html" class="btn btn-outline">Access Case Record</a>
+            </article>
+        </section>
+
+        <!-- Specific Operational Guidance for Incoming Groups -->
+        <section
+            style="background: #fff; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 1.5rem; margin-bottom: 2rem;">
+            <h2 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 0.5rem;">Arriving in <span class="fc-dynamic-event-region">the affected region</span>? 3
+                Priority Actions</h2>
+            <ol style="padding-left: 1.25rem; color: var(--text-muted); font-size: 0.9375rem;">
+                <li><strong>Register Case Reference:</strong> Obtain a reference before moving across physical
+                    facilities (avoids repeated intakes).</li>
+                <li><strong>Assistance Centre Navigation:</strong> Visit designated physical hubs for translation,
+                    lodging, and consular coordination.</li>
+                <li><strong>Log Family Location:</strong> Update your in-city residence (hotel/shelter) so caseworkers
+                    can coordinate transport.</li>
+            </ol>
+            <div style="margin-top: 1rem;">
+                <a href="assistance.html" class="btn btn-outline" style="font-size: 0.85rem;">View Verified Assistance
+                    Centres &amp; Embassies</a>
+            </div>
+        </section>
+
+        <!-- Stakeholder Gateway Segmentation -->
+        <section class="stakeholder-section">
+            <h3 style="font-size: 1.1rem; color: var(--text-main);">Coordination Gateways by Role</h3>
+            <div class="stakeholder-grid">
+                <div class="stakeholder-card">
+                    <h4>Tour &amp; Trek Operators</h4>
+                    <p>Upload group manifests, log check-ins, and account for guided expeditions without exposing
+                        individual private data.</p>
+                    <a href="console.html?role=TOUR_OPERATOR"
+                        style="font-size: 0.8125rem; font-weight:600; color:var(--primary); display:inline-block; margin-top:0.5rem;">Manage
+                        Group Manifest →</a>
+                </div>
+
+                <div class="stakeholder-card">
+                    <h4>Embassies &amp; Consulates</h4>
+                    <p>Access filtered, verified national identification cases and coordinate repatriation preferences
+                        lawfully.</p>
+                    <a href="console.html?role=CONSULAR"
+                        style="font-size: 0.8125rem; font-weight:600; color:var(--primary); display:inline-block; margin-top:0.5rem;">Consular
+                        Portal →</a>
+                </div>
+
+                <div class="stakeholder-card">
+                    <h4>Authorized Responders</h4>
+                    <p>Local Police, Regional caseworkers, and hospital teams: execute case triage, log safeguarding
+                        handovers, and manage disputes.</p>
+                    <a href="console.html?role=CASE_WORKER"
+                        style="font-size: 0.8125rem; font-weight:600; color:var(--primary); display:inline-block; margin-top:0.5rem;">Launch
+                        Caseworker Console →</a>
+                </div>
+
+                <div class="stakeholder-card">
+                    <h4>Misinformation Shield</h4>
+                    <p>Review real-time verified updates and official debunking of social media rumors (e.g. false dam
+                        collapses).</p>
+                    <a href="rumours.html"
+                        style="font-size: 0.8125rem; font-weight:600; color:var(--primary); display:inline-block; margin-top:0.5rem;">Browse
+                        Rumour Feed →</a>
+                </div>
+            </div>
+        <!-- Event Updates Feed matching disasteraassistance.life -->
+        <section style="margin-top: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem; gap: 1rem;">
+                <div>
+                    <h2 style="margin: 0; font-size: 1.5rem;">Event Updates</h2>
+                    <p style="margin: 0.25rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Latest verified reports and ground intelligence for <strong class="fc-dynamic-event-name">the ongoing emergency</strong>.</p>
+                </div>
+                <a href="information.html" style="font-size: 0.875rem; font-weight: 600; text-decoration: underline;">All verified information →</a>
+            </div>
+
+            <div id="home-event-updates" style="display: grid; gap: 1rem;">
+                <div class="notice notice-info">Loading latest event updates…</div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <p class="footer-notice-bold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+            <p>In an emergency contact the local emergency services. Information shown here always carries its source and verification state. Unverified information is never a confirmation.</p>
+            <p>Translations are provided to help you understand. Where a translation and the English record differ, coordinators work from the original record, which is language-neutral.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script src="js/api.js?v=20260906"></script>
+    <script>
+    async function loadHomeEventUpdates() {
+        const container = document.getElementById('home-event-updates');
+        if (!container) return;
+        try {
+            const updates = await api.getPublicNews('ALL');
+            if (!updates || !updates.length) {
+                container.innerHTML = '<div class="notice notice-info">No published event updates available yet. Check back shortly.</div>';
+                return;
+            }
+            container.innerHTML = '';
+            const currentLang = (typeof getLang === 'function' ? getLang() : 'en');
+            updates.slice(0, 5).forEach(u => {
+                const title = (u.translations && u.translations[currentLang] && u.translations[currentLang].title) || u.title;
+                const summary = (u.translations && u.translations[currentLang] && u.translations[currentLang].summary) || u.summary;
+                const card = document.createElement('article');
+                card.style.cssText = 'border: 1px solid var(--border-subtle); background: var(--bg-card); padding: 1.25rem; border-left: 4px solid var(--primary);';
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:0.5rem;">
+                        <h3 style="margin:0; font-size:1.1rem; color:var(--text-main);">${escapeHtml(title)}</h3>
+                        <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; padding:0.2rem 0.5rem; border-radius:3px; background:${u.verificationStatus === 'VERIFIED' ? '#dcfce7; color:#15803d;' : '#fef3c7; color:#b45309;'}">${escapeHtml(u.verificationStatus)}</span>
+                    </div>
+                    <p style="font-size:0.9rem; line-height:1.6; color:var(--text-main); margin-bottom:0.75rem;">${escapeHtml(summary)}</p>
+                    <div style="font-size:0.8rem; color:var(--text-muted); display:flex; gap:1.25rem; flex-wrap:wrap; border-top:1px dashed var(--border-subtle); padding-top:0.5rem;">
+                        <span>Source: <strong style="color:var(--primary);">${escapeHtml(u.sourceName)}</strong></span>
+                        <span>Category: <strong>${escapeHtml(u.category)}</strong></span>
+                        <span>Recorded: ${formatDate(u.createdAt)}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (err) {
+            container.innerHTML = `<div class="notice notice-error">${escapeHtml(err.message || 'Unable to load event updates.')}</div>`;
+        }
+    }
+    function escapeHtml(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+    document.addEventListener('DOMContentLoaded', loadHomeEventUpdates);
+    </script>
+</body>
+
+</html>

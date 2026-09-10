@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistance centres — FamilyConnect</title>
+<meta name="description" content="Where to get practical help in person after the disaster.">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.assistance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+    margin-bottom: 3rem;
+}
+.centre-card-item {
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+}
+.centre-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+.centre-title {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+.status-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+    background: rgba(27, 77, 62, 0.1);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    white-space: nowrap;
+}
+.centre-dl {
+    display: grid;
+    gap: 0.6rem;
+    font-size: 0.875rem;
+    margin: 0;
+}
+.centre-dl dt {
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 0.1rem;
+}
+.centre-dl dd {
+    margin-left: 0;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.2rem;
+}
+.service-pill {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.45rem;
+    background: var(--bg-main);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-main);
+    border-radius: 2px;
+}
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+
+<main class="container wide" id="main">
+
+    <div class="page-intro">
+        <h1>Assistance centres</h1>
+        <p class="lede">Family Assistance Centres provide in-person help: registration, welfare support, interpreting, documents and referral to authorities.</p>
+    </div>
+
+    <div class="safe-panel safe-panel--info" style="margin-bottom: 1.5rem;">
+        <p class="safe-panel-title">What to bring</p>
+        <p>Bring identification if you have it, and your case reference and access code if you already have a case. Staff can help you open one if you do not.</p>
+    </div>
+
+    <div id="centre-status" class="notice notice-info">Loading assistance centres…</div>
+    <div id="assistance-grid" class="assistance-grid"></div>
+
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+        <p>In an emergency contact the local emergency services. Information shown here always carries its source and verification state. Unverified information is never a confirmation.</p>
+        <p>Translations are provided to help you understand. Where a translation and the English record differ, coordinators work from the original record, which is language-neutral.</p>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="js/api.js?v=20260906"></script>
+<script>
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+const allFallbackCentres = {
+    'EVENT-IN-FL-2026-1187': [
+        {
+            name: "Guwahati Central Relief Hub — Nehru Stadium",
+            operationalStatus: "OPEN",
+            address: "Nehru Stadium, B. Borooah Road, Ulubari",
+            city: "Guwahati, Kamrup Metropolitan",
+            directions: "Inside the main stadium sports complex, ground floor.",
+            openingHours: "Open 24 hours / 7 days",
+            services: ["Missing person registration", "Safe-person declarations", "Relief distribution", "Medical triage"],
+            languages: ["Assamese", "Hindi", "English"],
+            accessibility: "Wheelchair accessible. Ground floor operations.",
+            emergencyContact: "+91 361 2237042"
+        },
+        {
+            name: "Sivasagar District Rescue Station",
+            operationalStatus: "OPEN",
+            address: "Sivasagar Civil Hospital Compound",
+            city: "Sivasagar",
+            directions: "Adjacent to Civil Hospital emergency wing.",
+            openingHours: "06:00 - 22:00 daily",
+            services: ["Missing person registration", "Boat rescue coordination", "Paramedic triage"],
+            languages: ["Assamese", "English"],
+            accessibility: "Ramp available for stretcher and wheelchair access.",
+            emergencyContact: "+91 3777 222137"
+        },
+        {
+            name: "Goalpara Evacuation Point",
+            operationalStatus: "OPEN",
+            address: "Goalpara Town Hall",
+            city: "Goalpara",
+            directions: "Near the District Collector Office.",
+            openingHours: "07:00 - 21:00 daily",
+            services: ["Family tracing", "Shelter referrals", "Hygiene kits distribution"],
+            languages: ["Assamese", "Goalpariya", "Hindi"],
+            accessibility: "Level access at main entrance.",
+            emergencyContact: "+91 3662 240030"
+        }
+    ],
+    'EVENT-NP-TIBET-2026': [
+        {
+            name: "Border Reception Point - Rasuwagadhi",
+            operationalStatus: "OPEN",
+            address: "Rasuwagadhi checkpoint",
+            city: "Rasuwa",
+            directions: "On the main highway at the border checkpoint.",
+            openingHours: "06:00 - 22:00",
+            services: ["Safety declaration", "Missing person reports", "Transport coordination"],
+            languages: ["English", "Nepali", "Tibetan"],
+            accessibility: "Uneven ground; assistance available",
+            emergencyContact: "+977 9800000112"
+        },
+        {
+            name: "Consular Support Desk - Kathmandu",
+            operationalStatus: "OPEN",
+            address: "Tribhuvan International Airport, Arrivals Hall",
+            city: "Kathmandu",
+            directions: "Inside the international arrivals hall, desk 4.",
+            openingHours: "08:00 - 20:00",
+            services: ["Consular referral", "Documentation support", "Accommodation referral"],
+            languages: ["English", "Nepali"],
+            accessibility: "Step-free access",
+            emergencyContact: "+977 1 4000113"
+        },
+        {
+            name: "Family Assistance Centre - Kathmandu",
+            operationalStatus: "OPEN",
+            address: "Bhrikutimandap Exhibition Ground",
+            city: "Kathmandu",
+            directions: "Five minutes walk east of Ratna Park bus stand.",
+            openingHours: "24 hours",
+            services: ["Case registration", "Family reception", "Interpretation", "Emotional support", "Travel guidance"],
+            languages: ["English", "Nepali", "Tibetan", "Hindi"],
+            accessibility: "Step-free access, accessible toilets",
+            emergencyContact: "+977 1 4000111"
+        }
+    ]
+};
+
+function getFallbackCentres() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('event') || localStorage.getItem('fc_current_event_id') || 'EVENT-IN-FL-2026-1187';
+    return allFallbackCentres[eventId] || allFallbackCentres['EVENT-IN-FL-2026-1187'];
+}
+
+function renderCentreCard(c) {
+    const status = (c.operationalStatus || c.operational_status || 'OPEN').toUpperCase();
+    const address = c.address ? (c.city ? `${c.address}, ${c.city}` : c.address) : (c.location ? (c.location.facilityName || c.location.administrativeArea || '') : '');
+    const directions = c.directions || (c.location ? c.location.directions : '') || '';
+    const openingHours = c.openingHours || c.opening_hours || '';
+    const services = Array.isArray(c.services) ? c.services : [];
+    const languages = Array.isArray(c.languages) ? c.languages : [];
+    const accessibility = c.accessibility || '';
+    const contact = c.emergencyContact || c.emergency_contact || '';
+
+    const servicesHtml = services.length
+        ? `<div class="tag-list">${services.map(s => `<span class="service-pill">${escapeHtml(s)}</span>`).join('')}</div>`
+        : '<span>General assistance</span>';
+
+    const languagesStr = languages.length ? languages.join(', ') : 'English, Nepali';
+
+    return `
+        <article class="centre-card-item">
+            <div class="centre-header">
+                <h2 class="centre-title">${escapeHtml(c.name)}</h2>
+                <span class="status-badge">${escapeHtml(status)}</span>
+            </div>
+            <dl class="centre-dl">
+                ${address ? `<div><dt>Address</dt><dd>${escapeHtml(address)}</dd></div>` : ''}
+                ${directions ? `<div><dt>Getting there</dt><dd>${escapeHtml(directions)}</dd></div>` : ''}
+                ${openingHours ? `<div><dt>Opening hours</dt><dd>${escapeHtml(openingHours)}</dd></div>` : ''}
+                <div><dt>Services</dt><dd>${servicesHtml}</dd></div>
+                <div><dt>Languages</dt><dd>${escapeHtml(languagesStr)}</dd></div>
+                ${accessibility ? `<div><dt>Accessibility</dt><dd>${escapeHtml(accessibility)}</dd></div>` : ''}
+                ${contact ? `<div><dt>Contact</dt><dd><a href="tel:${escapeHtml(contact)}" style="color:var(--primary); font-weight:600;">${escapeHtml(contact)}</a></dd></div>` : ''}
+            </dl>
+        </article>
+    `;
+}
+
+async function loadAssistanceCentres() {
+    const statusEl = document.getElementById('centre-status');
+    const grid = document.getElementById('assistance-grid');
+
+    try {
+        const centres = await api.getAssistanceCentres();
+        const list = (centres && centres.length) ? centres : getFallbackCentres();
+        statusEl.style.display = 'none';
+        grid.innerHTML = list.map(renderCentreCard).join('');
+    } catch (err) {
+        grid.innerHTML = getFallbackCentres().map(renderCentreCard).join('');
+        statusEl.style.display = 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadAssistanceCentres);
+</script>
+</body>
+</html>

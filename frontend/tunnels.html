@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hydropower Tunnel Rescue & Roster Tracking — FamilyConnect</title>
+<meta name="description" content="Live search and engineering status for trapped hydropower workers and tunnel rescue operations in Nepal-Tibet flood zone.">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.summary-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0 2rem 0;
+}
+.summary-card {
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+    padding: 1rem 1.25rem;
+    border-left: 4px solid var(--primary);
+}
+.summary-card-num {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.1;
+    margin-bottom: 0.2rem;
+}
+.summary-card-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+.tunnel-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+.tunnel-card {
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+    padding: 1.5rem;
+    border-left: 5px solid var(--primary);
+}
+.tunnel-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+.tunnel-title {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 0.25rem 0;
+}
+.tunnel-meta {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+.status-pill {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.6rem;
+    border-radius: 2px;
+    background: rgba(27, 77, 62, 0.1);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+.status-pill--alert {
+    background: rgba(184, 51, 42, 0.1);
+    color: #b8332a;
+    border-color: #b8332a;
+}
+.progress-container {
+    margin: 1rem 0;
+    background: var(--bg-main);
+    border: 1px solid var(--border-subtle);
+    padding: 0.75rem 1rem;
+    border-radius: 3px;
+}
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: var(--text-main);
+}
+.progress-bar-bg {
+    width: 100%;
+    height: 10px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 5px;
+    overflow: hidden;
+}
+.progress-bar-fill {
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+.army-update-box {
+    background: rgba(27, 77, 62, 0.04);
+    border-left: 3px solid var(--primary);
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: var(--text-main);
+    line-height: 1.5;
+    margin: 1rem 0;
+}
+.roster-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+.roster-table th, .roster-table td {
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border-subtle);
+    text-align: left;
+}
+.roster-table th {
+    background: var(--bg-main);
+    font-weight: 700;
+}
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+}
+.modal-overlay.active {
+    display: flex;
+}
+.modal-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    padding: 1.5rem;
+    max-width: 550px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+
+<main class="container wide" id="main">
+
+    <div id="assam-tunnel-notice" class="notice notice-info" style="margin-top:1rem; margin-bottom:1.5rem; display:none; border-left: 5px solid #005eb8; background:#eff6ff; padding:1.2rem; border-radius:4px;">
+        <h4 style="margin-top:0; color:#1e40af;">ℹ️ Operational Context: Mountain Tunnel SAR vs. Assam Plain Flooding</h4>
+        <p style="margin-bottom:0.5rem; line-height:1.5;">Hydropower tunnel rescue operations and horizontal micro-drilling tracking are active for the <strong>Nepal–Tibet Border Flash Flood event</strong> (Upper Trishuli 3A and Rasuwagadhi Hydropower tunnels). In the <strong>Assam Brahmaputra River Basin Floods</strong>, emergency search and rescue is conducted by NDRF and SDRF via shallow-draft rescue boats across inundated chars (river islands) and flooded villages.</p>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.75rem;">
+            <a href="water-levels.html" class="btn-primary" style="font-size:0.85rem; padding:0.4rem 0.8rem; text-decoration:none;">🌊 View Assam Water Levels</a>
+            <a href="relief.html" class="btn-outline" style="font-size:0.85rem; padding:0.4rem 0.8rem; text-decoration:none;">📦 View Assam Relief Schedules</a>
+            <a href="report-damage.html" class="btn-outline" style="font-size:0.85rem; padding:0.4rem 0.8rem; text-decoration:none;">🏚️ Report Assam Flood Damage</a>
+        </div>
+    </div>
+
+    <div class="page-intro">
+        <h1>Hydropower Tunnel Rescue &amp; Roster Tracking</h1>
+        <p class="lede">
+            Live SAR engineering updates, micro-drilling progress, air supply vent installations, and shift rosters for trapped workers across hydroelectric projects affected by the glacial outburst flood.
+        </p>
+    </div>
+
+    <div class="safe-panel safe-panel--info" style="margin-bottom:1.5rem;">
+        <p class="safe-panel-title">Dedicated Tunnel SAR Coordination &amp; AI Monitoring</p>
+        <p>Nepali Army engineering units, APF search teams, and project site managers provide verified operational updates. An automated <strong>Tunnel Rescue Intelligence Agent</strong> scans SAR emergency channels every 6 hours (and on demand) to update drilling progress, air vent status, and rescue counts.</p>
+        <div style="margin-top:0.75rem; display:flex; items-center; gap:1rem; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary" style="font-size:0.85rem; padding:0.4rem 0.8rem;" id="agent-trigger-btn" onclick="runTunnelAgent()">
+                🔄 Run Tunnel Rescue AI Agent Now
+            </button>
+            <span id="agent-status-text" style="font-size:0.85rem; color:var(--text-muted); align-self:center;">
+                Agent Status: Idle · Auto-schedule 6h active
+            </span>
+        </div>
+    </div>
+
+    <div class="summary-bar" id="summary-bar">
+        <div class="summary-card">
+            <div class="summary-card-num" id="sum-trapped">123</div>
+            <div class="summary-card-label">Estimated Trapped Workers</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-card-num" id="sum-rescued">24</div>
+            <div class="summary-card-label">Rescued / Surface Evacuated</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-card-num" id="sum-sites">4</div>
+            <div class="summary-card-label">Active Tunnel Rescue Sites</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-card-num" style="color: #b8332a;" id="sum-fatalities">7</div>
+            <div class="summary-card-label">Confirmed Recovered Fatalities</div>
+        </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+        <h2 style="margin:0; font-size:1.4rem;">Affected Hydropower Tunnel Sites</h2>
+        <button type="button" class="btn btn-primary" onclick="openWorkerReportModal()">+ Report Missing Worker for Tunnel Roster</button>
+    </div>
+
+    <div id="tunnels-status" class="notice notice-info">Loading tunnel rescue sites data…</div>
+    <div id="tunnel-grid" class="tunnel-grid"></div>
+
+</main>
+
+<!-- Modal: Report Missing Worker on Tunnel Roster -->
+<div id="report-modal" class="modal-overlay">
+    <div class="modal-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h2 style="margin:0; font-size:1.25rem;">Report Worker for Tunnel Roster</h2>
+            <button type="button" onclick="closeWorkerReportModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <form id="worker-report-form" class="safe-form" novalidate>
+            <div class="field-block">
+                <label for="modal-siteId">Select Hydropower Project Site <span aria-hidden="true" style="color:var(--accent-alert)"> *</span></label>
+                <select id="modal-siteId" name="siteId" required>
+                    <!-- Populated dynamically -->
+                </select>
+            </div>
+
+            <div class="field-block">
+                <label for="modal-workerName">Worker Full Name <span aria-hidden="true" style="color:var(--accent-alert)"> *</span></label>
+                <input id="modal-workerName" name="workerName" required placeholder="Full legal name of missing worker">
+            </div>
+
+            <div class="field-block">
+                <label for="modal-designation">Designation / Role <span class="optional-tag">(optional)</span></label>
+                <input id="modal-designation" name="designation" placeholder="e.g. Tunnel Excavator Operator, Electrical Engineer, Drill Crew">
+            </div>
+
+            <div class="field-block">
+                <label for="modal-contractor">Contractor / Employer Company <span class="optional-tag">(optional)</span></label>
+                <input id="modal-contractor" name="contractorCompany" placeholder="e.g. CGGC Nepal, NWEDC Subcontractor">
+            </div>
+
+            <div class="field-block">
+                <label for="modal-phone">Your Contact Phone <span class="optional-tag">(optional)</span></label>
+                <input id="modal-phone" name="familyContactPhone" type="tel" placeholder="+977 98XXXXXXXX">
+            </div>
+
+            <div class="field-block">
+                <label for="modal-notes">Additional Shift / Location Details <span class="optional-tag">(optional)</span></label>
+                <textarea id="modal-notes" name="notes" rows="2" placeholder="e.g. Assigned to morning shift at Cavern B-2 refuge room, carrying satellite radio."></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+                <button type="button" class="btn-outline-primary" onclick="closeWorkerReportModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="modal-submit-btn">Submit Worker Report</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+        <p>In an emergency contact the local emergency services. Information shown here always carries its source and verification state. Unverified information is never a confirmation.</p>
+        <p>Translations are provided to help you understand. Where a translation and the English record differ, coordinators work from the original record, which is language-neutral.</p>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="js/api.js?v=20260906"></script>
+<script>
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+let loadedSites = [];
+
+function formatStatus(status) {
+    const map = {
+        AIR_VENT_ESTABLISHED: 'Air Vent Pipe Established',
+        DRILLING_IN_PROGRESS: 'Micro-Drilling Active',
+        ENTRY_PORTAL_PARTIALLY_CLEARED: 'Portal Partially Cleared',
+        SEARCH_IN_PROGRESS: 'Thermal & Drone Sensing',
+        EVACUATED_SAFE: 'Evacuation Complete'
+    };
+    return map[status] || status.replace(/_/g, ' ');
+}
+
+function formatWorkerStatus(status) {
+    const map = {
+        TRAPPED_SAFE_CHAMBER: 'Trapped in Safe Refuge Chamber',
+        SURFACE_EVACUATED: 'Evacuated Safe to Surface',
+        UNACCOUNTED: 'Unaccounted / Under Search',
+        RECOVERED: 'Recovered'
+    };
+    return map[status] || status;
+}
+
+async function loadTunnelsData() {
+    const statusEl = document.getElementById('tunnels-status');
+    const grid = document.getElementById('tunnel-grid');
+    const isAssam = (typeof DISASTER_EVENT_ID !== 'undefined' && (DISASTER_EVENT_ID.includes('IN') || DISASTER_EVENT_ID.includes('FL') || DISASTER_EVENT_ID.includes('ASSAM')));
+    const assamNotice = document.getElementById('assam-tunnel-notice');
+    if (assamNotice) assamNotice.style.display = isAssam ? 'block' : 'none';
+
+    try {
+        const sites = await api.getTunnelSites();
+        loadedSites = sites || [];
+
+        if (!sites || !sites.length) {
+            statusEl.textContent = 'No tunnel rescue sites currently registered.';
+            return;
+        }
+
+        statusEl.style.display = 'none';
+
+        // Update summary numbers
+        let totalTrapped = 0, totalRescued = 0, totalFatalities = 0;
+        sites.forEach(s => {
+            totalTrapped += s.estimatedTrapped || 0;
+            totalRescued += s.rescuedCount || 0;
+            totalFatalities += s.confirmedFatalities || 0;
+        });
+
+        document.getElementById('sum-trapped').textContent = totalTrapped;
+        document.getElementById('sum-rescued').textContent = totalRescued;
+        document.getElementById('sum-sites').textContent = sites.length;
+        document.getElementById('sum-fatalities').textContent = totalFatalities;
+
+        // Populate modal site dropdown
+        const siteSelect = document.getElementById('modal-siteId');
+        siteSelect.innerHTML = sites.map(s => `<option value="${s.siteId}">${escapeHtml(s.siteName)} (${escapeHtml(s.district)})</option>`).join('');
+
+        // Render tunnel cards
+        grid.innerHTML = '';
+        sites.forEach(s => {
+            const card = document.createElement('article');
+            card.className = 'tunnel-card';
+
+            const pct = s.targetDepthMeters > 0 ? Math.min(100, Math.round((s.drillingProgressMeters / s.targetDepthMeters) * 100)) : 0;
+            const isAlert = s.operationalStatus === 'SEARCH_IN_PROGRESS';
+            const statusClass = isAlert ? 'status-pill status-pill--alert' : 'status-pill';
+
+            card.innerHTML = `
+                <div class="tunnel-card-header">
+                    <div>
+                        <h3 class="tunnel-title">${escapeHtml(s.siteName)}</h3>
+                        <div class="tunnel-meta">District: <strong>${escapeHtml(s.district)}</strong> · Operator: <strong>${escapeHtml(s.operatorCompany)}</strong></div>
+                    </div>
+                    <span class="${statusClass}">${escapeHtml(formatStatus(s.operationalStatus))}</span>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span>Rescue Drilling Progress: <strong>${s.drillingProgressMeters}m / ${s.targetDepthMeters}m target</strong></span>
+                        <span>${pct}% complete</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${pct}%;"></div>
+                    </div>
+                </div>
+
+                <div class="army-update-box">
+                    <strong>Latest Operational Update:</strong> ${escapeHtml(s.lastStatusUpdate)}
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-top:1rem;">
+                    <div style="font-size:0.875rem; color:var(--text-muted);">
+                        Trapped Estimate: <strong style="color:var(--text-main);">${s.estimatedTrapped}</strong> · Rescued: <strong style="color:var(--primary);">${s.rescuedCount}</strong> · Roster Items: <strong>${s.rosterCount}</strong>
+                    </div>
+                    <button type="button" class="btn-outline-primary" style="font-size:0.85rem; padding:0.35rem 0.75rem;" onclick="toggleRoster('${s.siteId}')">
+                        View Shift Roster &amp; Status ↓
+                    </button>
+                </div>
+
+                <div id="roster-container-${s.siteId}" style="display:none; margin-top:1rem; border-top:1px solid var(--border-subtle); padding-top:1rem;">
+                    <div style="font-weight:700; font-size:0.95rem; margin-bottom:0.5rem;">Shift Worker Roster Records</div>
+                    <div id="roster-list-${s.siteId}" style="font-size:0.875rem; color:var(--text-muted);">Loading roster...</div>
+                </div>
+            `;
+
+            grid.appendChild(card);
+        });
+
+    } catch (err) {
+        statusEl.className = 'notice notice-error';
+        statusEl.textContent = err.message || 'Failed to load tunnel rescue sites.';
+    }
+}
+
+async function toggleRoster(siteId) {
+    const container = document.getElementById(`roster-container-${siteId}`);
+    const listEl = document.getElementById(`roster-list-${siteId}`);
+
+    if (container.style.display === 'block') {
+        container.style.display = 'none';
+        return;
+    }
+
+    container.style.display = 'block';
+    listEl.textContent = 'Loading roster items…';
+
+    try {
+        const roster = await api.getTunnelRoster(siteId);
+        if (!roster || !roster.length) {
+            listEl.innerHTML = '<em>No shift worker roster records logged yet for this site. Use "+ Report Missing Worker for Tunnel Roster" above to submit missing personnel.</em>';
+            return;
+        }
+
+        let tableHtml = `
+            <table class="roster-table">
+                <thead>
+                    <tr>
+                        <th>Worker Name</th>
+                        <th>Designation</th>
+                        <th>Contractor</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        roster.forEach(r => {
+            const statusLabel = formatWorkerStatus(r.status);
+            const isTrapped = r.status === 'TRAPPED_SAFE_CHAMBER';
+            const isEvacuated = r.status === 'SURFACE_EVACUATED';
+            const color = isTrapped ? 'var(--primary)' : (isEvacuated ? '#1b4d3e' : 'inherit');
+            const weight = (isTrapped || isEvacuated) ? '600' : 'normal';
+
+            tableHtml += `
+                <tr>
+                    <td><strong>${escapeHtml(r.workerName)}</strong> ${r.reportedByFamily ? '<span style="font-size:0.75rem; color:var(--text-muted);">(Family Logged)</span>' : ''}</td>
+                    <td>${escapeHtml(r.designation || 'N/A')}</td>
+                    <td>${escapeHtml(r.contractorCompany || 'N/A')}</td>
+                    <td style="color:${color}; font-weight:${weight};">${escapeHtml(statusLabel)}</td>
+                    <td>${escapeHtml(r.notes || '')}</td>
+                </tr>
+            `;
+        });
+
+        tableHtml += `</tbody></table>`;
+        listEl.innerHTML = tableHtml;
+    } catch (err) {
+        listEl.textContent = err.message || 'Failed to load roster records.';
+    }
+}
+
+function openWorkerReportModal() {
+    document.getElementById('report-modal').classList.add('active');
+}
+
+function closeWorkerReportModal() {
+    document.getElementById('report-modal').classList.remove('active');
+}
+
+document.getElementById('worker-report-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const siteId = form.siteId.value;
+    const workerName = form.workerName.value.trim();
+
+    if (!siteId || !workerName) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+
+    const btn = document.getElementById('modal-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting report…';
+
+    try {
+        const res = await api.reportTunnelWorker({
+            siteId,
+            workerName,
+            designation: form.designation.value.trim() || undefined,
+            contractorCompany: form.contractorCompany.value.trim() || undefined,
+            familyContactPhone: form.familyContactPhone.value.trim() || undefined,
+            notes: form.notes.value.trim() || undefined
+        });
+
+        alert(res.message || 'Worker details successfully logged for tunnel rescue operations.');
+        form.reset();
+        closeWorkerReportModal();
+        loadTunnelsData();
+    } catch (err) {
+        alert(err.message || 'Failed to submit worker report.');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit Worker Report';
+    }
+});
+
+async function runTunnelAgent() {
+    const btn = document.getElementById('agent-trigger-btn');
+    const statusText = document.getElementById('agent-status-text');
+
+    btn.disabled = true;
+    btn.textContent = '🔄 Agent Scanning SAR Channels…';
+    statusText.textContent = 'Agent active: Fetching latest drilling & rescue telemetry…';
+
+    try {
+        const res = await api.triggerTunnelAgent();
+        statusText.textContent = `Agent Success: ${res.message || 'Updated tunnel telemetry'}`;
+        await loadTunnelsData();
+    } catch (err) {
+        statusText.textContent = `Agent error: ${err.message || 'Failed to execute agent'}`;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '🔄 Run Tunnel Rescue AI Agent Now';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadTunnelsData);
+</script>
+</body>
+</html>

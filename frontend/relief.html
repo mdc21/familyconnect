@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relief Distribution Schedule — FamilyConnect</title>
+<meta name="description" content="Relief Distribution Schedule">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main id="main" class="main-content container">
+    <div class="page-header" style="margin-top: 2rem; margin-bottom: 1.5rem;">
+        <h1>Relief Distribution Schedule</h1>
+        <p style="color: var(--text-muted); font-size: 1rem;">Verified supply distribution points, dry ration drops, and medical aid schedules for <strong class="fc-dynamic-event-name">the ongoing emergency</strong>.</p>
+    </div>
+
+    <!-- Official Coordination Notice -->
+    <div class="notice notice-info" style="margin-bottom: 2rem; border-left: 5px solid var(--primary); background: #f0f7f5; padding: 1.2rem; border-radius: 4px;">
+        <h3 style="margin-top:0; color: var(--primary);">📦 ASDMA &amp; Indian Red Cross Multi-Agency Relief Coordination</h3>
+        <p style="margin-bottom:0.5rem; line-height: 1.5;">Relief materials are supplied completely free of charge under State Disaster Response Fund (SDRF) norms. District administrations across all 15 affected districts are operating daily distribution shifts. Special NDRF boat convoys and IAF air-drops are prioritized for marooned river island (char) communities.</p>
+        <small style="color:var(--text-muted)">Assam Relief Operations Cell | Verification status: OFFICIAL GOVERNMENT ROSTER</small>
+    </div>
+
+    <!-- Active Distribution Hubs Table -->
+    <div style="background:white; border: 1px solid var(--border-subtle); border-radius: 4px; overflow-x: auto; margin-bottom: 2.5rem;">
+        <table class="queue-table" style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8fafc; border-bottom: 2px solid var(--border-subtle); text-align: left;">
+                    <th style="padding:0.75rem 1rem;">Distribution Centre</th>
+                    <th style="padding:0.75rem 1rem;">District / Location</th>
+                    <th style="padding:0.75rem 1rem;">Operating Hours</th>
+                    <th style="padding:0.75rem 1rem;">Supplies &amp; Rations Distributed</th>
+                    <th style="padding:0.75rem 1rem;">Coordinating Agency</th>
+                    <th style="padding:0.75rem 1rem;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                    <td style="padding:0.85rem 1rem;"><strong>Guwahati Central Hub</strong><br><small style="color:var(--text-muted)">Nehru Stadium Complex</small></td>
+                    <td style="padding:0.85rem 1rem;">Kamrup Metro</td>
+                    <td style="padding:0.85rem 1rem; white-space:nowrap;">07:00 – 19:00 Daily</td>
+                    <td style="padding:0.85rem 1rem;">Dry rations (rice, dal, oil), baby formula, water purification kits, blankets</td>
+                    <td style="padding:0.85rem 1rem;">District Administration &amp; ASDMA</td>
+                    <td style="padding:0.85rem 1rem;"><span class="status-pill pill-VERIFIED">ACTIVE</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                    <td style="padding:0.85rem 1rem;"><strong>Barpeta Relief Desk</strong><br><small style="color:var(--text-muted)">B.H. College Relief Camp</small></td>
+                    <td style="padding:0.85rem 1rem;">Barpeta</td>
+                    <td style="padding:0.85rem 1rem; white-space:nowrap;">06:30 – 18:30 Daily</td>
+                    <td style="padding:0.85rem 1rem;">Ready-to-eat food (chira, gur), halogen tablets, ORS, tarpaulin shelters</td>
+                    <td style="padding:0.85rem 1rem;">Indian Red Cross &amp; NDRF 1st Bn</td>
+                    <td style="padding:0.85rem 1rem;"><span class="status-pill pill-VERIFIED">ACTIVE</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                    <td style="padding:0.85rem 1rem;"><strong>Goalpara Town Hall Hub</strong><br><small style="color:var(--text-muted)">Near DC Office Compound</small></td>
+                    <td style="padding:0.85rem 1rem;">Goalpara</td>
+                    <td style="padding:0.85rem 1rem; white-space:nowrap;">07:30 – 20:00 Daily</td>
+                    <td style="padding:0.85rem 1rem;">Family food baskets (14 days), hygiene &amp; dignity kits, clean drinking water</td>
+                    <td style="padding:0.85rem 1rem;">SDRF Assam &amp; District Social Welfare</td>
+                    <td style="padding:0.85rem 1rem;"><span class="status-pill pill-VERIFIED">ACTIVE</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                    <td style="padding:0.85rem 1rem;"><strong>Sivasagar Rescue Station</strong><br><small style="color:var(--text-muted)">Civil Hospital Grounds</small></td>
+                    <td style="padding:0.85rem 1rem;">Sivasagar</td>
+                    <td style="padding:0.85rem 1rem; white-space:nowrap;">08:00 – 18:00 Daily</td>
+                    <td style="padding:0.85rem 1rem;">Emergency dry food packs, mosquito nets, water containers, oral electrolytes</td>
+                    <td style="padding:0.85rem 1rem;">Assam Health Dept &amp; Red Cross</td>
+                    <td style="padding:0.85rem 1rem;"><span class="status-pill pill-VERIFIED">ACTIVE</span></td>
+                </tr>
+                <tr>
+                    <td style="padding:0.85rem 1rem;"><strong>Morigaon High School Camp</strong><br><small style="color:var(--text-muted)">Morigaon Town Ward 4</small></td>
+                    <td style="padding:0.85rem 1rem;">Morigaon</td>
+                    <td style="padding:0.85rem 1rem; white-space:nowrap;">07:00 – 18:00 Daily</td>
+                    <td style="padding:0.85rem 1rem;">Cooked community meals, baby nutrition porridge, clean water tankers</td>
+                    <td style="padding:0.85rem 1rem;">ASDMA Volunteer Task Force</td>
+                    <td style="padding:0.85rem 1rem;"><span class="status-pill pill-VERIFIED">ACTIVE</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Standard Family Relief Entitlement (SDRF Norms) -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div style="background:var(--bg-card); border: 1px solid var(--border-subtle); padding: 1.25rem; border-radius: 4px;">
+            <h4 style="margin-top:0; color:var(--text-main);">📋 Standard Family Ration Scale (Per Week)</h4>
+            <ul style="margin:0; padding-left:1.2rem; line-height: 1.8; font-size:0.9rem; color:var(--text-main);">
+                <li><strong>Rice:</strong> 12 kg per family (or 3 kg chira/flattened rice)</li>
+                <li><strong>Dal (Lentils):</strong> 2 kg</li>
+                <li><strong>Salt:</strong> 1 kg iodized salt</li>
+                <li><strong>Mustard Cooking Oil:</strong> 1 Litre</li>
+                <li><strong>Baby Nutrition / Milk Powder:</strong> 500g (for families with infants)</li>
+            </ul>
+        </div>
+        <div style="background:var(--bg-card); border: 1px solid var(--border-subtle); padding: 1.25rem; border-radius: 4px;">
+            <h4 style="margin-top:0; color:var(--text-main);">🧪 Health &amp; Hygiene Protection Pack</h4>
+            <ul style="margin:0; padding-left:1.2rem; line-height: 1.8; font-size:0.9rem; color:var(--text-main);">
+                <li><strong>Halogen Tablets:</strong> 50 tablets (1 tablet per 10L clean water)</li>
+                <li><strong>ORS Sachets:</strong> 10 WHO-standard sachets</li>
+                <li><strong>Antiseptic Soap &amp; Bleach:</strong> 2 soap bars + bleaching powder packet</li>
+                <li><strong>Sanitary Napkins:</strong> 2 packs per household</li>
+                <li><strong>LLIN Mosquito Nets:</strong> 2 medicated bed nets</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Air-Drop Signals for Cut-off Chars -->
+    <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 4px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+        <div>
+            <h4 style="margin:0 0 0.25rem 0;">Marooned on an Inundated Char Island?</h4>
+            <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Spread an orange tarpaulin or white cloth on the highest dry rooftop/mound for IAF helicopter air-drop pilots to spot your location, and call the State Disaster Control Room.</p>
+        </div>
+        <a href="assistance.html" class="btn-primary" style="text-decoration:none; padding: 0.6rem 1.2rem;">Request Boat Evacuation</a>
+    </div>
+</main>
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">This is a public service humanitarian site.</p>
+    </div>
+</footer>
+<script src="/js/app.js"></script>
+<script src="/js/api.js?v=20260906"></script>
+</body>
+</html>

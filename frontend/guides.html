@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guides for families — FamilyConnect</title>
+<meta name="description" content="Plain-language guidance for people trying to reach relatives, report someone missing, or judge whether disaster information is reliable.">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.guides-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+    margin-bottom: 3rem;
+}
+.guide-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+    padding: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s, transform 0.15s;
+}
+.guide-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+.guide-card-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+.guide-card-desc {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    flex-grow: 1;
+    margin-bottom: 1rem;
+}
+.guide-card-link {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+
+<main class="container wide" id="main">
+
+    <div class="page-intro">
+        <h1>Guides for families</h1>
+        <p class="lede">Plain-language guidance for people trying to reach relatives, report someone missing, or judge whether information circulating about the glacial outburst flood is reliable.</p>
+    </div>
+
+    <div class="guides-grid">
+        <a href="guides/report-missing-person-nepal-glacial-flood.html" class="guide-card">
+            <h2 class="guide-card-title">How to report a missing person in the Nepal–Tibet glacial outburst flood</h2>
+            <p class="guide-card-desc">What information to gather, how to register a case, what happens next and how long each step usually takes.</p>
+            <span class="guide-card-link">Read guide →</span>
+        </a>
+
+        <a href="guides/find-family-after-glacial-flood.html" class="guide-card">
+            <h2 class="guide-card-title">How to find a family member after a glacial outburst flood</h2>
+            <p class="guide-card-desc">Where to search first, which authorities hold which records, and how to use assistance centres and case tracking.</p>
+            <span class="guide-card-link">Read guide →</span>
+        </a>
+
+        <a href="guides/verify-disaster-information.html" class="guide-card">
+            <h2 class="guide-card-title">How to check whether disaster information is verified</h2>
+            <p class="guide-card-desc">How to read source and verification labels, how rumours are assessed, and what an unverified update does not mean.</p>
+            <span class="guide-card-link">Read guide →</span>
+        </a>
+
+        <a href="guides/first-24-hours-missing-person.html" class="guide-card">
+            <h2 class="guide-card-title">The first 24 hours when someone is missing</h2>
+            <p class="guide-card-desc">An hour-by-hour checklist: who to call, what to write down, when to register the case and how to set up tracking.</p>
+            <span class="guide-card-link">Read guide →</span>
+        </a>
+
+        <a href="guides/foreign-national-missing-embassy.html" class="guide-card">
+            <h2 class="guide-card-title">Foreign national missing: embassy and consular help</h2>
+            <p class="guide-card-desc">What embassies and consulates can and cannot do, and the details to have ready before contacting them.</p>
+            <span class="guide-card-link">Read guide →</span>
+        </a>
+
+        <a href="guides/dna-identification-glacial-flood.html" class="guide-card">
+            <h2 class="guide-card-title">DNA identification: a guide for families</h2>
+            <p class="guide-card-desc">Requesting a DNA kit, giving a reference sample, how comparisons are reviewed by people, and who can confirm an identification.</p>
+            <span class="guide-card-link">Read guide →</span>
+        </a>
+    </div>
+
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+        <p>In an emergency contact the local emergency services. Information shown here always carries its source and verification state. Unverified information is never a confirmation.</p>
+        <p>Translations are provided to help you understand. Where a translation and the English record differ, coordinators work from the original record, which is language-neutral.</p>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="js/api.js?v=20260906"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const isAssam = (typeof DISASTER_EVENT_ID !== 'undefined' && DISASTER_EVENT_ID.includes('IN')) ||
+                    (new URLSearchParams(window.location.search).get('event') || '').includes('IN') ||
+                    (localStorage.getItem('fc_current_event_id') || '').includes('IN');
+    if (isAssam) {
+        const lede = document.querySelector('.page-intro .lede');
+        if (lede) lede.textContent = 'Plain-language guidance for people trying to reach relatives, report someone missing, or judge whether information circulating about the Assam flood emergency is reliable.';
+        const firstCardTitle = document.querySelector('a[href*="report-missing-person"] .guide-card-title');
+        if (firstCardTitle) firstCardTitle.textContent = 'How to report a missing person in the Assam flood emergency';
+        const secondCardTitle = document.querySelector('a[href*="find-family"] .guide-card-title');
+        if (secondCardTitle) secondCardTitle.textContent = 'How to find a family member after major floods';
+    }
+});
+</script>
+</body>
+</html>

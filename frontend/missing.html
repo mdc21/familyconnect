@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Report someone missing — FamilyConnect</title>
+<meta name="description" content="Register a missing person case for a relative, friend or travelling companion and receive a reference to track it.">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+
+<main class="container" id="main">
+
+    <div class="page-intro">
+        <h1 data-i18n="missingHeading">Report someone missing</h1>
+        <p class="lede" data-i18n="missingLede">Give us what you know. Nothing here is treated as confirmed — a coordinator checks each detail against named sources before anything is marked verified.</p>
+    </div>
+
+    <div class="safe-grid">
+
+        <form id="missing-form" novalidate class="safe-form">
+
+            <!-- Section 1: About the missing person -->
+            <fieldset class="form-section">
+                <legend><h2 class="form-section-title" data-i18n="sectionAboutPerson">About the missing person</h2></legend>
+
+                <div class="field-block">
+                    <label for="personName"><span data-i18n="lblFullName">Full name</span> <span aria-hidden="true" style="color:var(--accent-alert)"> *</span></label>
+                    <input id="personName" name="personName" required maxlength="200">
+                </div>
+
+                <div class="field-row">
+                    <div class="field-block">
+                        <label for="approximateAge"><span data-i18n="lblAge">Approximate age</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                        <input id="approximateAge" name="approximateAge" inputmode="numeric" maxlength="3" placeholder="">
+                    </div>
+                    <div class="field-block">
+                        <label for="nationality"><span data-i18n="lblNationality">Nationality</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                        <input id="nationality" name="nationality" maxlength="100">
+                    </div>
+                </div>
+
+                <div class="field-block">
+                    <label for="description"><span data-i18n="lblDescription">Description</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                    <span class="field-hint" data-i18n="hintDescription">Height, build, clothing when last seen, distinguishing features.</span>
+                    <textarea id="description" name="description" rows="4" maxlength="1500"></textarea>
+                </div>
+
+                <div class="field-block">
+                    <label for="tourGroup"><span data-i18n="lblTourGroup">Tour group, employer or organised party</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                    <input id="tourGroup" name="tourGroup" maxlength="200">
+                </div>
+
+                <label class="vulnerable-check" for="vulnerable">
+                    <input id="vulnerable" type="checkbox" name="vulnerable" value="true">
+                    <span>
+                        <span class="vulnerable-title" data-i18n="lblVulnerable">This person may be especially at risk</span>
+                        <span class="vulnerable-desc" data-i18n="descVulnerable">For example a child, an older person, someone with a medical need, or someone who may be at risk of harm or exploitation. This routes the case to a safeguarding lead.</span>
+                    </span>
+                </label>
+            </fieldset>
+
+            <!-- Section 2: Last known circumstances -->
+            <fieldset class="form-section">
+                <legend><h2 class="form-section-title" data-i18n="sectionCircumstances">Last known circumstances</h2></legend>
+
+                <div class="field-block">
+                    <label for="lastKnownLocation"><span data-i18n="lblLastKnownLoc">Last known location</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                    <input id="lastKnownLocation" name="lastKnownLocation" maxlength="300" placeholder="e.g. near Namche Bazaar checkpoint">
+                </div>
+
+                <div class="field-block">
+                    <label for="lastKnownContactAt"><span data-i18n="lblLastContactTime">Date and time you last had contact</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                    <input id="lastKnownContactAt" name="lastKnownContactAt" type="datetime-local">
+                </div>
+
+                <div class="field-block">
+                    <label for="circumstances"><span data-i18n="lblCircumstances">What happened, as far as you know</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                    <textarea id="circumstances" name="circumstances" rows="4" maxlength="2000"></textarea>
+                </div>
+            </fieldset>
+
+            <!-- Section 3: About you (reporter) -->
+            <fieldset class="form-section">
+                <legend><h2 class="form-section-title" data-i18n="sectionAboutReporter">About you</h2></legend>
+
+                <div class="field-block">
+                    <label for="reporterName"><span data-i18n="lblYourName">Your name</span> <span aria-hidden="true" style="color:var(--accent-alert)"> *</span></label>
+                    <input id="reporterName" name="reporterName" required maxlength="200">
+                </div>
+
+                <div class="field-block">
+                    <label for="relationship"><span data-i18n="lblRelationship">Your relationship to the person</span> <span aria-hidden="true" style="color:var(--accent-alert)"> *</span></label>
+                    <span class="field-hint" data-i18n="hintRelationship">For example: mother, colleague, tour leader.</span>
+                    <input id="relationship" name="relationship" required maxlength="120">
+                </div>
+
+                <div class="field-block">
+                    <label for="reporterContact"><span data-i18n="lblYourContact">Your contact details</span> <span aria-hidden="true" style="color:var(--accent-alert)"> *</span></label>
+                    <span class="field-hint" data-i18n="hintYourContact">Phone or email a coordinator can use.</span>
+                    <input id="reporterContact" name="reporterContact" required maxlength="300">
+                </div>
+
+                <div class="field-block">
+                    <label for="reporterLocation"><span data-i18n="lblWhereYouAre">Where you are</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                    <input id="reporterLocation" name="reporterLocation" maxlength="300">
+                </div>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary" id="submit-btn" data-i18n="submitMissingBtn">Register missing person report</button>
+        </form>
+
+        <aside class="safe-aside">
+            <div class="safe-panel safe-panel--warn">
+                <p class="safe-panel-title">How your report is handled</p>
+                <ul>
+                    <li>A person and a case are kept separate — several reports can describe the same person.</li>
+                    <li>Your relationship is recorded as a request for access, decided by a coordinator.</li>
+                    <li>Any second report by another family member is reconciled, not silently overwritten.</li>
+                    <li>FamilyConnect cannot confirm identity or death. Those remain with the authorities.</li>
+                </ul>
+            </div>
+
+            <div class="dna-panel">
+                <h2 class="dna-panel-title">DNA identification</h2>
+                <p>Where remains were buried before identification, a close relative's DNA reference sample can still provide an answer. You can apply for a sample kit and track it without an account.</p>
+                <a href="dna-request.html" class="btn-outline-primary">Request a DNA sample kit</a>
+            </div>
+
+            <div class="safe-panel safe-panel--danger">
+                <p class="safe-panel-title">Immediate danger</p>
+                <p>If someone is in immediate danger, contact local emergency services first.</p>
+            </div>
+        </aside>
+
+    </div>
+
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+        <p>In an emergency contact the local emergency services. Information shown here always carries its source and verification state. Unverified information is never a confirmation.</p>
+        <p>Translations are provided to help you understand. Where a translation and the English record differ, coordinators work from the original record, which is language-neutral.</p>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="js/api.js?v=20260906"></script>
+<script>
+document.getElementById('missing-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const main = document.getElementById('main');
+    clearNotices(main);
+
+    const form = e.target;
+    const personName = form.personName.value.trim();
+    const reporterName = form.reporterName.value.trim();
+    const relationship = form.relationship.value.trim();
+    const reporterContact = form.reporterContact.value.trim();
+
+    if (!personName) {
+        showNotice(main, "Please enter the missing person's full name.", 'error');
+        return;
+    }
+    if (!reporterName) {
+        showNotice(main, 'Please enter your name.', 'error');
+        return;
+    }
+    if (!relationship) {
+        showNotice(main, 'Please enter your relationship to the missing person.', 'error');
+        return;
+    }
+    if (!reporterContact) {
+        showNotice(main, 'Please enter your contact details so a coordinator can reach you.', 'error');
+        return;
+    }
+
+    // Split full name into first/last for the API
+    const parts = personName.split(/\s+/);
+    const firstName = parts[0];
+    const lastName = parts.slice(1).join(' ') || '.';
+
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    try {
+        const result = await api.submitMissing({
+            person: {
+                firstName,
+                lastName,
+                approximateAge: form.approximateAge.value ? Number(form.approximateAge.value) : undefined,
+                nationality: form.nationality.value.trim() || undefined,
+            },
+            lastKnownContact: {
+                locationDescription: form.lastKnownLocation.value.trim() || undefined,
+                datetime: form.lastKnownContactAt.value
+                    ? new Date(form.lastKnownContactAt.value).toISOString() : undefined,
+            },
+            reporter: {
+                relationship,
+                phone: reporterContact,
+            },
+        });
+        form.hidden = true;
+        // Save to localStorage so track.html can auto-populate it
+        try {
+            const saved = JSON.parse(localStorage.getItem('fc_tracked_refs') || '[]');
+            saved.unshift(result.caseReference);
+            localStorage.setItem('fc_tracked_refs', JSON.stringify(saved.slice(0, 5)));
+        } catch (e) { /* storage may be unavailable */ }
+
+        const notice = showNotice(main, '', 'success');
+        notice.innerHTML = `
+            <strong>Report received.</strong> ${result.message}<br>
+            Case reference: <strong style="font-size:1.1rem;letter-spacing:0.05em">${result.caseReference}</strong><br>
+            <span style="font-size:0.88rem;">This reference has been saved on this device.
+            Use it to check updates or provide additional information.</span>
+            <br><a class="btn btn-secondary" style="margin-top:0.75rem;" href="track.html?ref=${encodeURIComponent(result.caseReference)}">Track this case →</a>
+        `;
+    } catch (err) {
+        showNotice(main, err.message, 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Register missing person report';
+    }
+});
+</script>
+</body>
+</html>

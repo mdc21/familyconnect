@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Safe water points — FamilyConnect</title>
+<meta name="description" content="Verified safe drinking water sources, distribution points, and purification stations.">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main id="main" class="main-content container">
+    <div class="page-header" style="margin-top: 2rem; margin-bottom: 2rem;">
+        <h1>Safe water points</h1>
+        <p>Verified safe drinking water sources, distribution points, and purification stations.</p>
+    </div>
+    <div class="notice notice-info" style="margin-bottom: 2rem;">
+        <p><strong>Never drink untreated water after a flood.</strong> Floodwater carries bacteria, viruses, and chemical contaminants. Use only verified water points or purify water by boiling for at least 1 minute.</p>
+    </div>
+    
+    <div id="water-points-grid" class="assistance-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.25rem; margin-bottom: 4rem;">
+    </div>
+</main>
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">This is a public service humanitarian site.</p>
+    </div>
+</footer>
+<script src="/js/app.js?v=20260906"></script>
+<script src="/js/api.js?v=20260906"></script>
+<script>
+const eventWaterPoints = {
+    'EVENT-IN-FL-2026-1187': [
+        {
+            title: 'PHE Department & UNICEF Water Station — Guwahati',
+            status: 'OPEN',
+            hours: '06:00–22:00 daily',
+            address: 'Nehru Stadium Compound, B. Borooah Road, Ulubari, Guwahati',
+            available: 'Safe drinking water, Chlorine purification tablets, Hygiene kits',
+            note: 'Tanker refills available for community volunteers and relief camps.',
+            contact: '+91-361-2237042'
+        },
+        {
+            title: 'Indian Red Cross Mobile Water Purification Unit — Sivasagar',
+            status: 'OPEN',
+            hours: '24/7',
+            address: 'Sivasagar Boarding Field Relief Camp, Sivasagar',
+            available: 'Purified drinking water, 10L Jerry cans, Water test strips',
+            note: 'Priority distribution for elderly, mothers, and infants.',
+            contact: '+91-3777-222137'
+        },
+        {
+            title: 'ASDMA & PHED Clean Water Distribution Point — Goalpara',
+            status: 'OPEN',
+            hours: '07:00–20:00 daily',
+            address: 'Goalpara Town Hall Compound, Near DC Office',
+            available: 'Potable water tankers, Halogen tablets, ORS sachets',
+            note: 'Bring clean containers. Water tested hourly by district public health lab.',
+            contact: '+91-3662-240030'
+        }
+    ],
+    'EVENT-NP-TIBET-2026': [
+        {
+            title: 'WFP Water Distribution — Melamchi',
+            status: 'OPEN',
+            hours: '08:00–18:00 daily',
+            address: 'Melamchi Municipality compound',
+            available: 'Safe drinking water, Emergency food rations, Hygiene kits',
+            note: 'Priority lane for elderly and disabled.',
+            contact: '+977-9800-123456'
+        },
+        {
+            title: 'Red Cross Purification Station — Dhunche',
+            status: 'OPEN',
+            hours: '24/7',
+            address: 'Dhunche Central Square',
+            available: 'Safe drinking water, Jerry cans',
+            note: 'Bring your own containers if possible.',
+            contact: '+977-9800-654321'
+        }
+    ]
+};
+
+function renderWaterPoints() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('event') || localStorage.getItem('fc_current_event_id') || 'EVENT-IN-FL-2026-1187';
+    const points = eventWaterPoints[eventId] || eventWaterPoints['EVENT-IN-FL-2026-1187'];
+    
+    const container = document.getElementById('water-points-grid');
+    if (!container) return;
+    
+    container.innerHTML = points.map(p => `
+        <div style="border: 1px solid var(--border-subtle); background: var(--bg-card); padding: 1.25rem; border-radius: 6px;">
+            <h2 style="margin-top:0; font-size:1.2rem;">${p.title}</h2>
+            <p style="margin: 0.5rem 0;"><strong>Status:</strong> <span style="color: #166534; font-weight: bold;">${p.status}</span> (${p.hours})</p>
+            <p style="margin: 0.5rem 0;"><strong>Address:</strong> ${p.address}</p>
+            <p style="margin: 0.5rem 0;"><strong>Available:</strong> ${p.available}</p>
+            <p style="margin: 0.5rem 0;"><strong>Note:</strong> ${p.note}</p>
+            <p style="margin: 0.5rem 0;"><strong>Contact:</strong> <a href="tel:${p.contact}" style="color:var(--primary); font-weight:600;">${p.contact}</a></p>
+        </div>
+    `).join('');
+}
+
+document.addEventListener('DOMContentLoaded', renderWaterPoints);
+</script>
+</body>
+</html>

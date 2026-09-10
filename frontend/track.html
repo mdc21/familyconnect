@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check on a case — FamilyConnect</title>
+<meta name="description" content="Track the status of a missing person case or safety declaration using your FamilyConnect reference number.">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.track-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 1.5rem;
+}
+.status-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+.status-banner.new, .status-banner.received { background: #eff6ff; border: 1px solid #bfdbfe; }
+.status-banner.active { background: #ecfdf5; border: 1px solid #bbf7d0; }
+.status-banner.safe { background: #f0fdf4; border: 1px solid #86efac; }
+.status-banner.hospitalised { background: #fefce8; border: 1px solid #fde047; }
+.status-banner.deceased, .status-banner.closed { background: #f9fafb; border: 1px solid #e5e7eb; }
+.status-icon { font-size: 2rem; flex-shrink: 0; }
+.status-ref { font-size: 0.85rem; color: var(--text-muted); font-family: monospace; }
+.status-label { font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; margin: 0.25rem 0; }
+.status-desc { font-size: 0.9rem; color: var(--text-muted); }
+.update-list { list-style: none; padding: 0; margin: 0; }
+.update-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-subtle);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem 1rem;
+    align-items: start;
+}
+.update-item:last-child { border-bottom: none; }
+.update-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--primary); margin-top: 5px; flex-shrink: 0;
+}
+.update-dot.unverified { background: var(--accent-warn); }
+.update-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+.save-ref-box {
+    background: #fef9c3;
+    border: 1px solid #fde047;
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+}
+.save-ref-box strong { display: block; margin-bottom: 0.25rem; }
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main class="container">
+    <a class="back-link" href="index.html">← <span data-i18n="backToHome">Back to home</span></a>
+    <h1 data-i18n="trackHeading">Check on a case</h1>
+    <p class="lede" data-i18n="trackLede">Enter the reference number you were given when you submitted a report or safety declaration.</p>
+
+    <form id="lookup-form" novalidate>
+        <label for="caseRef"><span data-i18n="lblCaseRef">Case or submission reference</span></label>
+        <input id="caseRef" name="caseRef" required
+               placeholder="e.g. FC-SAFE-123456 or FC-NP-2026-00892"
+               autocomplete="off"
+               aria-describedby="ref-hint">
+        <p id="ref-hint" class="field-hint">
+            <span data-i18n="hintCaseRef">The reference was shown on screen after you submitted and sent to you by email or SMS if contact details were provided. It starts with</span> <strong>FC-</strong>.
+        </p>
+        <button type="submit" class="btn-primary" id="lookup-btn" data-i18n="btnCheckStatus">Check status</button>
+    </form>
+
+    <section id="case-result" hidden aria-live="polite">
+    </section>
+
+    <div class="save-ref-box" id="saved-refs-box" hidden>
+        <strong>📋 Previously looked up references (this device only)</strong>
+        <ul id="saved-refs-list" style="margin:0.5rem 0 0 1rem;padding:0;list-style:disc"></ul>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+        <p>In an emergency contact local emergency services. Information shown here always carries its source and verification state. Unverified information is never a confirmation.</p>
+    </div>
+</footer>
+<script src="js/app.js"></script>
+<script src="js/api.js?v=20260906"></script>
+<script>
+const SAVED_REFS_KEY = 'fc_tracked_refs';
+
+function getSavedRefs() {
+    try { return JSON.parse(localStorage.getItem(SAVED_REFS_KEY) || '[]'); }
+    catch { return []; }
+}
+function saveRef(ref) {
+    const refs = getSavedRefs().filter(r => r !== ref);
+    refs.unshift(ref);
+    localStorage.setItem(SAVED_REFS_KEY, JSON.stringify(refs.slice(0, 5)));
+    renderSavedRefs();
+}
+function renderSavedRefs() {
+    const refs = getSavedRefs();
+    if (!refs.length) return;
+    const box = document.getElementById('saved-refs-box');
+    box.hidden = false;
+    const list = document.getElementById('saved-refs-list');
+    list.innerHTML = refs.map(r =>
+        `<li><button class="btn-link" onclick="lookupCase('${r}')">${r}</button></li>`
+    ).join('');
+}
+
+function statusClass(status) {
+    const map = {
+        NEW:'new', RECEIVED:'received',
+        ACTIVE:'active', UNDER_REVIEW:'active',
+        SAFE_CONFIRMED:'safe', CASE_CREATED:'active',
+        HOSPITALISED:'hospitalised',
+        DECEASED:'deceased', CLOSED:'closed', TRANSFERRED:'closed',
+    };
+    return map[status] || 'new';
+}
+function statusIcon(status) {
+    const map = {
+        NEW:'📋', RECEIVED:'📋', ACTIVE:'🔍', UNDER_REVIEW:'🔍',
+        SAFE_CONFIRMED:'✅', CASE_CREATED:'🔍', HOSPITALISED:'🏥',
+        DECEASED:'🕊️', CLOSED:'📁', TRANSFERRED:'🔄',
+    };
+    return map[status] || '📋';
+}
+
+function renderResult(data) {
+    const section = document.getElementById('case-result');
+    section.hidden = false;
+    const sc = statusClass(data.status);
+    const si = statusIcon(data.status);
+
+    let updatesHtml = '';
+    if (data.updates && data.updates.length) {
+        updatesHtml = `
+        <h3 style="margin-top:1.5rem">Timeline</h3>
+        <p class="field-hint">Items marked <span class="unverified-tag">Unverified</span> haven't been confirmed yet.
+           Don't treat them as final until marked <span class="verified-tag">Verified</span>.</p>
+        <ul class="update-list">
+            ${data.updates.map(u => {
+                const isVerified = u.verificationStatus === 'VERIFIED' || u.verificationStatus === 'CONFIRMED';
+                const tag = isVerified
+                    ? '<span class="verified-tag">Verified</span>'
+                    : '<span class="unverified-tag">Unverified</span>';
+                return `<li class="update-item">
+                    <div class="update-dot ${isVerified ? '' : 'unverified'}"></div>
+                    <div>
+                        <div>${escapeHtml(u.content)} ${tag}</div>
+                        <div class="update-meta">${formatDate(u.createdAt)}${u.category ? ' · ' + u.category.replace(/_/g,' ') : ''}</div>
+                    </div>
+                </li>`;
+            }).join('')}
+        </ul>`;
+    } else {
+        updatesHtml = `<p class="notice notice-info" style="margin-top:1rem">
+            No updates yet. This doesn't mean nothing is happening — it means nothing has been confirmed to share.
+            Check back, or visit an <a href="assistance.html">assistance centre</a> for help.
+        </p>`;
+    }
+
+    section.innerHTML = `
+        <div class="track-card">
+            <div class="status-banner ${sc}">
+                <span class="status-icon" aria-hidden="true">${si}</span>
+                <div>
+                    <div class="status-ref">Reference: ${escapeHtml(data.reference)}</div>
+                    <div class="status-label">${escapeHtml(data.statusDescription)}</div>
+                    <div class="status-desc">Submitted: ${formatDate(data.submittedAt)}${data.lastUpdatedAt ? ' · Last updated: ' + formatDate(data.lastUpdatedAt) : ''}</div>
+                </div>
+            </div>
+            ${updatesHtml}
+            <p style="margin-top:1.5rem;font-size:0.875rem;color:var(--text-muted)">
+                Need to speak to someone?
+                <a href="assistance.html">Find an assistance centre near you →</a>
+            </p>
+        </div>`;
+}
+
+function renderNotFound(ref) {
+    const section = document.getElementById('case-result');
+    section.hidden = false;
+    section.innerHTML = `
+        <div class="track-card">
+            <p class="notice notice-error">
+                We couldn't find a case with reference <strong>${escapeHtml(ref)}</strong>.<br><br>
+                Double-check the reference exactly as it was given — it should start with <strong>FC-</strong>. 
+                If you've lost the reference, visit an <a href="assistance.html">assistance centre</a> where staff can look up cases in person.
+            </p>
+        </div>`;
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = String(str);
+    return d.innerHTML;
+}
+
+async function lookupCase(ref) {
+    const main = document.querySelector('main');
+    clearNotices(main);
+    document.getElementById('case-result').hidden = true;
+    document.getElementById('case-result').innerHTML = '';
+    const btn = document.getElementById('lookup-btn');
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+    try {
+        const data = await api.trackCase(ref);
+        if (data.found) {
+            renderResult(data);
+            saveRef(ref);
+        } else {
+            renderNotFound(ref);
+        }
+    } catch (err) {
+        document.getElementById('case-result').hidden = false;
+        document.getElementById('case-result').innerHTML =
+            `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Check status';
+    }
+}
+
+document.getElementById('lookup-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const ref = e.target.caseRef.value.trim();
+    if (ref) lookupCase(ref);
+});
+
+// Deep-link support: ?ref=FC-...
+const params = new URLSearchParams(window.location.search);
+if (params.get('ref')) {
+    document.getElementById('caseRef').value = params.get('ref');
+    document.addEventListener('DOMContentLoaded', () => lookupCase(params.get('ref')));
+}
+
+document.addEventListener('DOMContentLoaded', renderSavedRefs);
+</script>
+</body>
+</html>

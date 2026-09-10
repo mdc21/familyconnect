@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verified information — FamilyConnect</title>
+<meta name="description" content="Verified disaster information and emergency updates for the active disaster response. Filter by topic.">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.info-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.filter-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    padding: 0.4rem 0.85rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s;
+}
+.filter-btn.active, .filter-btn:hover {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+.info-card {
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--primary);
+    border-radius: 0 4px 4px 0;
+}
+.info-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+.info-card-title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+.info-card-meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+.info-card-content {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+.category-tag {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 3px;
+    background: var(--primary-light, #e0f2fe);
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+#info-list-loading { color: var(--text-muted); font-style: italic; }
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main class="container">
+    <h1>Verified information</h1>
+    <p class="lede" id="info-lede">Official updates from NDRRMA, Nepal Army, Nepal Red Cross, and partner agencies.
+       All entries are sourced and carry a verification status. Refresh for the latest.</p>
+
+    <div class="info-filters" role="group" aria-label="Filter by topic">
+        <button class="filter-btn active" data-category="ALL" id="filter-ALL">All updates</button>
+        <button class="filter-btn" data-category="SITUATION_OVERVIEW" id="filter-SITUATION_OVERVIEW">Situation overview</button>
+        <button class="filter-btn" data-category="RESCUE_OPERATIONS" id="filter-RESCUE_OPERATIONS">Rescue operations</button>
+        <button class="filter-btn" data-category="TUNNEL_RESCUE" id="filter-TUNNEL_RESCUE">Tunnel rescue</button>
+        <button class="filter-btn" data-category="MEDICAL" id="filter-MEDICAL">Medical</button>
+        <button class="filter-btn" data-category="MISSING_PERSONS" id="filter-MISSING_PERSONS">Missing persons</button>
+        <button class="filter-btn" data-category="ACCESS_ROUTES" id="filter-ACCESS_ROUTES">Access &amp; roads</button>
+        <button class="filter-btn" data-category="CONSULAR" id="filter-CONSULAR">Embassies</button>
+        <button class="filter-btn" data-category="FAMILY_TRACING" id="filter-FAMILY_TRACING">Family tracing</button>
+    </div>
+
+    <div id="info-list">
+        <p id="info-list-loading">Loading updates…</p>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+        <p>All information shown carries its source and verification state. Unverified information is never a confirmation.</p>
+    </div>
+</footer>
+<script src="js/app.js"></script>
+<script src="js/api.js?v=20260906"></script>
+<script>
+const CATEGORY_LABELS = {
+    SITUATION_OVERVIEW: 'Situation Overview',
+    RESCUE_OPERATIONS: 'Rescue Operations',
+    TUNNEL_RESCUE: 'Tunnel Rescue',
+    MEDICAL: 'Medical',
+    MISSING_PERSONS: 'Missing Persons',
+    ACCESS_ROUTES: 'Access & Roads',
+    CONSULAR: 'Embassies & Consular',
+    FAMILY_TRACING: 'Family Tracing',
+    LOCATION: 'Location & River Status',
+    STATUS_UPDATE: 'Status Update'
+};
+
+let activeCategory = 'ALL';
+
+function escapeHtml(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = String(str);
+    return d.innerHTML;
+}
+
+function renderUpdates(updates) {
+    const list = document.getElementById('info-list');
+    if (!updates || !updates.length) {
+        list.innerHTML = '<p class="notice notice-info">No verified updates found for this filter. Check back soon.</p>';
+        return;
+    }
+    const currentLang = (typeof getLang === 'function' ? getLang() : 'en');
+    list.innerHTML = updates.map(u => {
+        const label = CATEGORY_LABELS[u.category] || u.category.replace(/_/g, ' ');
+        const content = (u.translations && u.translations[currentLang] && u.translations[currentLang].content) || u.content;
+        return `<article class="info-card" aria-label="${label} update">
+            <span class="category-tag">${label}</span>
+            <div class="info-card-header">
+                <div class="info-card-content">${escapeHtml(content)}</div>
+                <div class="info-card-meta">${formatDate(u.publishedAt)}</div>
+            </div>
+        </article>`;
+    }).join('');
+}
+
+async function loadUpdates(category) {
+    const list = document.getElementById('info-list');
+    list.innerHTML = '<p id="info-list-loading">Loading updates…</p>';
+    try {
+        const updates = await api.getInformation(null, category);
+        renderUpdates(updates);
+    } catch (err) {
+        list.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCategory = btn.dataset.category;
+        loadUpdates(activeCategory);
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const isAssam = (typeof DISASTER_EVENT_ID !== 'undefined' && DISASTER_EVENT_ID.includes('IN')) ||
+                    (new URLSearchParams(window.location.search).get('event') || '').includes('IN') ||
+                    (localStorage.getItem('fc_current_event_id') || '').includes('IN');
+    const ledeEl = document.getElementById('info-lede');
+    if (ledeEl) {
+        if (isAssam) {
+            ledeEl.textContent = 'Official updates from ASDMA, NDRF, SDRF, Assam Police, and partner relief agencies. All entries are sourced and carry a verification status. Refresh for the latest.';
+        } else {
+            ledeEl.textContent = 'Official updates from NDRRMA, Nepal Army, Nepal Red Cross, and partner agencies. All entries are sourced and carry a verification status. Refresh for the latest.';
+        }
+    }
+    loadUpdates('ALL');
+});
+</script>
+</body>
+</html>

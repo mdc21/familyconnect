@@ -1,0 +1,1277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coordinator Console — FamilyConnect</title>
+<meta name="description" content="FamilyConnect secured coordinator console for NDRRMA, Nepal Red Cross, and partner agency case workers.">
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+.console-login {
+    max-width: 420px;
+    margin: 4rem auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 2rem;
+}
+.console-login h2 { margin-top: 0; }
+.console-nav {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle);
+}
+.console-tab {
+    padding: 0.75rem 1rem;
+    border: none;
+    background: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.console-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.console-tab:hover:not(.active) { color: var(--text-main); background: var(--bg-muted, #f8fafc); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.metric-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 1.25rem;
+}
+.metric-val { font-size: 1.75rem; font-weight: 800; font-family: var(--font-heading); color: var(--primary); }
+.metric-lbl { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+
+.queue-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.queue-table th {
+    text-align: left; padding: 0.6rem 0.75rem;
+    background: var(--bg-muted, #f8fafc);
+    font-weight: 700; border-bottom: 2px solid var(--border-subtle);
+}
+.queue-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+.queue-table tr:hover td { background: var(--bg-muted, #f8fafc); }
+
+.status-pill {
+    display: inline-block; padding: 0.15rem 0.5rem; border-radius: 3px;
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+}
+.pill-PENDING { background: #fef3c7; color: #92400e; }
+.pill-KIT_DISPATCHED { background: #dbeafe; color: #1e40af; }
+.pill-SAMPLE_RECEIVED { background: #d1fae5; color: #065f46; }
+.pill-LAB_PROCESSING { background: #ede9fe; color: #4c1d95; }
+.pill-RESULT_AVAILABLE { background: #dcfce7; color: #166534; }
+.pill-CLOSED { background: #f1f5f9; color: #475569; }
+.pill-PUBLISHED, .pill-VERIFIED, .pill-CONFIRMED, .pill-ACTIVE { background: #dcfce7; color: #166534; }
+.pill-FALSE, .pill-HIGH, .pill-CRITICAL { background: #fee2e2; color: #991b1b; }
+.pill-MISLEADING, .pill-MEDIUM { background: #fef3c7; color: #92400e; }
+.pill-UNVERIFIED, .pill-LOW { background: #f1f5f9; color: #475569; }
+
+.session-bar {
+    background: var(--primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+}
+.session-bar[hidden] { display: none !important; }
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center; z-index: 100;
+}
+.modal-overlay[hidden] { display: none; }
+.modal-box {
+    background: white; border-radius: 8px; padding: 2rem;
+    max-width: 520px; width: 90%; max-height: 90vh; overflow-y: auto;
+}
+.modal-box h3 { margin-top: 0; }
+
+.matrix-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.matrix-table th, .matrix-table td { border: 1px solid var(--border-subtle); padding: 0.5rem 0.75rem; }
+.matrix-table th { background: var(--bg-muted, #f8fafc); font-weight: 700; }
+.check-yes { color: #166534; font-weight: bold; }
+.check-no { color: #991b1b; }
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+
+<!-- SESSION BAR (shown when logged in) -->
+<div class="session-bar" id="session-bar" hidden>
+    <span id="session-name">Loading session…</span>
+    <button class="btn-outline" onclick="signOut()" style="color:white;border-color:rgba(255,255,255,0.5);padding:0.25rem 0.75rem;font-size:0.8rem">Sign out</button>
+</div>
+
+<main class="container" style="max-width:1200px">
+
+<!-- ── LOGIN GATE ────────────────────────────── -->
+<div id="login-panel">
+    <div class="console-login">
+        <h2>Coordinator sign-in</h2>
+        <p style="color:var(--text-muted);font-size:0.875rem">Select a responder persona for 1-click sign in, or enter your credentials below.</p>
+
+        <!-- 1-Click Persona Sign-In Buttons -->
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.5rem" id="persona-buttons-container">
+            <button type="button" class="btn-outline" style="text-align:left;padding:0.65rem 0.85rem;font-size:0.85rem;display:flex;justify-content:space-between;align-items:center;border-color:var(--primary)"
+                onclick="quickLogin('coordinator@asdma.assam.gov.in', 'Coord@2026!')">
+                <div>
+                    <strong>🛡️ ASDMA Authority (Assam Govt)</strong><br>
+                    <small style="color:var(--text-muted)">Assam flood bulletins, CWC telemetry, NDRF coordination</small>
+                </div>
+                <span class="status-pill pill-VERIFIED" style="white-space:nowrap">Sign in →</span>
+            </button>
+
+            <button type="button" class="btn-outline" style="text-align:left;padding:0.65rem 0.85rem;font-size:0.85rem;display:flex;justify-content:space-between;align-items:center;border-color:var(--primary)"
+                onclick="quickLogin('caseworker@redcross.org.in', 'Coord@2026!')">
+                <div>
+                    <strong>📋 Indian Red Cross (Assam Branch)</strong><br>
+                    <small style="color:var(--text-muted)">Family tracing, char rescue intake, relief distribution</small>
+                </div>
+                <span class="status-pill pill-VERIFIED" style="white-space:nowrap">Sign in →</span>
+            </button>
+
+            <button type="button" class="btn-outline" style="text-align:left;padding:0.65rem 0.85rem;font-size:0.85rem;display:flex;justify-content:space-between;align-items:center;border-color:var(--primary)"
+                onclick="quickLogin('admin@familyconnect.org', 'Coord@2026!')">
+                <div>
+                    <strong>⚙️ System Administrator</strong><br>
+                    <small style="color:var(--text-muted)">Platform oversight, audit trail, user roles</small>
+                </div>
+                <span class="status-pill pill-VERIFIED" style="white-space:nowrap">Sign in →</span>
+            </button>
+
+            <details style="font-size:0.8rem;margin-top:0.25rem;color:var(--text-muted)">
+                <summary style="cursor:pointer;padding:0.25rem 0">Show Nepal–Tibet Responders</summary>
+                <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.4rem">
+                    <button type="button" class="btn-outline" style="text-align:left;padding:0.5rem 0.75rem;font-size:0.8rem;display:flex;justify-content:space-between;align-items:center"
+                        onclick="quickLogin('coordinator@ndrrma.gov.np', 'Coord@2026!')">
+                        <div><strong>🛡️ NDRRMA Authority (Nepal)</strong></div>
+                        <span class="status-pill pill-VERIFIED">Sign in →</span>
+                    </button>
+                    <button type="button" class="btn-outline" style="text-align:left;padding:0.5rem 0.75rem;font-size:0.8rem;display:flex;justify-content:space-between;align-items:center"
+                        onclick="quickLogin('caseworker@nrcs.org', 'Coord@2026!')">
+                        <div><strong>📋 Nepal Red Cross Caseworker</strong></div>
+                        <span class="status-pill pill-VERIFIED">Sign in →</span>
+                    </button>
+                </div>
+            </details>
+        </div>
+
+        <div style="text-align:center;color:var(--text-muted);font-size:0.8rem;margin-bottom:1rem;border-bottom:1px solid var(--border-subtle);line-height:0.1em">
+            <span style="background:white;padding:0 0.5rem">or sign in manually</span>
+        </div>
+
+        <form id="login-form" novalidate>
+            <label for="login-email">Email address</label>
+            <input type="email" id="login-email" name="email" required autocomplete="username" placeholder="coordinator@ndrrma.gov.np">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" name="password" required autocomplete="current-password">
+            <div id="login-error" class="notice notice-error" hidden></div>
+            <button type="submit" class="btn-primary" id="login-btn" style="width:100%;margin-top:0.5rem">Sign in</button>
+        </form>
+    </div>
+</div>
+
+<!-- ── MAIN CONSOLE (shown after login) ─────── -->
+<div id="console-panel" hidden>
+    <h1 id="console-heading" style="margin-bottom:1rem">Coordinator Console</h1>
+
+    <!-- Sub-route navigation tabs matching disasteraassistance.life/console/* -->
+    <nav class="console-nav" aria-label="Console navigation">
+        <a class="console-tab active" href="/console/overview" data-route="overview">📊 Overview</a>
+        <a class="console-tab" href="/console/hospital" data-route="hospital">🏥 Hospitals &amp; Unidentified</a>
+        <a class="console-tab" href="/console/dna" data-route="dna">🧬 DNA &amp; Kinship</a>
+        <a class="console-tab" href="/console/consular" data-route="consular">🌐 Consular &amp; Missions</a>
+        <a class="console-tab" href="/console/handovers" data-route="handovers">📁 Case Handovers</a>
+        <a class="console-tab" href="/console/safeguarding" data-route="safeguarding">🛡️ Safeguarding</a>
+        <a class="console-tab" href="/console/sources" data-route="sources">📰 AI News &amp; Sources</a>
+        <a class="console-tab" href="/console/audit" data-route="audit">📜 Audit Trail</a>
+        <a class="console-tab" href="/console/organisations" data-route="organisations">🏢 Organisations</a>
+        <a class="console-tab" href="/console/assistance-centres" data-route="assistance-centres">🏥 Assistance Centres</a>
+        <a class="console-tab" href="/console/rumours" data-route="rumours">🗣️ Rumours &amp; Misinfo</a>
+        <a class="console-tab" href="/console/admin" data-route="admin">⚙️ Admin &amp; Roles</a>
+        <a class="console-tab" href="/console/access-matrix" data-route="access-matrix">🔑 Access Matrix</a>
+        <a class="console-tab" href="/console/orchestrator" data-route="orchestrator">🤖 AI Event Builder</a>
+    </nav>
+
+    <!-- 1. OVERVIEW VIEW -->
+    <div class="tab-panel active" id="view-overview">
+        <div class="panel-header">
+            <h2 style="margin:0">Disaster Response Situation Overview</h2>
+            <button class="btn-primary" onclick="loadOverview()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh overview</button>
+        </div>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-val" id="metric-missing">2,436</div>
+                <div class="metric-lbl">Active Missing Reports</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-val" id="metric-safe" style="color:#166534">1,876</div>
+                <div class="metric-lbl">Confirmed Safe</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-val" id="metric-tunnels" style="color:#92400e">9</div>
+                <div class="metric-lbl">Tunnel Sites Active</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-val" id="metric-updates">16</div>
+                <div class="metric-lbl">Verified Bulletins</div>
+            </div>
+        </div>
+        <h3>Most Recent Situation Bulletins &amp; Tracing Updates</h3>
+        <div id="overview-recent-container"><p style="color:var(--text-muted)">Loading updates…</p></div>
+    </div>
+
+    <!-- 2. HOSPITAL VIEW -->
+    <div class="tab-panel" id="view-hospital">
+        <div class="panel-header">
+            <h2 style="margin:0">Hospitals, Unidentified Patients &amp; Triage</h2>
+            <button class="btn-primary" onclick="loadHospital()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+        </div>
+        <p class="field-hint">Medical triage desks at TUTH, Bir Hospital, and Rasuwa District Hospital. FamilyConnect logs unidentified admissions to match against family tracing inquiries.</p>
+        <div id="hospital-container"><p style="color:var(--text-muted)">Loading hospital admissions…</p></div>
+    </div>
+
+    <!-- 3. DNA & KINSHIP VIEW -->
+    <div class="tab-panel" id="view-dna">
+        <div class="panel-header">
+            <h2 style="margin:0">DNA Reference Queue &amp; Kinship Matching</h2>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+                <select id="dna-status-filter" style="padding:0.3rem 0.5rem;border:1px solid var(--border-subtle);border-radius:4px;font-size:0.875rem">
+                    <option value="">All statuses</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="KIT_DISPATCHED">Kit Dispatched</option>
+                    <option value="SAMPLE_RECEIVED">Sample Received</option>
+                    <option value="LAB_PROCESSING">Lab Processing</option>
+                    <option value="RESULT_AVAILABLE">Result Available</option>
+                </select>
+                <button class="btn-primary" onclick="loadDnaQueue()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+            </div>
+        </div>
+        <div id="dna-queue-container"><p style="color:var(--text-muted)">Loading DNA queue…</p></div>
+    </div>
+
+    <!-- 4. CONSULAR & REPATRIATION VIEW -->
+    <div class="tab-panel" id="view-consular">
+        <div class="panel-header">
+            <h2 style="margin:0">Consular &amp; Repatriation Assistance</h2>
+            <button class="btn-primary" onclick="loadConsular()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+        </div>
+        <p class="field-hint">Emergency desks for Indian, Chinese, Bangladeshi, and European diplomatic missions. Coordinates travel document re-issuance and cross-border repatriation.</p>
+        <div id="consular-container"><p style="color:var(--text-muted)">Loading consular inquiries…</p></div>
+    </div>
+
+    <!-- 5. CASE HANDOVERS VIEW -->
+    <div class="tab-panel" id="view-handovers">
+        <div class="panel-header">
+            <h2 style="margin:0">Inter-Agency Case Handovers</h2>
+            <button class="btn-primary" onclick="loadHandovers()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+        </div>
+        <p class="field-hint">Transfer active missing-person cases between Nepal Police, Nepal Red Cross Society, and ICRC Central Tracing Agency.</p>
+        <div id="handovers-container"><p style="color:var(--text-muted)">Loading handovers…</p></div>
+    </div>
+
+    <!-- 6. SAFEGUARDING VIEW -->
+    <div class="tab-panel" id="view-safeguarding">
+        <div class="panel-header">
+            <h2 style="margin:0">Safeguarding &amp; Vulnerable Persons</h2>
+            <button class="btn-primary" onclick="loadSafeguarding()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+        </div>
+        <p class="field-hint">Unaccompanied minors, vulnerable elderly, and victims requiring statutory protection. Requires digital officer acknowledgment before record release.</p>
+        <div id="safeguarding-container"><p style="color:var(--text-muted)">Loading safeguarding alerts…</p></div>
+    </div>
+
+    <!-- 7. AI NEWS & SOURCES VIEW -->
+    <div class="tab-panel" id="view-sources">
+        <div class="panel-header">
+            <h2 style="margin:0">AI News Collector &amp; Source Monitoring</h2>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+                <button class="btn-outline" onclick="triggerNewsAgent()" style="font-size:0.875rem">⚡ Run AI Collector Now</button>
+                <button class="btn-primary" onclick="loadNewsQueue()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+            </div>
+        </div>
+        <div id="news-queue-container"><p style="color:var(--text-muted)">Loading news queue…</p></div>
+    </div>
+
+    <!-- 8. AUDIT TRAIL VIEW -->
+    <div class="tab-panel" id="view-audit">
+        <div class="panel-header">
+            <h2 style="margin:0">Immutable Audit Trail (Restricted to Admin &amp; Authority)</h2>
+            <button class="btn-primary" onclick="loadAuditTrail()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh audit log</button>
+        </div>
+        <p class="field-hint">Every case access, status modification, DNA update, and safeguarding handover is cryptographically logged and immutable.</p>
+        <div id="audit-container"><p style="color:var(--text-muted)">Loading audit trail…</p></div>
+    </div>
+
+    <!-- 9. ORGANISATIONS VIEW -->
+    <div class="tab-panel" id="view-organisations">
+        <div class="panel-header">
+            <h2 style="margin:0">Partner Organisations &amp; Relief Agencies</h2>
+            <button class="btn-primary" onclick="loadOrganisations()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+        </div>
+        <div id="organisations-container"><p style="color:var(--text-muted)">Loading organisations…</p></div>
+    </div>
+
+    <!-- 10. ASSISTANCE CENTRES VIEW -->
+    <div class="tab-panel" id="view-assistance-centres">
+        <div class="panel-header">
+            <h2 style="margin:0">Assistance Centres</h2>
+            <button class="btn-primary" onclick="loadAssistanceCentres()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+        </div>
+        <p class="field-hint">Manage the physical assistance centres operating for this event. These are public-facing physical locations.</p>
+        <div id="assistance-centres-container"><p style="color:var(--text-muted)">Loading assistance centres…</p></div>
+    </div>
+
+    <!-- 11. RUMOURS VIEW -->
+    <div class="tab-panel" id="view-rumours">
+        <div class="panel-header">
+            <h2 style="margin:0">Rumours &amp; Misinformation</h2>
+            <button class="btn-primary" onclick="loadRumours()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+        </div>
+        <p class="field-hint">Review publicly reported rumours and issue official clarifications.</p>
+        <div id="rumours-container"><p style="color:var(--text-muted)">Loading rumours…</p></div>
+    </div>
+
+    <!-- 12. ADMIN & ROLES VIEW -->
+    <div class="tab-panel" id="view-admin">
+        <div class="panel-header">
+            <h2 style="margin:0">Administration &amp; Coordinator Accounts</h2>
+            <button class="btn-primary" onclick="loadAdmin()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh accounts</button>
+        </div>
+        <div id="admin-container"><p style="color:var(--text-muted)">Loading coordinator accounts…</p></div>
+    </div>
+
+    <!-- 13. ACCESS MATRIX VIEW -->
+    <div class="tab-panel" id="view-access-matrix">
+        <div class="panel-header">
+            <h2 style="margin:0">Role Access Control Matrix</h2>
+        </div>
+        <p class="field-hint">Enforces strict Attribute-Based Access Control (ABAC) per SPEC-003 §2. Each role sees only what is necessary for its humanitarian mandate.</p>
+        <table class="matrix-table">
+            <thead>
+                <tr>
+                    <th>Console Section</th>
+                    <th>ADMIN</th>
+                    <th>AUTHORITY</th>
+                    <th>CASE_WORKER</th>
+                    <th>SAFEGUARDING_LEAD</th>
+                    <th>PARTNER</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Overview Dashboard</strong></td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Read-Only</td></tr>
+                <tr><td><strong>Hospitals &amp; Unidentified</strong></td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-no">✗ Blocked</td><td class="check-no">✗ Blocked</td></tr>
+                <tr><td><strong>DNA &amp; Kinship Queue</strong></td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-no">✗ Blocked</td><td class="check-no">✗ Blocked</td></tr>
+                <tr><td><strong>Consular &amp; Repatriation</strong></td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-no">✗ Blocked</td><td class="check-yes">✓ Mission Only</td></tr>
+                <tr><td><strong>Case Handovers</strong></td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-no">✗ Blocked</td><td class="check-no">✗ Blocked</td></tr>
+                <tr><td><strong>Safeguarding &amp; Minors</strong></td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-no">✗ Limited</td><td class="check-yes">✓ Full</td><td class="check-no">✗ Blocked</td></tr>
+                <tr><td><strong>AI News &amp; Sources</strong></td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Review</td><td class="check-no">✗ Blocked</td><td class="check-yes">✓ Submit Only</td></tr>
+                <tr><td><strong>Audit Trail (IAL-2)</strong></td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Full</td><td class="check-no">✗ Blocked</td><td class="check-no">✗ Blocked</td><td class="check-no">✗ Blocked</td></tr>
+                <tr><td><strong>Organisations &amp; Onboarding</strong></td><td class="check-yes">✓ Full</td><td class="check-yes">✓ Review</td><td class="check-no">✗ Blocked</td><td class="check-no">✗ Blocked</td><td class="check-no">✗ Blocked</td></tr>
+                <tr><td><strong>Administration &amp; Roles</strong></td><td class="check-yes">✓ Full</td><td class="check-no">✗ Blocked</td><td class="check-no">✗ Blocked</td><td class="check-no">✗ Blocked</td><td class="check-no">✗ Blocked</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 14. AGENTIC AI EVENT ORCHESTRATOR VIEW -->
+    <div class="tab-panel" id="view-orchestrator">
+        <div class="panel-header">
+            <div>
+                <h2 style="margin:0">🤖 Agentic AI Event Orchestrator</h2>
+                <small style="color:var(--text-muted)">Autonomous global feed detection, deterministic template composition &amp; human-in-the-loop portal review</small>
+            </div>
+            <div style="display:flex;gap:0.5rem">
+                <button class="btn-outline" onclick="triggerSentinelScan()" style="font-size:0.875rem">⚡ Scan GDACS Feeds Now</button>
+                <button class="btn-primary" onclick="loadOrchestratorView()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-val" id="orch-metric-detected">0</div>
+                <div class="metric-lbl">Detected Events</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-val" id="orch-metric-review" style="color:#92400e">0</div>
+                <div class="metric-lbl">Review Required</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-val" id="orch-metric-deployed" style="color:#166534">0</div>
+                <div class="metric-lbl">Deployed Portals</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-val" id="orch-metric-modules">21</div>
+                <div class="metric-lbl">Module Registry</div>
+            </div>
+        </div>
+
+        <h3>Detected Global Disasters &amp; Autonomous Portal Generation</h3>
+        <div id="orchestrator-events-container"><p style="color:var(--text-muted)">Loading orchestrator events…</p></div>
+    </div>
+
+</div>
+</main>
+
+<!-- Event Portal Review & Staging Preview Modal -->
+<div class="modal-overlay" id="orch-modal" hidden role="dialog" aria-modal="true">
+    <div class="modal-box" style="max-width:900px;width:95%">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;border-bottom:1px solid var(--border-subtle);padding-bottom:0.75rem">
+            <h3 id="orch-modal-title" style="margin:0">Event Portal Preview &amp; Human Approval</h3>
+            <button onclick="closeOrchModal()" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.9rem">&times;</button>
+        </div>
+        <div id="orch-modal-content">
+            <!-- Dynamic content -->
+        </div>
+    </div>
+</div>
+
+<!-- Update DNA Status Modal -->
+<div class="modal-overlay" id="dna-modal" hidden role="dialog" aria-modal="true" aria-labelledby="dna-modal-title">
+    <div class="modal-box">
+        <h3 id="dna-modal-title">Update DNA Request Status</h3>
+        <p id="dna-modal-ref" style="font-family:monospace;color:var(--text-muted)"></p>
+        <label for="dna-new-status">New status</label>
+        <select id="dna-new-status" style="width:100%;padding:0.5rem;margin-bottom:1rem;border:1px solid var(--border-subtle);border-radius:4px">
+            <option value="PENDING">Pending</option>
+            <option value="KIT_DISPATCHED">Kit Dispatched</option>
+            <option value="SAMPLE_RECEIVED">Sample Received</option>
+            <option value="LAB_PROCESSING">Lab Processing</option>
+            <option value="RESULT_AVAILABLE">Result Available</option>
+            <option value="CLOSED">Closed</option>
+        </select>
+        <label for="dna-lab-ref">Lab reference (optional)</label>
+        <input type="text" id="dna-lab-ref" placeholder="e.g. LAB-20260903-XYZ" style="width:100%;margin-bottom:1rem">
+        <div style="display:flex;gap:0.5rem;justify-content:flex-end">
+            <button class="btn-outline" onclick="closeDnaModal()">Cancel</button>
+            <button class="btn-primary" onclick="submitDnaUpdate()">Update</button>
+        </div>
+    </div>
+</div>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">This console is access-controlled. All actions are logged to the immutable audit trail.</p>
+    </div>
+</footer>
+
+<script src="/js/app.js"></script>
+<script src="/js/api.js?v=20260906"></script>
+<script>
+const EVENT_ID = (typeof DISASTER_EVENT_ID !== 'undefined' ? DISASTER_EVENT_ID : (new URLSearchParams(window.location.search).get('event') || localStorage.getItem('fc_current_event_id') || window.FC_EVENT_ID || 'EVENT-IN-FL-2026-1187'));
+let currentDnaRef = null;
+
+// ── AUTH ──────────────────────────────────────
+async function checkSession() {
+    const session = getAuthSession();
+    if (!session) return;
+    try {
+        const me = await api.getMe();
+        showConsole(me);
+    } catch (e) {
+        clearAuthSession();
+    }
+}
+
+function signOut() {
+    clearAuthSession();
+    window.location.href = '/console.html';
+}
+
+function showConsole(account) {
+    document.getElementById('login-panel').hidden = true;
+    document.getElementById('console-panel').hidden = false;
+    document.getElementById('session-bar').hidden = false;
+    document.getElementById('session-name').textContent =
+        `Signed in as ${account.displayName || account.email} (${account.role})`;
+    document.getElementById('console-heading').textContent =
+        `Coordinator Console — ${account.displayName || account.email}`;
+
+    // Handle initial route from URL path (e.g. /console/hospital)
+    const route = getRouteFromUrl();
+    switchTab(route);
+}
+
+async function quickLogin(email, password) {
+    document.getElementById('login-email').value = email;
+    document.getElementById('login-password').value = password;
+    const form = document.getElementById('login-form');
+    if (typeof form.requestSubmit === 'function') {
+        form.requestSubmit();
+    } else {
+        form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    }
+}
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    const errEl = document.getElementById('login-error');
+    errEl.hidden = true;
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+    try {
+        const result = await api.login({
+            email: document.getElementById('login-email').value.trim(),
+            password: document.getElementById('login-password').value,
+        });
+        setAuthSession(result.token, result.account);
+        showConsole(result.account);
+    } catch (err) {
+        errEl.textContent = err.message || 'Sign-in failed. Check your credentials.';
+        errEl.hidden = false;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign in';
+    }
+});
+
+// ── SUB-ROUTE ROUTING ─────────────────────────
+function getRouteFromUrl() {
+    let path = location.pathname.replace('/console.html', '').replace('/console', '').replace('/', '');
+    if (path.endsWith('.html')) path = path.replace('.html', '');
+    return path || 'overview';
+}
+
+function switchTab(route) {
+    document.querySelectorAll('.console-tab').forEach(t => {
+        const isActive = t.dataset.route === route;
+        t.classList.toggle('active', isActive);
+        t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+    const panel = document.getElementById(`view-${route}`) || document.getElementById('view-overview');
+    if (panel) panel.classList.add('active');
+
+    // Update URL history without reload
+    history.pushState(null, '', `/console/${route}`);
+
+    // Load data for active view
+    if (route === 'overview') loadOverview();
+    if (route === 'hospital') loadHospital();
+    if (route === 'dna') loadDnaQueue();
+    if (route === 'consular') loadConsular();
+    if (route === 'handovers') loadHandovers();
+    if (route === 'safeguarding') loadSafeguarding();
+    if (route === 'sources') loadNewsQueue();
+    if (route === 'audit') loadAuditTrail();
+    if (route === 'organisations') loadOrganisations();
+    if (route === 'assistance-centres') loadAssistanceCentres();
+    if (route === 'rumours') loadRumours();
+    if (route === 'admin') loadAdmin();
+    if (route === 'access-matrix') loadAccessMatrix();
+    if (route === 'orchestrator') loadOrchestratorView();
+}
+
+document.querySelectorAll('.console-tab').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+        e.preventDefault();
+        switchTab(tab.dataset.route);
+    });
+});
+
+window.addEventListener('popstate', () => {
+    switchTab(getRouteFromUrl());
+});
+
+// ── 1. OVERVIEW VIEW ──────────────────────────
+async function loadOverview() {
+    const container = document.getElementById('overview-recent-container');
+    container.innerHTML = '<p style="color:var(--text-muted)">Loading updates…</p>';
+    try {
+        const updates = await api.getInformation(EVENT_ID, 'ALL');
+        if (!updates.length) {
+            container.innerHTML = '<p class="notice notice-info">No bulletins published yet.</p>';
+            return;
+        }
+        container.innerHTML = `<table class="queue-table">
+            <thead><tr><th>Category</th><th>Bulletin Content</th><th>Published</th></tr></thead>
+            <tbody>
+            ${updates.slice(0, 10).map(u => `<tr>
+                <td><span class="status-pill pill-VERIFIED">${u.category.replace(/_/g,' ')}</span></td>
+                <td>${escapeHtml(u.content)}</td>
+                <td style="white-space:nowrap">${formatDate(u.publishedAt)}</td>
+            </tr>`).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        container.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+// ── 2. HOSPITAL VIEW ──────────────────────────
+async function loadHospital() {
+    const c = document.getElementById('hospital-container');
+    const isAssam = EVENT_ID && (EVENT_ID.includes('IN') || EVENT_ID.includes('FL') || EVENT_ID.includes('ASSAM'));
+    if (isAssam) {
+        c.innerHTML = `
+            <table class="queue-table">
+                <thead><tr><th>Admission Ref</th><th>Facility</th><th>Triage Status</th><th>Age / Sex</th><th>Admitted</th><th>Match Status</th></tr></thead>
+                <tbody>
+                    <tr><td><code>HOSP-GMCH-0941</code></td><td>Gauhati Medical College &amp; Hospital (GMCH)</td><td><span class="status-pill pill-CRITICAL">Critical Care</span></td><td>Approx 34 / Male</td><td>4 Sep 2026, 11:20</td><td><span class="status-pill pill-PENDING">1 Potential Match</span></td></tr>
+                    <tr><td><code>HOSP-AMCH-0419</code></td><td>Assam Medical College, Dibrugarh</td><td><span class="status-pill pill-MEDIUM">Stable</span></td><td>Approx 26 / Female</td><td>4 Sep 2026, 16:30</td><td><span class="status-pill pill-UNVERIFIED">Awaiting Tracing</span></td></tr>
+                    <tr><td><code>HOSP-SIL-0122</code></td><td>Silchar Medical College &amp; Hospital</td><td><span class="status-pill pill-MEDIUM">Treated &amp; Discharged</span></td><td>48 / Male</td><td>5 Sep 2026, 09:15</td><td><span class="status-pill pill-VERIFIED">Matched to Safe List</span></td></tr>
+                    <tr><td><code>HOSP-BAR-0083</code></td><td>Barpeta Civil Hospital — Flood Ward</td><td><span class="status-pill pill-MEDIUM">In Observation</span></td><td>19 / Female</td><td>5 Sep 2026, 13:40</td><td><span class="status-pill pill-PENDING">Tracing Active</span></td></tr>
+                </tbody>
+            </table>`;
+    } else {
+        c.innerHTML = `
+            <table class="queue-table">
+                <thead><tr><th>Admission Ref</th><th>Facility</th><th>Triage Status</th><th>Age / Sex</th><th>Admitted</th><th>Match Status</th></tr></thead>
+                <tbody>
+                    <tr><td><code>HOSP-TUTH-0891</code></td><td>Tribhuvan Univ. Teaching Hospital</td><td><span class="status-pill pill-CRITICAL">Critical Care</span></td><td>Approx 35 / Male</td><td>2 Sep 2026, 14:20</td><td><span class="status-pill pill-PENDING">1 Potential Match</span></td></tr>
+                    <tr><td><code>HOSP-BIR-0412</code></td><td>Bir Hospital Kathmandu</td><td><span class="status-pill pill-MEDIUM">Stable</span></td><td>Approx 28 / Female</td><td>2 Sep 2026, 18:45</td><td><span class="status-pill pill-UNVERIFIED">Awaiting Tracing</span></td></tr>
+                    <tr><td><code>HOSP-RASUWA-012</code></td><td>Dhunche Field Hospital</td><td><span class="status-pill pill-MEDIUM">Treated &amp; Discharged</span></td><td>42 / Male</td><td>3 Sep 2026, 08:10</td><td><span class="status-pill pill-VERIFIED">Matched to Safe List</span></td></tr>
+                </tbody>
+            </table>`;
+    }
+}
+
+// ── 3. DNA QUEUE VIEW ─────────────────────────
+async function loadDnaQueue() {
+    const c = document.getElementById('dna-queue-container');
+    const status = document.getElementById('dna-status-filter').value;
+    c.innerHTML = '<p style="color:var(--text-muted)">Loading…</p>';
+    try {
+        const data = await api.getDnaQueue(status || null);
+        if (!data.requests.length) {
+            c.innerHTML = '<p class="notice notice-info">No DNA requests found for this filter.</p>';
+            return;
+        }
+        c.innerHTML = `<table class="queue-table">
+            <thead><tr>
+                <th>Reference</th><th>Requester</th><th>Missing person</th>
+                <th>Relationship</th><th>Location</th><th>Status</th><th>Submitted</th><th>Action</th>
+            </tr></thead>
+            <tbody>
+            ${data.requests.map(r => `<tr>
+                <td><code>${escapeHtml(r.trackingReference)}</code></td>
+                <td>${escapeHtml(r.requesterName)}<br><small>${escapeHtml(r.requesterEmail)}</small></td>
+                <td>${escapeHtml(r.missingPersonName || '—')}</td>
+                <td>${escapeHtml(r.relationship)}</td>
+                <td>${escapeHtml(r.preferredLocation || '—')}</td>
+                <td><span class="status-pill pill-${r.status}">${r.status.replace(/_/g,' ')}</span></td>
+                <td style="white-space:nowrap">${formatDate(r.submittedAt)}</td>
+                <td><button class="btn-outline" style="font-size:0.75rem;padding:0.2rem 0.5rem" onclick="openDnaModal('${r.trackingReference}','${r.status}')">Update</button></td>
+            </tr>`).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        c.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+function openDnaModal(ref, currentStatus) {
+    currentDnaRef = ref;
+    document.getElementById('dna-modal-ref').textContent = ref;
+    document.getElementById('dna-new-status').value = currentStatus;
+    document.getElementById('dna-lab-ref').value = '';
+    document.getElementById('dna-modal').hidden = false;
+    document.getElementById('dna-new-status').focus();
+}
+function closeDnaModal() {
+    document.getElementById('dna-modal').hidden = true;
+    currentDnaRef = null;
+}
+async function submitDnaUpdate() {
+    if (!currentDnaRef) return;
+    const status = document.getElementById('dna-new-status').value;
+    const labReference = document.getElementById('dna-lab-ref').value.trim() || null;
+    try {
+        await api.updateDnaStatus(currentDnaRef, { status, labReference });
+        closeDnaModal();
+        loadDnaQueue();
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+// ── 4. CONSULAR VIEW ──────────────────────────
+async function loadConsular() {
+    const c = document.getElementById('consular-container');
+    const isAssam = EVENT_ID && (EVENT_ID.includes('IN') || EVENT_ID.includes('FL') || EVENT_ID.includes('ASSAM'));
+    if (isAssam) {
+        c.innerHTML = `
+            <table class="queue-table">
+                <thead><tr><th>Ref</th><th>Mission / Consulate</th><th>Nationality</th><th>Inquiries</th><th>Consular Status</th></tr></thead>
+                <tbody>
+                    <tr><td><code>CONS-BGD-011</code></td><td>Assistant High Commission of Bangladesh, Guwahati</td><td>Bangladeshi</td><td>14 cargo crew &amp; tourists</td><td><span class="status-pill pill-VERIFIED">Active Coordination Desk</span></td></tr>
+                    <tr><td><code>CONS-BTN-003</code></td><td>Royal Bhutanese Consulate General, Guwahati</td><td>Bhutanese</td><td>22 transit travellers</td><td><span class="status-pill pill-VERIFIED">Joint Border SAR Active</span></td></tr>
+                    <tr><td><code>CONS-NPL-005</code></td><td>Embassy of Nepal (North-East Liaison Desk)</td><td>Nepali</td><td>35 tea garden &amp; transport workers</td><td><span class="status-pill pill-PENDING">Tracing Inquiry Open</span></td></tr>
+                </tbody>
+            </table>`;
+    } else {
+        c.innerHTML = `
+            <table class="queue-table">
+                <thead><tr><th>Ref</th><th>Mission / Embassy</th><th>Nationality</th><th>Inquiries</th><th>Consular Status</th></tr></thead>
+                <tbody>
+                    <tr><td><code>CONS-IND-001</code></td><td>Embassy of India, Kathmandu</td><td>Indian</td><td>142 workers unaccounted</td><td><span class="status-pill pill-VERIFIED">Active Coordination Desk</span></td></tr>
+                    <tr><td><code>CONS-CHN-004</code></td><td>Embassy of China, Kathmandu</td><td>Chinese</td><td>18 hydel engineers</td><td><span class="status-pill pill-VERIFIED">Joint Border SAR Active</span></td></tr>
+                    <tr><td><code>CONS-BGD-002</code></td><td>High Commission of Bangladesh</td><td>Bangladeshi</td><td>6 tourists</td><td><span class="status-pill pill-PENDING">Tracing Inquiry Open</span></td></tr>
+                </tbody>
+            </table>`;
+    }
+}
+
+// ── 5. HANDOVERS VIEW ─────────────────────────
+async function loadHandovers() {
+    const c = document.getElementById('handovers-container');
+    const isAssam = EVENT_ID && (EVENT_ID.includes('IN') || EVENT_ID.includes('FL') || EVENT_ID.includes('ASSAM'));
+    if (isAssam) {
+        c.innerHTML = `
+            <table class="queue-table">
+                <thead><tr><th>Handover ID</th><th>Originating Org</th><th>Receiving Agency</th><th>Scope</th><th>Status</th></tr></thead>
+                <tbody>
+                    <tr><td><code>HO-IN-2026-0901</code></td><td>Assam Police CID &amp; Missing Persons Bureau</td><td>ASDMA Multi-Agency Tracing Hub</td><td>48 Missing Person Dossiers</td><td><span class="status-pill pill-CONFIRMED">Completed</span></td></tr>
+                    <tr><td><code>HO-IN-2026-0904</code></td><td>NDRF 1st Battalion Guwahati</td><td>Indian Red Cross Society (Assam Branch)</td><td>280 Evacuated Char Resident Manifests</td><td><span class="status-pill pill-CONFIRMED">Completed</span></td></tr>
+                    <tr><td><code>HO-IN-2026-0907</code></td><td>Gauhati Medical College Hospital (GMCH)</td><td>State Forensic Science Laboratory (Kahilipara)</td><td>12 DNA Reference Sample Batches</td><td><span class="status-pill pill-PENDING">In Progress</span></td></tr>
+                </tbody>
+            </table>`;
+    } else {
+        c.innerHTML = `
+            <table class="queue-table">
+                <thead><tr><th>Handover ID</th><th>Originating Org</th><th>Receiving Agency</th><th>Scope</th><th>Status</th></tr></thead>
+                <tbody>
+                    <tr><td><code>HO-2026-0811</code></td><td>Nepal Police HQ</td><td>ICRC Central Tracing Agency</td><td>14 Forensic Case Files</td><td><span class="status-pill pill-CONFIRMED">Completed</span></td></tr>
+                    <tr><td><code>HO-2026-0814</code></td><td>Nepal Red Cross Society</td><td>Department of Immigration</td><td>Foreign National Safe Declarations</td><td><span class="status-pill pill-CONFIRMED">Completed</span></td></tr>
+                </tbody>
+            </table>`;
+    }
+}
+
+// ── 6. SAFEGUARDING VIEW ──────────────────────
+async function loadSafeguarding() {
+    const c = document.getElementById('safeguarding-container');
+    c.innerHTML = '<p style="color:var(--text-muted)">Loading safeguarding alerts…</p>';
+    try {
+        const token = localStorage.getItem('fc_auth_token');
+        const res = await fetch('/api/v1/safeguarding/alerts', {
+            headers: { 'Authorization': token ? `Bearer ${token}` : '' }
+        });
+        const data = await res.json();
+        if (!data.length) {
+            c.innerHTML = '<p class="notice notice-info">No active safeguarding alerts on file.</p>';
+            return;
+        }
+        c.innerHTML = `<table class="queue-table">
+            <thead><tr><th>Alert ID</th><th>Case ID</th><th>Risk Level</th><th>Concern</th><th>Status</th><th>Reported</th></tr></thead>
+            <tbody>
+            ${data.map(a => `<tr>
+                <td><code>${escapeHtml(a.alertId)}</code></td>
+                <td>${escapeHtml(a.caseId || '—')}</td>
+                <td><span class="status-pill pill-${a.riskLevel}">${a.riskLevel}</span></td>
+                <td>${escapeHtml(a.concernType)}</td>
+                <td><span class="status-pill pill-${a.status}">${a.status}</span></td>
+                <td style="white-space:nowrap">${formatDate(a.reportedAt)}</td>
+            </tr>`).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        c.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+// ── 7. SOURCES & NEWS QUEUE VIEW ──────────────
+async function loadNewsQueue() {
+    const c = document.getElementById('news-queue-container');
+    c.innerHTML = '<p style="color:var(--text-muted)">Loading AI collector queue…</p>';
+    try {
+        const data = await api.getNewsQueue('PENDING_REVIEW');
+        if (!data || !data.length) {
+            c.innerHTML = '<p class="notice notice-info">No pending news items requiring review.</p>';
+            return;
+        }
+        c.innerHTML = `<table class="queue-table">
+            <thead><tr><th>Headline</th><th>Source</th><th>Category</th><th>Fetched</th><th>Action</th></tr></thead>
+            <tbody>
+            ${data.map(item => `<tr>
+                <td><strong>${escapeHtml(item.title || item.headline || 'Update')}</strong><br><small style="color:var(--text-muted)">${escapeHtml(item.summary ? item.summary.substring(0, 110) + '…' : '')}</small></td>
+                <td>${escapeHtml(item.sourceName || item.sourceType || '—')}</td>
+                <td>${escapeHtml(item.category || '—')}</td>
+                <td style="white-space:nowrap">${formatDate(item.fetchedAt || item.createdAt)}</td>
+                <td style="display:flex;gap:0.25rem">
+                    <button class="btn-primary" style="font-size:0.75rem;padding:0.2rem 0.5rem"
+                        onclick="reviewItem('${item.newsId || item.newsItemId || item.id}','PUBLISH_VERIFIED')">✓ Verify</button>
+                    <button class="btn-outline" style="font-size:0.75rem;padding:0.2rem 0.5rem"
+                        onclick="reviewItem('${item.newsId || item.newsItemId || item.id}','REJECT')">✗ Reject</button>
+                </td>
+            </tr>`).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        c.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+async function triggerNewsAgent() {
+    try {
+        await api.runNewsAgent();
+        alert('AI Collector cycle completed.');
+        loadNewsQueue();
+    } catch (err) { alert(err.message); }
+}
+
+async function reviewItem(id, verdict) {
+    try {
+        await api.reviewNewsItem(id, { action: verdict });
+        alert(`News item successfully processed (${verdict}).`);
+        loadNewsQueue();
+    } catch (err) { alert(err.message); }
+}
+
+// ── 8. AUDIT TRAIL VIEW ───────────────────────
+async function loadAuditTrail() {
+    const c = document.getElementById('audit-container');
+    c.innerHTML = '<p style="color:var(--text-muted)">Loading audit trail…</p>';
+    try {
+        const token = localStorage.getItem('fc_auth_token');
+        const res = await fetch('/api/v1/audit/events?limit=50', {
+            headers: { 'Authorization': token ? `Bearer ${token}` : '' }
+        });
+        const events = await res.json();
+        if (!events || !events.length) {
+            c.innerHTML = '<p class="notice notice-info">No audit events logged yet.</p>';
+            return;
+        }
+        c.innerHTML = `<table class="queue-table">
+            <thead><tr><th>Timestamp</th><th>Action</th><th>Actor</th><th>Entity</th><th>Outcome</th></tr></thead>
+            <tbody>
+            ${events.map(e => `<tr>
+                <td style="white-space:nowrap">${formatDate(e.timestamp)}</td>
+                <td><strong>${escapeHtml(e.action)}</strong></td>
+                <td><code>${escapeHtml(e.actor || 'SYSTEM')}</code></td>
+                <td>${escapeHtml(e.entity_type)} (${escapeHtml(e.entity_id || '—')})</td>
+                <td><span class="status-pill pill-${e.outcome === 'SUCCESS' ? 'CONFIRMED' : 'CRITICAL'}">${e.outcome}</span></td>
+            </tr>`).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        c.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+// ── 9. ORGANISATIONS VIEW ─────────────────────
+async function loadOrganisations() {
+    const c = document.getElementById('organisations-container');
+    c.innerHTML = '<p style="color:var(--text-muted)">Loading organisations…</p>';
+    try {
+        const orgs = await api.getActiveAgencies();
+        if (!orgs.length) {
+            c.innerHTML = '<p class="notice notice-info">No partner organisations found.</p>';
+            return;
+        }
+        c.innerHTML = `<table class="queue-table">
+            <thead><tr><th>Organisation Name</th><th>Type</th><th>Country</th><th>Assistance Centres</th><th>Updates Published</th></tr></thead>
+            <tbody>
+            ${orgs.map(o => `<tr>
+                <td><strong>${escapeHtml(o.organisationName)}</strong></td>
+                <td><span class="status-pill pill-VERIFIED">${escapeHtml(o.orgType)}</span></td>
+                <td>${escapeHtml(o.country)}</td>
+                <td>${o.centreCount} centres</td>
+                <td>${o.updateCount} bulletins</td>
+            </tr>`).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        c.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+// ── 10. ASSISTANCE CENTRES VIEW ───────────────
+async function loadAssistanceCentres() {
+    const c = document.getElementById('assistance-centres-container');
+    c.innerHTML = '<p style="color:var(--text-muted)">Loading assistance centres…</p>';
+    try {
+        const data = await api.getAssistanceCentres();
+        if (!data || !data.length) {
+            c.innerHTML = '<p class="notice notice-info">No assistance centres registered.</p>';
+            return;
+        }
+        c.innerHTML = `<table class="queue-table">
+            <thead><tr><th>Name</th><th>Location</th><th>Services</th><th>Status</th></tr></thead>
+            <tbody>
+            ${data.map(ac => `<tr>
+                <td><strong>${escapeHtml(ac.name)}</strong><br><span style="font-size:0.8rem;color:var(--text-muted)">${escapeHtml(ac.organisationName)}</span></td>
+                <td>${escapeHtml(ac.location.address)}</td>
+                <td><ul style="margin:0;padding-left:1rem;font-size:0.85rem">${(ac.services||[]).map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul></td>
+                <td><span class="status-pill pill-${ac.operationalStatus === 'OPEN' ? 'SAFE_CONFIRMED' : 'CLOSED'}">${ac.operationalStatus}</span></td>
+            </tr>`).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        c.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+// ── 11. RUMOURS VIEW ─────────────────────────
+async function loadRumours() {
+    const c = document.getElementById('rumours-container');
+    c.innerHTML = '<p style="color:var(--text-muted)">Loading rumours…</p>';
+    try {
+        const data = await api.getRumours(EVENT_ID);
+        if (!data || !data.length) {
+            c.innerHTML = '<p class="notice notice-info">No rumours reported.</p>';
+            return;
+        }
+        c.innerHTML = `<table class="queue-table">
+            <thead><tr><th>Claim</th><th>Status</th><th>Reported At</th><th>Action</th></tr></thead>
+            <tbody>
+            ${data.map(r => `<tr>
+                <td style="max-width:300px"><strong>${escapeHtml(r.claim)}</strong></td>
+                <td><span class="status-pill pill-${r.verificationStatus === 'REPORTED' ? 'NEW' : r.verificationStatus}">${r.verificationStatus}</span></td>
+                <td style="white-space:nowrap">${formatDate(r.firstReportedAt)}</td>
+                <td style="display:flex;gap:0.25rem;flex-direction:column">
+                    ${r.verificationStatus === 'REPORTED' ? `
+                        <button class="btn-primary" style="font-size:0.75rem;padding:0.2rem 0.5rem"
+                            onclick="correctRumour('${r.rumourId}', 'TRUE')">Confirm True</button>
+                        <button class="btn-outline" style="font-size:0.75rem;padding:0.2rem 0.5rem"
+                            onclick="correctRumour('${r.rumourId}', 'FALSE')">Mark False</button>
+                        <button class="btn-outline" style="font-size:0.75rem;padding:0.2rem 0.5rem"
+                            onclick="correctRumour('${r.rumourId}', 'MISLEADING')">Mark Misleading</button>
+                    ` : `
+                        <span style="font-size:0.8rem;color:var(--text-muted)">Resolved at<br>${formatDate(r.resolvedAt)}</span>
+                    `}
+                </td>
+            </tr>`).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        c.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+window.correctRumour = async function(rumourId, newStatus) {
+    const stmt = prompt(`Provide an official statement explaining why this is ${newStatus}:`);
+    if (!stmt) return;
+    try {
+        await api.correctRumour(EVENT_ID, rumourId, { verificationStatus: newStatus, officialStatement: stmt });
+        loadRumours();
+    } catch (err) {
+        alert(err.message);
+    }
+};
+
+// ── 12. ADMIN & ROLES VIEW ────────────────────
+async function loadAdmin() {
+    const c = document.getElementById('admin-container');
+    const isAssam = EVENT_ID && (EVENT_ID.includes('IN') || EVENT_ID.includes('FL') || EVENT_ID.includes('ASSAM'));
+    if (isAssam) {
+        c.innerHTML = `
+            <table class="queue-table">
+                <thead><tr><th>Account Name</th><th>Email</th><th>Role</th><th>Status</th><th>Last Sign-In</th></tr></thead>
+                <tbody>
+                    <tr><td>System Administrator</td><td><code>admin@familyconnect.org</code></td><td><span class="status-pill pill-CONFIRMED">ADMIN</span></td><td>Active</td><td>Just now</td></tr>
+                    <tr><td>ASDMA Emergency Operations Coordinator</td><td><code>coordinator@asdma.assam.gov.in</code></td><td><span class="status-pill pill-KIT_DISPATCHED">AUTHORITY</span></td><td>Active</td><td>Online</td></tr>
+                    <tr><td>Indian Red Cross Society — Assam Branch</td><td><code>caseworker@redcross.org.in</code></td><td><span class="status-pill pill-LAB_PROCESSING">CASE_WORKER</span></td><td>Active</td><td>Online</td></tr>
+                </tbody>
+            </table>`;
+    } else {
+        c.innerHTML = `
+            <table class="queue-table">
+                <thead><tr><th>Account Name</th><th>Email</th><th>Role</th><th>Status</th><th>Last Sign-In</th></tr></thead>
+                <tbody>
+                    <tr><td>System Administrator</td><td><code>admin@familyconnect.org</code></td><td><span class="status-pill pill-CONFIRMED">ADMIN</span></td><td>Active</td><td>Just now</td></tr>
+                    <tr><td>NDRRMA Coordinator — Rasuwa</td><td><code>coordinator@ndrrma.gov.np</code></td><td><span class="status-pill pill-KIT_DISPATCHED">AUTHORITY</span></td><td>Active</td><td>3 Sep 2026</td></tr>
+                    <tr><td>Nepal Red Cross — Case Worker</td><td><code>caseworker@nrcs.org</code></td><td><span class="status-pill pill-LAB_PROCESSING">CASE_WORKER</span></td><td>Active</td><td>3 Sep 2026</td></tr>
+                </tbody>
+            </table>`;
+    }
+}
+
+// ── 11. AGENTIC AI EVENT ORCHESTRATOR VIEW ──────────
+function orchAuthHeaders(extra = {}) {
+    const token = localStorage.getItem('fc_auth_token');
+    return {
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...extra
+    };
+}
+
+async function loadOrchestratorView() {
+    const container = document.getElementById('orchestrator-events-container');
+    container.innerHTML = '<p style="color:var(--text-muted)">Loading detected events…</p>';
+    try {
+        const res = await fetch('/api/v1/orchestrator/events', { headers: orchAuthHeaders() });
+        const data = await res.json();
+        const events = data.events || [];
+
+        // Update metrics
+        document.getElementById('orch-metric-detected').textContent = events.length;
+        document.getElementById('orch-metric-review').textContent = events.filter(e => e.status === 'REVIEW_REQUIRED' || e.status === 'BUILT').length;
+        document.getElementById('orch-metric-deployed').textContent = events.filter(e => e.status === 'DEPLOYED').length;
+
+        if (!events.length) {
+            container.innerHTML = '<p class="notice notice-info">No disaster events detected yet. Click <strong>Scan GDACS Feeds Now</strong> to scan global feeds.</p>';
+            return;
+        }
+
+        container.innerHTML = `<table class="queue-table">
+            <thead>
+                <tr>
+                    <th>Event Code &amp; Title</th>
+                    <th>Disaster Type</th>
+                    <th>Location / Country</th>
+                    <th>Alert Level</th>
+                    <th>Status</th>
+                    <th>Detected</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            ${events.map(ev => `
+                <tr>
+                    <td>
+                        <strong>${escapeHtml(ev.title)}</strong><br>
+                        <code>${escapeHtml(ev.event_code)}</code>
+                    </td>
+                    <td><span class="status-pill pill-KIT_DISPATCHED">${escapeHtml(ev.event_type)}</span></td>
+                    <td>${escapeHtml(ev.location_name)}, ${escapeHtml(ev.country_name)} (${escapeHtml(ev.country_code)})</td>
+                    <td><span class="status-pill pill-${ev.alert_level === 'Red' ? 'CRITICAL' : ev.alert_level === 'Orange' ? 'MEDIUM' : 'LOW'}">${escapeHtml(ev.alert_level)} Alert</span></td>
+                    <td><span class="status-pill pill-${ev.status === 'DEPLOYED' ? 'CONFIRMED' : ev.status === 'APPROVED' ? 'VERIFIED' : ev.status === 'REVIEW_REQUIRED' ? 'MEDIUM' : 'PENDING'}">${escapeHtml(ev.status)}</span></td>
+                    <td style="white-space:nowrap">${formatDate(ev.detected_at)}</td>
+                    <td style="display:flex;gap:0.3rem;flex-wrap:wrap">
+                        ${ev.status === 'DETECTED' ? `
+                            <button class="btn-primary" style="font-size:0.75rem;padding:0.25rem 0.5rem" onclick="triggerPlan('${ev.id}')">1. Plan Modules</button>
+                        ` : ''}
+                        ${ev.status === 'PLANNED' ? `
+                            <button class="btn-primary" style="font-size:0.75rem;padding:0.25rem 0.5rem" onclick="triggerBuild('${ev.id}')">2. Generate Portal</button>
+                        ` : ''}
+                        ${['BUILT', 'REVIEW_REQUIRED', 'APPROVED', 'DEPLOYED'].includes(ev.status) ? `
+                            <button class="btn-outline" style="font-size:0.75rem;padding:0.25rem 0.5rem" onclick="openOrchPreview('${ev.id}')">👁️ Review &amp; Staging Preview</button>
+                        ` : ''}
+                        ${ev.status === 'APPROVED' ? `
+                            <button class="btn-primary" style="font-size:0.75rem;padding:0.25rem 0.5rem;background:#166534" onclick="deployOrchEvent('${ev.id}')">🚀 Deploy Production</button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        container.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+async function triggerSentinelScan() {
+    try {
+        const res = await fetch('/api/v1/orchestrator/scan', { method: 'POST', headers: orchAuthHeaders() });
+        const data = await res.json();
+        alert(data.message || 'Scan completed.');
+        loadOrchestratorView();
+    } catch (err) {
+        alert('Scan failed: ' + err.message);
+    }
+}
+
+async function triggerPlan(detectedEventId) {
+    try {
+        const res = await fetch('/api/v1/orchestrator/plan', {
+            method: 'POST',
+            headers: orchAuthHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ detectedEventId })
+        });
+        const data = await res.json();
+        alert(`Planner Agent completed! Selected ${data.selectedModules.length} functional modules for ${data.event.title}.`);
+        loadOrchestratorView();
+    } catch (err) {
+        alert('Planning failed: ' + err.message);
+    }
+}
+
+async function triggerBuild(detectedEventId) {
+    try {
+        const container = document.getElementById('orchestrator-events-container');
+        container.innerHTML = '<p style="color:var(--text-muted)">⚙️ Builder Agent generating templates &amp; portal artifacts (no LLM code generation)…</p>';
+        const res = await fetch('/api/v1/orchestrator/build', {
+            method: 'POST',
+            headers: orchAuthHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ detectedEventId })
+        });
+        const data = await res.json();
+        alert(`Builder Agent completed! Generated ${data.artifacts.length} portal artifacts. Status set to REVIEW_REQUIRED.`);
+        loadOrchestratorView();
+    } catch (err) {
+        alert('Build failed: ' + err.message);
+    }
+}
+
+async function openOrchPreview(detectedEventId) {
+    const modal = document.getElementById('orch-modal');
+    const content = document.getElementById('orch-modal-content');
+    modal.hidden = false;
+    content.innerHTML = '<p style="color:var(--text-muted)">Loading portal preview &amp; artifacts…</p>';
+
+    try {
+        const res = await fetch(`/api/v1/orchestrator/preview/${detectedEventId}`, { headers: orchAuthHeaders() });
+        const data = await res.json();
+        const ev = data.event;
+        const artifacts = data.artifacts || [];
+
+        let artifactsHtml = artifacts.map(a => `
+            <div style="border:1px solid var(--border-subtle);border-radius:6px;margin-bottom:0.75rem;padding:0.75rem;background:var(--bg-muted,#f8fafc)">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                    <strong>📄 ${escapeHtml(a.artifact_name)}</strong>
+                    <span class="status-pill pill-VERIFIED">${escapeHtml(a.artifact_type)}</span>
+                </div>
+                <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem">Target: <code>${escapeHtml(a.target_path)}</code></div>
+                <details>
+                    <summary style="cursor:pointer;font-size:0.85rem;color:var(--primary);font-weight:600">View Generated Code / Content Snippet</summary>
+                    <pre style="max-height:220px;overflow-y:auto;background:#0f172a;color:#f8fafc;padding:0.75rem;border-radius:4px;font-size:0.75rem;margin-top:0.5rem"><code>${escapeHtml(a.content_preview || 'Content available in target path')}</code></pre>
+                </details>
+            </div>
+        `).join('');
+
+        content.innerHTML = `
+            <div style="margin-bottom:1rem">
+                <h4>${escapeHtml(ev.title)} — ${escapeHtml(ev.event_code)}</h4>
+                <p style="font-size:0.875rem;color:var(--text-muted)">${escapeHtml(ev.description)}</p>
+                <div style="display:flex;gap:1rem;margin-bottom:1rem;font-size:0.85rem">
+                    <div><strong>Country:</strong> ${escapeHtml(ev.country_name)} (${escapeHtml(ev.country_code)})</div>
+                    <div><strong>Type:</strong> ${escapeHtml(ev.event_type)}</div>
+                    <div><strong>Current Status:</strong> <span class="status-pill pill-CONFIRMED">${escapeHtml(ev.status)}</span></div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:1.5rem">
+                <h5 style="margin-bottom:0.5rem">Generated Portal Artifacts (${artifacts.length}):</h5>
+                ${artifactsHtml}
+            </div>
+
+            <div style="border-top:1px solid var(--border-subtle);padding-top:1rem;background:#fff;border-radius:6px">
+                <h4 style="margin-top:0">Human-in-the-Loop Approval Decision</h4>
+                <div style="margin-bottom:0.75rem">
+                    <label for="orch-review-comments">Reviewer Comments / Audit Notes:</label>
+                    <textarea id="orch-review-comments" style="width:100%;height:60px;padding:0.5rem;border:1px solid var(--border-subtle);border-radius:4px;font-size:0.875rem" placeholder="Provide reason for approval or requested modifications..."></textarea>
+                </div>
+                <div style="display:flex;gap:0.5rem;justify-content:flex-end">
+                    <button class="btn-outline" onclick="submitOrchReview('${ev.id}', 'REJECTED')" style="color:#991b1b;border-color:#fee2e2">✗ Reject Portal</button>
+                    <button class="btn-outline" onclick="submitOrchReview('${ev.id}', 'NEEDS_REVISION')">🔄 Request Revision</button>
+                    <button class="btn-primary" onclick="submitOrchReview('${ev.id}', 'APPROVED')" style="background:#166534">✓ Approve Event Portal</button>
+                </div>
+            </div>
+        `;
+    } catch (err) {
+        content.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+function closeOrchModal() {
+    document.getElementById('orch-modal').hidden = true;
+}
+
+async function submitOrchReview(detectedEventId, action) {
+    const comments = document.getElementById('orch-review-comments').value.trim();
+    try {
+        const res = await fetch(`/api/v1/orchestrator/review/${detectedEventId}`, {
+            method: 'POST',
+            headers: orchAuthHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ action, comments })
+        });
+        const data = await res.json();
+        alert(data.message || `Review submitted: ${action}`);
+        closeOrchModal();
+        loadOrchestratorView();
+    } catch (err) {
+        alert('Review failed: ' + err.message);
+    }
+}
+
+async function deployOrchEvent(detectedEventId) {
+    if (!confirm('Are you sure you want to deploy this approved event portal to production? This will activate the event and make the humanitarian portal live for affected families.')) return;
+    try {
+        const res = await fetch(`/api/v1/orchestrator/deploy/${detectedEventId}`, {
+            method: 'POST',
+            headers: orchAuthHeaders()
+        });
+        const data = await res.json();
+        alert(data.message || 'Event deployed to production successfully!');
+        loadOrchestratorView();
+    } catch (err) {
+        alert('Deployment failed: ' + err.message);
+    }
+}
+
+function escapeHtml(str) {
+    if (!str) return '—';
+    const d = document.createElement('div');
+    d.textContent = String(str);
+    return d.innerHTML;
+}
+
+document.addEventListener('DOMContentLoaded', checkSession);
+</script>
+</body>
+</html>

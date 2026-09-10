@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Water Level Monitoring — FamilyConnect</title>
+<meta name="description" content="Water level monitoring">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main id="main" class="main-content container">
+    <div class="page-header" style="margin-top: 2rem; margin-bottom: 1.5rem;">
+        <h1>Water Level Monitoring</h1>
+        <p style="color: var(--text-muted); font-size: 1rem;">Live hydrological gauges and Central Water Commission (CWC) telemetry for <strong class="fc-dynamic-event-name">the ongoing emergency</strong>.</p>
+    </div>
+
+    <!-- Official Advisory Banner -->
+    <div class="notice notice-alert" style="margin-bottom: 2rem; border-left: 5px solid #b8332a; background: #fff5f5; padding: 1.2rem; border-radius: 4px;">
+        <h3 style="margin-top:0; color: #b8332a;">⚠️ CWC Severe Flood Warning & Inland Water Transport Advisory</h3>
+        <p style="margin-bottom:0.5rem; line-height: 1.5;">The Brahmaputra and key northern tributaries (Jia Bharali, Puthimari, Beki, Subansiri) continue to flow <strong>0.5m to 1.8m above Danger Level</strong> across Upper, Middle, and Lower Assam. All public river ferry crossings (including Guwahati–North Guwahati and Neamatighat–Majuli) remain <strong>strictly suspended</strong> by order of Inland Water Transport (IWT) Assam until discharge recedes below danger mark.</p>
+        <small style="color:var(--text-muted)">Hydrological Bulletin Ref: CWC-NE-FL-2026-0910 | Source: Central Water Commission (North-East Region)</small>
+    </div>
+
+    <!-- Summary KPI Cards -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-left: 4px solid #b8332a; padding:1rem 1.25rem; border-radius:4px;">
+            <div style="font-size: 1.8rem; font-weight:800; color:#b8332a;">6 Stations</div>
+            <div style="font-size: 0.85rem; font-weight:600; color:var(--text-muted);">Above Danger Level</div>
+        </div>
+        <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-left: 4px solid var(--primary); padding:1rem 1.25rem; border-radius:4px;">
+            <div style="font-size: 1.8rem; font-weight:800; color:var(--primary);">+1.38 m</div>
+            <div style="font-size: 0.85rem; font-weight:600; color:var(--text-muted);">Max Inundation (Neamatighat)</div>
+        </div>
+        <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-left: 4px solid #b45309; padding:1rem 1.25rem; border-radius:4px;">
+            <div style="font-size: 1.8rem; font-weight:800; color:#b45309;">Rising</div>
+            <div style="font-size: 0.85rem; font-weight:600; color:var(--text-muted);">Basin Discharge Trend</div>
+        </div>
+        <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-left: 4px solid #166534; padding:1rem 1.25rem; border-radius:4px;">
+            <div style="font-size: 1.8rem; font-weight:800; color:#166534;">15 mins ago</div>
+            <div style="font-size: 0.85rem; font-weight:600; color:var(--text-muted);">Latest Telemetry Sync</div>
+        </div>
+    </div>
+
+    <!-- Active Gauges Table -->
+    <div style="background:white; border: 1px solid var(--border-subtle); border-radius: 4px; overflow-x: auto; margin-bottom: 2.5rem;">
+        <table class="queue-table" style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8fafc; border-bottom: 2px solid var(--border-subtle); text-align: left;">
+                    <th style="padding:0.75rem 1rem;">River &amp; Station</th>
+                    <th style="padding:0.75rem 1rem;">District</th>
+                    <th style="padding:0.75rem 1rem;">Current Level</th>
+                    <th style="padding:0.75rem 1rem;">Danger Level</th>
+                    <th style="padding:0.75rem 1rem;">Status vs Danger</th>
+                    <th style="padding:0.75rem 1rem;">24h Trend</th>
+                    <th style="padding:0.75rem 1rem;">Alert Severity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                    <td style="padding:0.85rem 1rem;"><strong>Brahmaputra River</strong><br><small style="color:var(--text-muted)">Neamatighat Gauge</small></td>
+                    <td style="padding:0.85rem 1rem;">Jorhat</td>
+                    <td style="padding:0.85rem 1rem; font-weight:bold; color:#b8332a;">86.42 m</td>
+                    <td style="padding:0.85rem 1rem;">85.04 m</td>
+                    <td style="padding:0.85rem 1rem; color:#b8332a; font-weight:600;">+1.38 m Above</td>
+                    <td style="padding:0.85rem 1rem;">🔺 Rising (+0.04m/hr)</td>
+                    <td style="padding:0.85rem 1rem;"><span class="status-pill" style="background:#fee2e2; color:#991b1b; border:1px solid #ef4444;">Severe Flood</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                    <td style="padding:0.85rem 1rem;"><strong>Brahmaputra River</strong><br><small style="color:var(--text-muted)">Guwahati (DC Court Ghat)</small></td>
+                    <td style="padding:0.85rem 1rem;">Kamrup Metro</td>
+                    <td style="padding:0.85rem 1rem; font-weight:bold; color:#b45309;">50.15 m</td>
+                    <td style="padding:0.85rem 1rem;">49.68 m</td>
+                    <td style="padding:0.85rem 1rem; color:#b45309; font-weight:600;">+0.47 m Above</td>
+                    <td style="padding:0.85rem 1rem;">▶️ Steady</td>
+                    <td style="padding:0.85rem 1rem;"><span class="status-pill" style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b;">Flood Warning</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                    <td style="padding:0.85rem 1rem;"><strong>Brahmaputra River</strong><br><small style="color:var(--text-muted)">Tezpur Ghat</small></td>
+                    <td style="padding:0.85rem 1rem;">Sonitpur</td>
+                    <td style="padding:0.85rem 1rem; font-weight:bold; color:#b8332a;">66.23 m</td>
+                    <td style="padding:0.85rem 1rem;">65.23 m</td>
+                    <td style="padding:0.85rem 1rem; color:#b8332a; font-weight:600;">+1.00 m Above</td>
+                    <td style="padding:0.85rem 1rem;">🔺 Rising (+0.03m/hr)</td>
+                    <td style="padding:0.85rem 1rem;"><span class="status-pill" style="background:#fee2e2; color:#991b1b; border:1px solid #ef4444;">Severe Flood</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                    <td style="padding:0.85rem 1rem;"><strong>Brahmaputra River</strong><br><small style="color:var(--text-muted)">Dhubri Port Station</small></td>
+                    <td style="padding:0.85rem 1rem;">Dhubri</td>
+                    <td style="padding:0.85rem 1rem; font-weight:bold; color:#b8332a;">29.80 m</td>
+                    <td style="padding:0.85rem 1rem;">28.62 m</td>
+                    <td style="padding:0.85rem 1rem; color:#b8332a; font-weight:600;">+1.18 m Above</td>
+                    <td style="padding:0.85rem 1rem;">🔺 Rising (+0.05m/hr)</td>
+                    <td style="padding:0.85rem 1rem;"><span class="status-pill" style="background:#fee2e2; color:#991b1b; border:1px solid #ef4444;">Severe Flood</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                    <td style="padding:0.85rem 1rem;"><strong>Brahmaputra River</strong><br><small style="color:var(--text-muted)">Dibrugarh (Maijan Ghat)</small></td>
+                    <td style="padding:0.85rem 1rem;">Dibrugarh</td>
+                    <td style="padding:0.85rem 1rem; font-weight:bold; color:#b45309;">105.80 m</td>
+                    <td style="padding:0.85rem 1rem;">105.70 m</td>
+                    <td style="padding:0.85rem 1rem; color:#b45309; font-weight:600;">+0.10 m Above</td>
+                    <td style="padding:0.85rem 1rem;">🔽 Falling (-0.02m/hr)</td>
+                    <td style="padding:0.85rem 1rem;"><span class="status-pill" style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b;">Moderate Flood</span></td>
+                </tr>
+                <tr>
+                    <td style="padding:0.85rem 1rem;"><strong>Jia Bharali River</strong><br><small style="color:var(--text-muted)">NT Road Crossing</small></td>
+                    <td style="padding:0.85rem 1rem;">Sonitpur</td>
+                    <td style="padding:0.85rem 1rem; font-weight:bold; color:#b8332a;">77.85 m</td>
+                    <td style="padding:0.85rem 1rem;">77.00 m</td>
+                    <td style="padding:0.85rem 1rem; color:#b8332a; font-weight:600;">+0.85 m Above</td>
+                    <td style="padding:0.85rem 1rem;">🔺 Rising (+0.06m/hr)</td>
+                    <td style="padding:0.85rem 1rem;"><span class="status-pill" style="background:#fee2e2; color:#991b1b; border:1px solid #ef4444;">Severe Flood</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Embankment & Flood Control Hotline -->
+    <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 4px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+        <div>
+            <h4 style="margin:0 0 0.25rem 0;">Water Resources Department (WRD) Embankment Breach Patrol</h4>
+            <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">To report riverbank erosion, piping, or seepage along Brahmaputra dykes, contact the 24/7 WRD flood control room.</p>
+        </div>
+        <a href="tel:1070" class="btn-primary" style="text-decoration:none; padding: 0.6rem 1.2rem;">📞 Call SEOC Control 1070</a>
+    </div>
+</main>
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">This is a public service humanitarian site.</p>
+    </div>
+</footer>
+<script src="/js/app.js"></script>
+<script src="/js/api.js?v=20260906"></script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Request a DNA sample kit — FamilyConnect</title>
+<meta name="description" content="Apply to give a DNA reference sample to help identify a missing relative in the disaster zone. Track your request with a reference — no account needed.">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+
+<main class="container" id="main">
+
+    <div class="page-intro">
+        <h1 data-i18n="dnaHeading">Request a DNA sample kit</h1>
+        <p class="lede" data-i18n="dnaLede">If someone you love is missing and the authorities have taken DNA from unidentified remains before burial, your reference sample may be the strongest route to an answer.</p>
+    </div>
+
+    <!-- Who should apply panel -->
+    <div class="safe-panel safe-panel--info dna-who-panel">
+        <p class="safe-panel-title" data-i18n="dnaWhoTitle">Who should give a sample</p>
+        <p data-i18n="dnaWhoDesc">A parent, child or sibling of the missing person gives the strongest comparison. More distant relatives can still help — a coordinator will advise. You do not need an account, and there is no charge.</p>
+    </div>
+
+    <!-- Application form -->
+    <section class="dna-form-section" id="dna-sample">
+        <h2 class="dna-form-section-title" data-i18n="dnaFormTitle">Apply to give a DNA reference sample</h2>
+        <p class="dna-form-section-desc" data-i18n="dnaFormDesc">Where the authorities have taken DNA from unidentified remains before burial, a close relative's reference sample can allow a later identification. Apply here and a coordinator will tell you where and when to attend. Only a laboratory and the responsible authority can confirm a match — this platform never does, and we never hold genetic data, only the laboratory's own reference numbers.</p>
+
+        <form id="dna-request-form" novalidate class="dna-form-grid">
+
+            <div class="field-block">
+                <label for="requesterName"><span data-i18n="lblFullName">Your full name</span> <span aria-hidden="true" style="color:var(--accent-alert)"> *</span></label>
+                <input id="requesterName" name="requesterName" required maxlength="150" autocomplete="name">
+            </div>
+
+            <div class="field-block">
+                <label for="requesterEmail"><span data-i18n="lblEmail">Email address</span> <span aria-hidden="true" style="color:var(--accent-alert)"> *</span></label>
+                <input id="requesterEmail" name="requesterEmail" type="email" required maxlength="255" autocomplete="email">
+            </div>
+
+            <div class="field-block">
+                <label for="requesterPhone"><span data-i18n="lblPhone">Phone number</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                <input id="requesterPhone" name="requesterPhone" maxlength="50" autocomplete="tel">
+            </div>
+
+            <div class="field-block">
+                <label for="relationship"><span data-i18n="lblRelationship">Your relationship to the missing person</span> <span aria-hidden="true" style="color:var(--accent-alert)"> *</span></label>
+                <span class="field-hint" data-i18n="hintRelationshipDna">A parent, child or sibling sample gives a far stronger result than a distant relative's.</span>
+                <input id="relationship" name="relationship" required maxlength="100">
+            </div>
+
+            <div class="field-block">
+                <label for="missingPersonName"><span data-i18n="lblMissingName">Missing person's name</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                <input id="missingPersonName" name="missingPersonName" maxlength="200">
+            </div>
+
+            <div class="field-block">
+                <label for="caseRef"><span data-i18n="lblExistingCaseRef">Existing case reference</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                <span class="field-hint" data-i18n="hintExistingCaseRef">If you already reported them.</span>
+                <input id="caseRef" name="caseRef" maxlength="40" placeholder="e.g. FC-2026-…">
+            </div>
+
+            <div class="field-block">
+                <label for="preferredLocation"><span data-i18n="lblPreferredLocation">Where you can attend to give a sample</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                <input id="preferredLocation" name="preferredLocation" maxlength="200" placeholder="e.g. Kathmandu, Pokhara">
+            </div>
+
+            <div class="field-block dna-form-full">
+                <label for="missingPersonDetails"><span data-i18n="lblIdentificationDetails">Anything that may help identification</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                <span class="field-hint" data-i18n="hintIdentificationDetails">Height, marks, dental work, clothing, jewellery, what they were carrying.</span>
+                <textarea id="missingPersonDetails" name="missingPersonDetails" rows="3" maxlength="1000"></textarea>
+            </div>
+
+            <div class="dna-form-full">
+                <button type="submit" class="btn btn-primary" id="submit-btn" data-i18n="btnRequestKit">Request a sample kit</button>
+            </div>
+
+        </form>
+    </section>
+
+    <!-- What happens next -->
+    <section class="dna-next-section">
+        <h2 class="dna-form-section-title" style="margin-bottom:0.75rem;" data-i18n="dnaNextTitle">What happens next</h2>
+        <ol class="dna-steps-list">
+            <li data-i18n="dnaStep1">You receive a tracking reference immediately — keep it with the email address you used.</li>
+            <li data-i18n="dnaStep2">A coordinator contacts you to arrange where and when to give the sample.</li>
+            <li data-i18n="dnaStep3">The laboratory compares your sample against profiles from remains and issues its own reference numbers.</li>
+            <li data-i18n="dnaStep4">Comparisons are pre-sorted for coordinators, but only the responsible authority can confirm a match.</li>
+            <li data-i18n="dnaStep5">Once you have a lab sample reference, you can record it yourself in the family DNA portal and see how comparisons are progressing.</li>
+        </ol>
+        <div class="dna-next-links">
+            <a href="track.html" class="btn-outline-primary" data-i18n="btnTrackExisting">Track an existing case</a>
+            <a href="missing.html" class="btn-outline-primary" data-i18n="btnReportMissing">Report someone missing</a>
+        </div>
+    </section>
+
+    <!-- Privacy notice -->
+    <div class="safe-panel safe-panel--info dna-privacy-panel">
+        <p class="safe-panel-title" data-i18n="dnaPrivacyTitle">Your privacy</p>
+        <p data-i18n="dnaPrivacyDesc">FamilyConnect never holds genetic data. We record only your contact details, your relationship, and the laboratory's own reference numbers. A DNA result is never shown to you as a match here — the responsible authority confirms identity and contacts you directly.</p>
+    </div>
+
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+        <p>In an emergency contact the local emergency services. Information shown here always carries its source and verification state. Unverified information is never a confirmation.</p>
+        <p>Translations are provided to help you understand. Where a translation and the English record differ, coordinators work from the original record, which is language-neutral.</p>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="js/api.js?v=20260906"></script>
+<script>
+const form = document.getElementById('dna-request-form');
+const main = document.getElementById('main');
+
+const isAssam = (typeof DISASTER_EVENT_ID !== 'undefined' && (DISASTER_EVENT_ID.includes('IN') || DISASTER_EVENT_ID.includes('FL') || DISASTER_EVENT_ID.includes('ASSAM')));
+if (isAssam) {
+    const locInput = document.getElementById('preferredLocation');
+    if (locInput) locInput.placeholder = 'e.g. Guwahati (GMCH), Dibrugarh, Silchar';
+    const caseInput = document.getElementById('caseRef');
+    if (caseInput) caseInput.placeholder = 'e.g. FC-IN-2026-…';
+}
+
+document.getElementById('dna-request-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearNotices(main);
+
+    const form = e.target;
+    const requesterName    = form.requesterName.value.trim();
+    const requesterEmail   = form.requesterEmail.value.trim();
+    const relationship     = form.relationship.value.trim();
+
+    if (!requesterName) {
+        showNotice(main, 'Please enter your full name.', 'error');
+        return;
+    }
+    if (!requesterEmail || !requesterEmail.includes('@')) {
+        showNotice(main, 'Please enter a valid email address.', 'error');
+        return;
+    }
+    if (!relationship) {
+        showNotice(main, 'Please enter your relationship to the missing person.', 'error');
+        return;
+    }
+
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    try {
+        const result = await api.submitDnaRequest({
+            requesterName,
+            requesterEmail,
+            requesterPhone:       form.requesterPhone.value.trim() || undefined,
+            relationship,
+            missingPersonName:    form.missingPersonName.value.trim() || undefined,
+            caseReference:        form.caseRef.value.trim() || undefined,
+            preferredLocation:    form.preferredLocation.value.trim() || undefined,
+            missingPersonDetails: form.missingPersonDetails.value.trim() || undefined,
+        });
+
+        form.hidden = true;
+        const notice = showNotice(main, '', 'success');
+        notice.innerHTML = `
+            <strong>Request received.</strong><br>
+            Tracking reference: <strong>${result.trackingReference}</strong><br>
+            <span style="font-size:0.88rem;">Keep this reference and the email address you used — a coordinator will contact you to arrange where and when to give your sample.</span>
+        `;
+    } catch (err) {
+        showNotice(main, err.message || 'An error occurred. Please try again.', 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Request a sample kit';
+    }
+});
+</script>
+</body>
+</html>

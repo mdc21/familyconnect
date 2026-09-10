@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I am safe — FamilyConnect</title>
+<meta name="description" content="Declare that you are safe so coordinators and your family can be told, and receive a case reference.">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+
+<main class="container" id="main">
+
+    <div class="page-intro">
+        <h1 data-i18n="safeHeading">I am safe</h1>
+        <p class="lede" data-i18n="safeLede">Use this if you are the person affected and you are safe. We only ask for what is needed to match you to people who are looking for you.</p>
+    </div>
+
+    <div class="safe-grid">
+
+        <form id="safety-form" novalidate class="safe-form">
+
+            <div class="field-block">
+                <label for="fullName"><span data-i18n="lblFullName">Your full name</span> <span aria-hidden="true" style="color:var(--accent-alert)"> *</span></label>
+                <input id="fullName" name="fullName" required maxlength="200" autocomplete="name" placeholder="">
+            </div>
+
+            <div class="field-block">
+                <label for="nationality"><span data-i18n="lblNationality">Nationality</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                <input id="nationality" name="nationality" maxlength="100" autocomplete="country-name">
+            </div>
+
+            <div class="field-block">
+                <label for="locationDescription"><span data-i18n="lblLocation">Where you are now</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                <span class="field-hint" data-i18n="hintLocationSafe">A town, camp, hotel or landmark is enough.</span>
+                <input id="locationDescription" name="locationDescription" maxlength="300" placeholder="">
+            </div>
+
+            <div class="field-block">
+                <label for="contact"><span data-i18n="lblContact">How coordinators can reach you</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                <span class="field-hint" data-i18n="hintContactSafe">Phone number, email, or the name of someone with you.</span>
+                <input id="contact" name="contact" maxlength="300" placeholder="">
+            </div>
+
+            <div class="field-block">
+                <label for="message"><span data-i18n="lblMessageSafe">Message for people looking for you</span> <span class="optional-tag" data-i18n="optionalTag">(optional)</span></label>
+                <span class="field-hint" data-i18n="hintMessageSafe">This may be shared with family who are authorised on your case.</span>
+                <textarea id="message" name="message" rows="4" maxlength="1000"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="submit-btn" data-i18n="submitSafeBtn">Submit safety declaration</button>
+        </form>
+
+        <aside class="safe-aside">
+            <div class="safe-panel safe-panel--warn">
+                <p class="safe-panel-title" data-i18n="beforeSubmit">Before you submit</p>
+                <ul>
+                    <li data-i18n="rule1">Only declare safety for yourself, or for someone present who asks you to.</li>
+                    <li data-i18n="rule2">A declaration is recorded as reported by you until a coordinator checks it.</li>
+                    <li data-i18n="rule3">Being related to someone does not by itself grant access to their case.</li>
+                </ul>
+            </div>
+
+            <div class="safe-panel safe-panel--info">
+                <p class="safe-panel-title" data-i18n="needHelp">Need help instead?</p>
+                <p data-i18n="needHelpDesc">If you need shelter, transport, medical care or documents, submit this first, then ask for assistance from your case tracking page.</p>
+            </div>
+        </aside>
+
+    </div>
+
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p class="footer-notice-bold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+        <p>In an emergency contact the local emergency services. Information shown here always carries its source and verification state. Unverified information is never a confirmation.</p>
+        <p>Translations are provided to help you understand. Where a translation and the English record differ, coordinators work from the original record, which is language-neutral.</p>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="js/api.js?v=20260906"></script>
+<script>
+document.getElementById('safety-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const main = document.getElementById('main');
+    clearNotices(main);
+
+    const form = e.target;
+    const fullName = form.fullName.value.trim();
+    if (!fullName) {
+        showNotice(main, 'Please enter your full name.', 'error');
+        return;
+    }
+
+    // Split full name into first/last for the API (first word = first, rest = last)
+    const parts = fullName.split(/\s+/);
+    const firstName = parts[0];
+    const lastName = parts.slice(1).join(' ') || '.';
+
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    try {
+        const result = await api.submitSafety({
+            person: {
+                firstName,
+                lastName,
+                nationality: form.nationality.value.trim() || undefined,
+            },
+            currentLocation: form.locationDescription.value.trim()
+                ? { description: form.locationDescription.value.trim() } : undefined,
+            contactPreference: form.contact.value.trim() || undefined,
+            message: form.message.value.trim() || undefined,
+        });
+        form.hidden = true;
+        // Save to localStorage so track.html can auto-populate it
+        try {
+            const saved = JSON.parse(localStorage.getItem('fc_tracked_refs') || '[]');
+            saved.unshift(result.submissionReference);
+            localStorage.setItem('fc_tracked_refs', JSON.stringify(saved.slice(0, 5)));
+        } catch (e) { /* storage may be unavailable */ }
+
+        const notice = showNotice(main, '', 'success');
+        notice.innerHTML = `
+            <strong>Declaration received.</strong> ${result.message}<br>
+            Your reference: <strong style="font-size:1.1rem;letter-spacing:0.05em">${result.submissionReference}</strong><br>
+            <span style="font-size:0.88rem;">This reference has been saved on this device.
+            <a href="track.html?ref=${encodeURIComponent(result.submissionReference)}" style="color:inherit;font-weight:600">Check status →</a></span>
+        `;
+    } catch (err) {
+        showNotice(main, err.message, 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit safety declaration';
+    }
+});
+</script>
+</body>
+</html>
