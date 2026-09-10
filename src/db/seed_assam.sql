@@ -2,6 +2,18 @@
 -- ASSAM FLOOD SEED DATA
 -- ============================================================
 
+-- DISASTER EVENT (idempotent upsert)
+INSERT INTO disaster_event (event_id, name, status, governance_authority, data_controller, data_residency)
+VALUES (
+    'EVENT-IN-FL-2026-1187',
+    'Assam Brahmaputra Basin Flooding 2026',
+    'ACTIVE',
+    'Assam State Disaster Management Authority (ASDMA)',
+    'Government of Assam / ASDMA',
+    'ap-south-1'
+)
+ON CONFLICT (event_id) DO NOTHING;
+
 -- ASSISTANCE CENTRES
 INSERT INTO assistance_centre
     (centre_id, organisation_id, event_id, name, location, opening_hours, services, languages, accessibility, emergency_contact, operational_status)
