@@ -252,3 +252,10 @@ The platform features an autonomous multi-agent disaster coordination system (`s
 - **Docker Compose**: Containerized PostgreSQL 16 with automatic volume entrypoint mounts executing all baseline schemas, orchestrator migrations, and multi-event seeds.
 - **Automated Seeder (`scripts/seed.js`)**: Single-command provisioning runner executing all migrations and seeding initial disaster data for both Nepal and Assam events.
 
+### 10.6 Ultra-Low-Cost Cloud Hosting (Azure Container Apps Pilot)
+- **Serverless Compute**: Hosted on **Azure Container Apps (Consumption Plan)** in Central India (Pune) or South India (Chennai), utilizing the free monthly grant (180,000 vCPU-seconds and 360,000 GiB-seconds free).
+- **Serverless PostgreSQL**: Backed by a free-tier PostgreSQL 16 database (Neon.tech or Supabase) with full SSL TLS encryption (`rejectUnauthorized: false` for managed cloud certs) and support for `uuid-ossp`, `pg_trgm`, and `citext`.
+- **Total Monthly Outlay**: Estimated at **$0.00 – $3.00/month**, eliminating enterprise infrastructure costs during the humanitarian pilot phase while remaining capable of autoscaling to 5+ replicas during disaster surges.
+- **Deployment Automation**: Single-command deployment script [`deploy/azure/deploy-aca.sh`](../deploy/azure/deploy-aca.sh) paired with GitHub Actions continuous delivery [`.github/workflows/deploy-azure-container-apps.yml`](../.github/workflows/deploy-azure-container-apps.yml).
+
+

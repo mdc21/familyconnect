@@ -25,6 +25,12 @@ This directory contains the authoritative system specifications governing the ar
 
 ---
 
+## Cloud Deployment Guides
+
+- **[Azure Container Apps Pilot Guide](azure-container-apps-deployment-guide.md)**: Ultra-low-cost ($0–$3/mo) cloud deployment guide using Azure Container Apps (Consumption plan) and free serverless PostgreSQL (Neon.tech / Supabase).
+
+---
+
 ## Architectural Principles Enforced by Specs
 
 1. **Humanitarian Data Protection**: High sensitivity data (DNA tracking references, safeguarding notes, hospital mortuary logs) are classified according to ICRC Professional Standards and masked by default.

@@ -180,6 +180,25 @@ The platform is hardened against OWASP Top 10 vulnerabilities:
 
 ---
 
+### Option C: Azure Cloud Hosting (Pilot Tier, $0–$3/month)
+
+Deploy FamilyConnect to **Azure Container Apps (Consumption Plan)** backed by free serverless PostgreSQL (Neon.tech / Supabase):
+
+1. **Seed remote cloud database**:
+   ```bash
+   DATABASE_URL="postgresql://user:pass@ep-xxxx.neon.tech/neondb?sslmode=require" npm run db:seed
+   ```
+
+2. **Deploy with automated Azure CLI script**:
+   ```bash
+   export DATABASE_URL="postgresql://user:pass@ep-xxxx.neon.tech/neondb?sslmode=require"
+   ./deploy/azure/deploy-aca.sh
+   ```
+
+*Refer to the complete [Azure Container Apps Deployment Guide](docs/azure-container-apps-deployment-guide.md) for custom domains, managed SSL, and GitHub Actions CI/CD setup.*
+
+---
+
 ## 🧪 Running Tests
 
 The test suite runs with zero third-party testing dependencies using Node's native test runner (`node --test`).
@@ -233,7 +252,10 @@ The architecture, privacy models, and engineering practices of FamilyConnect are
 
 ```
 familyconnect/
-├── docs/                       # System specifications (SPEC-001 to SPEC-007 in MD & DOCX)
+├── deploy/
+│   └── azure/
+│       └── deploy-aca.sh       # Automated Azure Container Apps deployment script
+├── docs/                       # System specifications (SPEC-001 to SPEC-007) & Cloud Guides
 │   ├── SPEC-001-Product-Requirements.md
 │   ├── SPEC-002-Domain-Model-and-Data.md
 │   ├── SPEC-003-API-Contract-and-Events.md
@@ -242,6 +264,7 @@ familyconnect/
 │   ├── SPEC-005-Architecture-and-Deployment.md
 │   ├── SPEC-006-UX-Interaction-and-Interface-Constraints.md
 │   ├── SPEC-007-Engineering-QA-and-Gate-Testing.md
+│   ├── azure-container-apps-deployment-guide.md
 │   └── docx/                   # Original binary .docx specification documents
 ├── frontend/                   # Client-side static application (<50KB payload)
 │   ├── css/styles.css          # Design system & responsive layout
@@ -276,6 +299,11 @@ familyconnect/
 ├── scripts/
 │   └── seed.js                 # Automated full database provisioning script
 ├── test/                       # 38 automated test suites
+├── .github/
+│   └── workflows/
+│       └── deploy-azure-container-apps.yml # Automated CI/CD deployment
+├── Dockerfile                  # Multi-stage production container for Azure Container Apps
+├── .dockerignore               # Container build exclusion patterns
 ├── docker-compose.yml          # PostgreSQL 16 container with automatic seeding
 ├── .env.example                # Safe environment configuration template
 ├── .gitignore                  # Security-hardened git ignore patterns
