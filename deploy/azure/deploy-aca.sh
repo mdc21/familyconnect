@@ -28,6 +28,16 @@ command -v az >/dev/null 2>&1 || { echo "Error: Azure CLI ('az') is required. In
 echo "Checking Azure authentication..."
 az account show >/dev/null 2>&1 || { echo "Please log in to Azure using 'az login'"; exit 1; }
 
+# Ensure required Azure Resource Providers are registered
+echo "Registering required Azure resource providers (ContainerRegistry, App, OperationalInsights)..."
+for provider in Microsoft.ContainerRegistry Microsoft.App Microsoft.OperationalInsights; do
+    state=$(az provider show --namespace "$provider" --query registrationState -o tsv 2>/dev/null || echo "NotRegistered")
+    if [ "$state" != "Registered" ]; then
+        echo "  Registering $provider..."
+        az provider register --namespace "$provider" --wait >/dev/null 2>&1 || az provider register --namespace "$provider"
+    fi
+done
+
 # ── Prompt for Database URL if not provided ─────────────────────────────────
 if [ -z "${DATABASE_URL:-}" ]; then
     echo ""
