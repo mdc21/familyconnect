@@ -39,6 +39,9 @@ const path = require('path');
 
 const app = express();
 
+// Trust reverse proxy (Azure Container Apps / Envoy ingress)
+app.set('trust proxy', 1);
+
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
