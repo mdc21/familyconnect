@@ -76,10 +76,10 @@ CREATE TABLE IF NOT EXISTS coordinator_account (
 
 INSERT INTO coordinator_account (account_id, email, password_hash, display_name, role, organisation_id, event_id)
 VALUES
-    ('ca000001-0000-0000-0000-000000000001','admin@familyconnect.org','$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FgtB5Y0STjTaAl1kX/pjJTgp7TXlCa2','System Administrator','ADMIN',NULL,'EVENT-NP-TIBET-2026'),
-    ('ca000002-0000-0000-0000-000000000002','coordinator@ndrrma.gov.np','$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FgtB5Y0STjTaAl1kX/pjJTgp7TXlCa2','NDRRMA Coordinator — Rasuwa','AUTHORITY','11111111-0000-0000-0000-000000000002','EVENT-NP-TIBET-2026'),
-    ('ca000003-0000-0000-0000-000000000003','caseworker@nrcs.org','$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FgtB5Y0STjTaAl1kX/pjJTgp7TXlCa2','Nepal Red Cross — Case Worker','CASE_WORKER','11111111-0000-0000-0000-000000000001','EVENT-NP-TIBET-2026')
-ON CONFLICT (account_id) DO NOTHING;
+    ('ca000001-0000-0000-0000-000000000001','admin@familyconnect.org','$2b$10$xMlng6dI63qSsiqpTjFHheCIMUwwkNZcDTo1VQpgepKepnmggVYni','System Administrator','ADMIN',NULL,'EVENT-NP-TIBET-2026'),
+    ('ca000002-0000-0000-0000-000000000002','coordinator@ndrrma.gov.np','$2b$10$xMlng6dI63qSsiqpTjFHheCIMUwwkNZcDTo1VQpgepKepnmggVYni','NDRRMA Coordinator — Rasuwa','AUTHORITY','11111111-0000-0000-0000-000000000002','EVENT-NP-TIBET-2026'),
+    ('ca000003-0000-0000-0000-000000000003','caseworker@nrcs.org','$2b$10$xMlng6dI63qSsiqpTjFHheCIMUwwkNZcDTo1VQpgepKepnmggVYni','Nepal Red Cross — Case Worker','CASE_WORKER','11111111-0000-0000-0000-000000000001','EVENT-NP-TIBET-2026')
+ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash;
 
 -- ============================================================
 -- INFORMATION UPDATES

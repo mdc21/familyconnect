@@ -1,5 +1,5 @@
 -- ============================================================
--- ASSAM FLOOD SEED DATA
+    -- ASSAM FLOOD SEED DATA
 -- ============================================================
 
 -- DISASTER EVENT (idempotent upsert)
@@ -53,3 +53,10 @@ VALUES
     ('dddddddd-0000-0000-0000-000000000004', 'EVENT-IN-FL-2026-1187', 'Kaziranga Inundated', 'Kaziranga National Park 80% inundated. Animal patrols active.', 'Kaziranga Park Authority', 'OFFICIAL_AUTHORITY', 'RESCUE', 'PUBLISHED', 'cccccccc-0000-0000-0000-000000000004'),
     ('dddddddd-0000-0000-0000-000000000005', 'EVENT-IN-FL-2026-1187', 'Medical Teams Dispatched', 'Ministry of Health dispatching 50 medical teams with anti-venom.', 'Ministry of Health, Assam', 'HOSPITAL', 'AID', 'PUBLISHED', 'cccccccc-0000-0000-0000-000000000005')
 ON CONFLICT (news_id) DO NOTHING;
+
+-- COORDINATOR ACCOUNTS (Assam Responders)
+INSERT INTO coordinator_account (account_id, email, password_hash, display_name, role, organisation_id, event_id)
+VALUES
+    ('ca000004-0000-0000-0000-000000000001','coordinator@asdma.assam.gov.in','$2b$10$xMlng6dI63qSsiqpTjFHheCIMUwwkNZcDTo1VQpgepKepnmggVYni','ASDMA Authority — Assam Govt','AUTHORITY','11111111-0000-0000-0000-000000000002','EVENT-IN-FL-2026-1187'),
+    ('ca000005-0000-0000-0000-000000000001','caseworker@redcross.org.in','$2b$10$xMlng6dI63qSsiqpTjFHheCIMUwwkNZcDTo1VQpgepKepnmggVYni','Indian Red Cross — Assam Branch','CASE_WORKER','11111111-0000-0000-0000-000000000001','EVENT-IN-FL-2026-1187')
+ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash;
