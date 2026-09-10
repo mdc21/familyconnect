@@ -8,7 +8,7 @@
 
 **FamilyConnect** is a humanitarian crisis response platform designed to trace missing persons, verify ground-truth intelligence, distribute emergency relief, and coordinate multi-agency operations during sudden-onset disasters.
 
-Engineered under strict humanitarian data protection principles (SPEC-001 through SPEC-007), FamilyConnect functions as a resilient, low-bandwidth modular monolith that connects affected families, local authorities, first responders, and relief agencies.
+Engineered under strict humanitarian data protection principles ([SPEC-001 through SPEC-007](docs/)), FamilyConnect functions as a resilient, low-bandwidth modular monolith that connects affected families, local authorities, first responders, and relief agencies.
 
 ---
 
@@ -211,7 +211,21 @@ For local evaluation and testing, the following responder personas are pre-seede
 | **Nepal Red Cross** | `caseworker@nrcs.org` | `Coord@2026!` | NRCS Family Tracing Caseworker |
 | **System Admin** | `admin@familyconnect.org` | `Coord@2026!` | Platform Oversight & Audit Trail |
 
-*Tip: You can use the 1-Click Persona buttons on the [Coordinator Sign-In](http://localhost:3000/console.html) page to authenticate instantly.*
+---
+
+## 📐 System Specifications & Standards
+
+The architecture, privacy models, and engineering practices of FamilyConnect are documented in [`docs/`](docs/):
+
+- **[SPEC-001: Product Requirements Specification](docs/SPEC-001-Product-Requirements.md)** — Humanitarian problem space, user journeys, operational scopes.
+- **[SPEC-002: Domain Model & Data Specification](docs/SPEC-002-Domain-Model-and-Data.md)** — Canonical 31-entity model, privacy classifications, relationships.
+- **[SPEC-003: API Contract & Event Specification](docs/SPEC-003-API-Contract-and-Events.md)** ([Hardening Delta](docs/SPEC-003-DELTA.md)) — RESTful endpoints, RFC 9457 errors, actor gates.
+- **[SPEC-004: Security, Privacy, Governance & Safeguards](docs/SPEC-004-Security-Privacy-and-Governance.md)** — ABAC, IAL-2 step-up assurance, CSPRNG, immutable audit triggers.
+- **[SPEC-005: Architecture & Deployment Specification](docs/SPEC-005-Architecture-and-Deployment.md)** — Modular monolith, zero-build frontend, disaster isolation.
+- **[SPEC-006: UX, Interaction Models & Interface Constraints](docs/SPEC-006-UX-Interaction-and-Interface-Constraints.md)** — Trauma-informed design, 2G/3G network resilience.
+- **[SPEC-007: Engineering QA, Deployment & Gate Testing](docs/SPEC-007-Engineering-QA-and-Gate-Testing.md)** — Zero-dependency test harnesses, QA gate checkpoints.
+
+*(Original `.docx` documents are archived in [`docs/docx/`](docs/docx/))*
 
 ---
 
@@ -219,6 +233,16 @@ For local evaluation and testing, the following responder personas are pre-seede
 
 ```
 familyconnect/
+├── docs/                       # System specifications (SPEC-001 to SPEC-007 in MD & DOCX)
+│   ├── SPEC-001-Product-Requirements.md
+│   ├── SPEC-002-Domain-Model-and-Data.md
+│   ├── SPEC-003-API-Contract-and-Events.md
+│   ├── SPEC-003-DELTA.md
+│   ├── SPEC-004-Security-Privacy-and-Governance.md
+│   ├── SPEC-005-Architecture-and-Deployment.md
+│   ├── SPEC-006-UX-Interaction-and-Interface-Constraints.md
+│   ├── SPEC-007-Engineering-QA-and-Gate-Testing.md
+│   └── docx/                   # Original binary .docx specification documents
 ├── frontend/                   # Client-side static application (<50KB payload)
 │   ├── css/styles.css          # Design system & responsive layout
 │   ├── js/
