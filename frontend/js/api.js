@@ -4,8 +4,12 @@
 // public-facing app stays small over a slow connection.
 
 const API_BASE = window.FC_API_BASE || '/api/v1';
+function getActiveEventId() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('event') || localStorage.getItem('fc_current_event_id') || window.FC_EVENT_ID || 'EVENT-NP-TIBET-2026';
+}
 const urlParams = new URLSearchParams(window.location.search);
-const DISASTER_EVENT_ID = urlParams.get('event') || localStorage.getItem('fc_current_event_id') || window.FC_EVENT_ID || 'EVENT-IN-FL-2026-1187';
+const DISASTER_EVENT_ID = getActiveEventId();
 
 function newIdempotencyKey() {
     // Native UUIDv4, no dependency needed.
@@ -37,7 +41,7 @@ function humaniseProblem(problem, status) {
 async function apiRequest(method, path, { body, idempotent = false, headers = {}, skipTranslation = false } = {}) {
     const reqHeaders = { 'Content-Type': 'application/json', ...headers };
     if (idempotent) reqHeaders['Idempotency-Key'] = newIdempotencyKey();
-    if (!reqHeaders['X-Disaster-Event-ID']) reqHeaders['X-Disaster-Event-ID'] = DISASTER_EVENT_ID;
+    if (!reqHeaders['X-Disaster-Event-ID']) reqHeaders['X-Disaster-Event-ID'] = getActiveEventId();
     if (!reqHeaders['Authorization']) {
         const token = localStorage.getItem('fc_auth_token');
         if (token) reqHeaders['Authorization'] = `Bearer ${token}`;
@@ -51,9 +55,29 @@ async function apiRequest(method, path, { body, idempotent = false, headers = {}
             body: body ? JSON.stringify(body) : undefined,
         });
     } catch (networkErr) {
-        // Genuinely offline / server unreachable — distinct message from a
-        // server-side 503, since the person's next step differs (check
-        // their own connection vs. just retry later).
+        // Genuinely offline / server unreachable: auto-queue write submissions in IndexedDB
+        if (window.FCOfflineQueue && (method === 'POST' || method === 'PUT') && path.startsWith('/submissions')) {
+            try {
+                const queued = await window.FCOfflineQueue.enqueueSubmission({
+                    path,
+                    method,
+                    body,
+                    headers: reqHeaders,
+                    label: path.includes('safety') ? 'Safety Declaration' : 'Missing Person Report'
+                });
+                return {
+                    offline: true,
+                    receiptId: queued.localRef,
+                    caseReference: queued.localRef,
+                    trackingReference: queued.localRef,
+                    processingStatus: 'QUEUED_OFFLINE',
+                    status: 'QUEUED_OFFLINE',
+                    message: "Saved to your device. FamilyConnect will automatically sync this report once your internet connection is restored."
+                };
+            } catch (queueErr) {
+                console.warn("[Offline Queue] Error storing to IndexedDB:", queueErr);
+            }
+        }
         const err = new Error("We can't reach FamilyConnect right now. Check your connection and try again — nothing has been lost.");
         err.offline = true;
         throw err;
@@ -100,12 +124,15 @@ const api = {
     getSubmission: (id) => apiRequest('GET', `/submissions/${encodeURIComponent(id)}`),
     getCase: (ref) => apiRequest('GET', `/cases/${encodeURIComponent(ref)}`),
     getCaseUpdates: (ref) => apiRequest('GET', `/cases/${encodeURIComponent(ref)}/updates`),
-    getAssistanceCentres: () => apiRequest('GET', '/assistance-centres'),
+    getAssistanceCentres: (eventId) => {
+        const eid = eventId || getActiveEventId();
+        return apiRequest('GET', eid ? `/assistance-centres?eventId=${encodeURIComponent(eid)}` : '/assistance-centres');
+    },
     submitAssistanceRequest: (caseRef, body) => apiRequest('POST', `/cases/${encodeURIComponent(caseRef)}/assistance`, {
         body, headers: { 'X-Debug-Actor-Class': 'FAMILY' },
     }),
-    getRumours: (eventId) => apiRequest('GET', `/events/${encodeURIComponent(eventId || DISASTER_EVENT_ID)}/rumours`),
-    submitRumour: (eventId, body) => apiRequest('POST', `/events/${encodeURIComponent(eventId || DISASTER_EVENT_ID)}/rumours`, { body }),
+    getRumours: (eventId) => apiRequest('GET', `/events/${encodeURIComponent(eventId || getActiveEventId())}/rumours`),
+    submitRumour: (eventId, body) => apiRequest('POST', `/events/${encodeURIComponent(eventId || getActiveEventId())}/rumours`, { body }),
     submitDnaRequest: (body) => apiRequest('POST', '/dna/requests', { body, idempotent: true }),
     getDnaRequestStatus: (ref) => apiRequest('GET', `/dna/requests/${encodeURIComponent(ref)}`),
     getDnaQueue: (status) => apiRequest('GET', `/dna/queue${status ? '?status=' + encodeURIComponent(status) : ''}`, { headers: authHeader() }),

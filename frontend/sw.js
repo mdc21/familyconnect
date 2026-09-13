@@ -2,7 +2,7 @@
 // Provides offline fallback for families in low-connectivity disaster zones.
 // Cache strategy: network-first for API calls, cache-first for static assets.
 
-const CACHE_NAME = "familyconnect-v16";
+const CACHE_NAME = "familyconnect-v18";
 const OFFLINE_FALLBACK = '/offline.html';
 
 // Assets to pre-cache on install
@@ -13,11 +13,28 @@ const PRECACHE_ASSETS = [
     '/safe.html',
     '/missing.html',
     '/assistance.html',
+    '/shelters.html',
+    '/water-points.html',
     '/information.html',
+    '/partner-updates.html',
+    '/agencies.html',
     '/guides.html',
+    '/for-authorities.html',
+    '/rumours.html',
+    '/dna-request.html',
+    '/dna.html',
+    '/tunnels.html',
+    '/water-levels.html',
+    '/relief.html',
+    '/report-damage.html',
+    '/console.html',
     '/css/styles.css',
+    '/css/leaflet.css',
     '/js/app.js',
     '/js/api.js',
+    '/js/leaflet.js',
+    '/js/map.js',
+    '/js/offline-queue.js',
 ];
 
 // Install: pre-cache critical assets

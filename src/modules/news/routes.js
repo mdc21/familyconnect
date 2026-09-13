@@ -215,20 +215,39 @@ router.get('/public', async (req, res, next) => {
 
         const result = await pool.query(query, params);
 
-        res.json(result.rows.map(r => ({
-            informationId: r.information_id,
-            title: r.title || r.content.split('\n\n')[0] || 'Event Update',
-            summary: r.summary || r.content.split('\n\n')[1] || r.content,
-            content: r.content,
-            translations: r.translations || r.news_translations || {},
-            sourceName: r.source_name || 'Official Authority',
-            sourceType: r.source_type || 'OFFICIAL_AUTHORITY',
-            sourceUrl: r.source_url || '#',
-            category: r.category || 'RESCUE',
-            verificationStatus: r.verification_status,
-            createdAt: r.created_at,
-            verifiedAt: r.verified_at
-        })));
+        res.json(result.rows.map(r => {
+            let title = r.title;
+            let summary = r.summary;
+            const contentParts = (r.content || '').split('\n\n');
+
+            if (!title) {
+                if (contentParts.length > 1) {
+                    title = contentParts[0].trim();
+                    summary = summary || contentParts.slice(1).join('\n\n').trim();
+                } else {
+                    const categoryLabel = (r.category || 'SITUATION').replace(/_/g, ' ');
+                    title = `${categoryLabel} Bulletin — ${r.source_name || 'Official Authority'}`;
+                    summary = summary || r.content;
+                }
+            } else if (!summary) {
+                summary = r.content;
+            }
+
+            return {
+                informationId: r.information_id,
+                title: title || 'Event Update',
+                summary: summary || r.content || '',
+                content: r.content,
+                translations: r.translations || r.news_translations || {},
+                sourceName: r.source_name || 'Official Authority',
+                sourceType: r.source_type || 'OFFICIAL_AUTHORITY',
+                sourceUrl: r.source_url || '#',
+                category: r.category || 'RESCUE',
+                verificationStatus: r.verification_status,
+                createdAt: r.created_at,
+                verifiedAt: r.verified_at
+            };
+        }));
     } catch (err) {
         next(err);
     }

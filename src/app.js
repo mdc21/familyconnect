@@ -34,6 +34,8 @@ const authRoutes = require('./modules/auth/routes');                    // JWT c
 const orchestratorRoutes = require('./modules/orchestrator/routes');        // Agentic AI Event Orchestrator
 const eventsRoutes = require('./modules/events/routes');
 const aiRoutes = require('./modules/ai/routes');
+const gatewayRoutes = require('./modules/gateways/routes');    // Two-way SMS & WhatsApp Gateway
+const tilesRoutes = require('./modules/tiles/routes');          // Geospatial basemap tile proxy & cache
 
 const path = require('path');
 
@@ -46,7 +48,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
 app.disable('x-powered-by');
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
 
 // ── Security headers ───────────────────────────────────────────────────────
 // SPEC-004 §15 / ICRC humanitarian tech security baseline.
@@ -57,18 +59,23 @@ app.use((req, res, next) => {
     res.set('X-Frame-Options', 'SAMEORIGIN');
     res.set('X-XSS-Protection', '1; mode=block');
     res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-    // Allow fonts from Google, block everything else not from self
+    // Allow fonts from Google, map tiles from OpenStreetMap, block everything else not from self
     res.set('Content-Security-Policy',
         "default-src 'self'; " +
         "font-src 'self' https://fonts.gstatic.com; " +
         "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; " +
         "script-src 'self' 'unsafe-inline'; " +  // unsafe-inline required for inline <script> tags in HTML pages
-        "connect-src 'self'; " +
-        "img-src 'self' data:; " +
+        "connect-src 'self' https://*.tile.openstreetmap.org https://tile.openstreetmap.org https://*.basemaps.cartocdn.com https://basemaps.cartocdn.com; " +
+        "img-src 'self' data: https://*.tile.openstreetmap.org https://tile.openstreetmap.org https://*.basemaps.cartocdn.com https://basemaps.cartocdn.com; " +
         "frame-ancestors 'self';"
     );
     next();
 });
+
+// Route aliases for module paths and alternate page references (prevents 404s)
+app.get(['/dna', '/dna.html', '/family-dna', '/family-dna.html'], (req, res) => res.redirect(301, '/dna-request.html' + (req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '')));
+app.get(['/report-missing', '/report-missing.html'], (req, res) => res.redirect(301, '/missing.html' + (req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '')));
+app.get(['/rescue-sites', '/rescue-sites.html'], (req, res) => res.redirect(301, '/tunnels.html' + (req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '')));
 
 // Serve frontend static files (HTML, CSS, JS, etc.) before API rate limiting
 // extensions: ['html'] allows accessing clean URLs like /partner-updates as well as /partner-updates.html
@@ -87,6 +94,7 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
 // SPEC-003 §1: standard header contracts on every request
 app.use(correlationAndEventContext);
@@ -119,6 +127,8 @@ app.use('/api/v1/organisations', organisationsRoutes); // /organisations/registe
 app.use('/api/v1/tunnels', tunnelsRoutes);            // /tunnels, /tunnels/:siteId/roster, /tunnels/worker-report
 app.use('/api/v1/orchestrator', orchestratorRoutes);  // Autonomous event portal generator & review workflow
 app.use('/api/v1/ai', aiRoutes);                      // AI translation endpoint
+app.use('/api/v1/gateways', gatewayRoutes);            // Two-way SMS & WhatsApp Gateway (Twilio / Meta)
+app.use('/api/v1/tiles', tilesRoutes);                // High-performance geospatial basemap tile cache
 
 // Serve static assets under /console only if request is for CSS, JS, images, or fonts
 app.use('/console', (req, res, next) => {

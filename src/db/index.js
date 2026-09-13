@@ -1,3 +1,9 @@
+try {
+    process.loadEnvFile?.();
+} catch (e) {
+    // .env is optional
+}
+
 const { Pool } = require('pg');
 
 const isLocal = !process.env.DATABASE_URL || 

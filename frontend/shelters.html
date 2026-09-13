@@ -6,6 +6,7 @@
 <title>Temporary shelters — FamilyConnect</title>
 <meta name="description" content="Temporary shelter locations with capacity, services, and operating status.">
 <link rel="stylesheet" href="/css/styles.css">
+<link rel="stylesheet" href="/css/leaflet.css?v=20260913">
 </head>
 <body>
 <header class="site-header">
@@ -59,31 +60,55 @@
 </header>
 
 <main id="main" class="main-content container">
-    <div class="page-header" style="margin-top: 2rem; margin-bottom: 2rem;">
-        <h1>Temporary shelters</h1>
-        <p>Temporary shelter locations with capacity, services, and operating status.</p>
+    <div class="page-header" style="margin-top: 2rem; margin-bottom: 1.5rem;">
+        <h1 data-i18n="sheltersHeading">Evacuation shelters</h1>
+        <p data-i18n="sheltersLede">Temporary shelter locations with capacity, services, and operating status.</p>
     </div>
-    <div class="notice notice-info" style="margin-bottom: 2rem;">
-        <p>Shelter information is updated by relief agencies as conditions change. Contact your local emergency services for the most current availability.</p>
+
+    <!-- View Switcher -->
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.25rem;">
+        <span style="font-size:0.875rem;color:var(--text-muted)" data-i18n="showingShelters">Showing designated emergency relief camps</span>
+        <div class="view-switcher" style="display:inline-flex;border:1px solid var(--border-subtle);border-radius:6px;overflow:hidden;background:white">
+            <button type="button" id="btn-shelter-list" style="padding:0.4rem 0.85rem;font-size:0.82rem;font-weight:600;border:none;background:var(--primary);color:white;cursor:pointer" data-i18n="btnShelterList">📋 List View</button>
+            <button type="button" id="btn-shelter-map" style="padding:0.4rem 0.85rem;font-size:0.82rem;font-weight:600;border:none;background:white;color:var(--text-main);cursor:pointer" data-i18n="btnShelterMap">🗺️ Map View</button>
+        </div>
+    </div>
+
+    <div class="notice notice-info" style="margin-bottom: 1.5rem;">
+        <p data-i18n="shelterNotice">Shelter information is updated by relief agencies as conditions change. Contact your local emergency services for the most current availability.</p>
     </div>
     
+    <div id="shelters-map" style="display:none;height:520px;width:100%;border-radius:6px;border:1px solid var(--border-subtle);margin-bottom:2.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#f1f5f9"></div>
     <div id="shelters-grid" class="assistance-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.25rem; margin-bottom: 4rem;">
     </div>
 </main>
 <footer class="site-footer">
     <div class="container footer-content">
-        <p class="footer-notice-bold">This is a public service humanitarian site.</p>
+        <p class="footer-notice-bold" data-i18n="footerNoticeBold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+        <p data-i18n="footerNoticeEmergency">In an emergency contact the local emergency services. Information shown here always carries its source and verification state. Unverified information is never a confirmation.</p>
+        <p data-i18n="footerNoticeTranslation">Translations are provided to help you understand. Where a translation and the English record differ, coordinators work from the original record, which is language-neutral.</p>
     </div>
 </footer>
 <script src="/js/app.js?v=20260906"></script>
 <script src="/js/api.js?v=20260906"></script>
+<script src="/js/leaflet.js?v=20260913"></script>
+<script src="/js/map.js?v=20260913"></script>
 <script>
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
 const eventShelters = {
     'EVENT-IN-FL-2026-1187': [
         {
             title: 'Nehru Stadium Indoor Relief Shelter — Guwahati',
             status: 'OPEN',
             statusColor: '#166534',
+            lat: 26.1738,
+            lng: 91.7580,
             address: 'Ulubari, Guwahati, Kamrup Metropolitan, Assam',
             capacity: 'Capacity: 1,200 | Current Occupancy: 650',
             available: 'Dry rations, Community kitchen, Medical check-ups, Child-friendly space',
@@ -93,6 +118,8 @@ const eventShelters = {
             title: 'Sivasagar Govt Higher Secondary School Relief Camp',
             status: 'NEAR CAPACITY',
             statusColor: '#92400e',
+            lat: 26.9850,
+            lng: 94.6320,
             address: 'Station Road, Sivasagar Town, Assam',
             capacity: 'Capacity: 450 | Current Occupancy: 410',
             available: 'Safe shelter, Boiled drinking water, Paramedic on site, Mosquito netting',
@@ -102,6 +129,8 @@ const eventShelters = {
             title: 'Goalpara District Sports Complex Evacuation Shelter',
             status: 'OPEN',
             statusColor: '#166534',
+            lat: 26.1720,
+            lng: 90.6280,
             address: 'Bhalukdubi, Goalpara, Assam',
             capacity: 'Capacity: 800 | Current Occupancy: 380',
             available: 'Hot meals, Clean drinking water, Sanitary supplies, Immunization desk',
@@ -113,32 +142,79 @@ const eventShelters = {
             title: 'Melamchi High School Shelter',
             status: 'NEAR CAPACITY',
             statusColor: '#92400e',
+            lat: 27.8310,
+            lng: 85.5820,
             address: 'Melamchi Main Road, Sindhupalchok',
             capacity: 'Capacity: 300 | Current Occupancy: 280',
             available: 'Bedding, basic medical care, hot meals',
             note: 'Families with small children given priority.'
+        },
+        {
+            title: 'Dhunche Community Hall Shelter',
+            status: 'OPEN',
+            statusColor: '#166534',
+            lat: 28.1090,
+            lng: 85.3010,
+            address: 'Dhunche Bazaar, Rasuwa',
+            capacity: 'Capacity: 250 | Current Occupancy: 120',
+            available: 'Heated halls, rations, emergency blankets',
+            note: 'High elevation shelter; warm clothing distribution active.'
         }
     ]
 };
 
 function renderShelters() {
     const urlParams = new URLSearchParams(window.location.search);
-    const eventId = urlParams.get('event') || localStorage.getItem('fc_current_event_id') || 'EVENT-IN-FL-2026-1187';
-    const shelters = eventShelters[eventId] || eventShelters['EVENT-IN-FL-2026-1187'];
+    const eventId = urlParams.get('event') || localStorage.getItem('fc_current_event_id') || 'EVENT-NP-TIBET-2026';
+    const shelters = eventShelters[eventId] || eventShelters['EVENT-NP-TIBET-2026'];
     
     const container = document.getElementById('shelters-grid');
     if (!container) return;
     
+    const tr = (k, def) => (typeof t === 'function' ? t(k) : def) || def;
     container.innerHTML = shelters.map(s => `
         <div style="border: 1px solid var(--border-subtle); background: var(--bg-card); padding: 1.25rem; border-radius: 6px;">
-            <h2 style="margin-top:0; font-size:1.2rem;">${s.title}</h2>
-            <p style="margin: 0.5rem 0;"><strong>Status:</strong> <span style="color: ${s.statusColor}; font-weight: bold;">${s.status}</span></p>
-            <p style="margin: 0.5rem 0;"><strong>Address:</strong> ${s.address}</p>
-            <p style="margin: 0.5rem 0;"><strong>Capacity:</strong> ${s.capacity}</p>
-            <p style="margin: 0.5rem 0;"><strong>Available:</strong> ${s.available}</p>
-            <p style="margin: 0.5rem 0;"><strong>Note:</strong> ${s.note}</p>
+            <h2 style="margin-top:0; font-size:1.2rem;">${escapeHtml(s.title)}</h2>
+            <p style="margin: 0.5rem 0;"><strong>${escapeHtml(tr('lblStatus', 'Status:'))}</strong> <span style="color: ${s.statusColor}; font-weight: bold;">${escapeHtml(s.status)}</span></p>
+            <p style="margin: 0.5rem 0;"><strong>${escapeHtml(tr('lblAddress', 'Address:'))}</strong> ${escapeHtml(s.address)}</p>
+            <p style="margin: 0.5rem 0;"><strong>${escapeHtml(tr('lblCapacity', 'Capacity:'))}</strong> ${escapeHtml(s.capacity)}</p>
+            <p style="margin: 0.5rem 0;"><strong>${escapeHtml(tr('lblAvailable', 'Available:'))}</strong> ${escapeHtml(s.available)}</p>
+            <p style="margin: 0.5rem 0;"><strong>${escapeHtml(tr('lblNote', 'Note:'))}</strong> ${escapeHtml(s.note)}</p>
         </div>
     `).join('');
+
+    // Setup view switcher
+    const btnList = document.getElementById('btn-shelter-list');
+    const btnMap = document.getElementById('btn-shelter-map');
+    const mapEl = document.getElementById('shelters-map');
+
+    if (btnList && btnMap && mapEl) {
+        btnList.addEventListener('click', () => {
+            btnList.style.background = 'var(--primary)';
+            btnList.style.color = 'white';
+            btnMap.style.background = 'white';
+            btnMap.style.color = 'var(--text-main)';
+            container.style.display = 'grid';
+            mapEl.style.display = 'none';
+        });
+
+        btnMap.addEventListener('click', () => {
+            btnMap.style.background = 'var(--primary)';
+            btnMap.style.color = 'white';
+            btnList.style.background = 'white';
+            btnList.style.color = 'var(--text-main)';
+            container.style.display = 'none';
+            mapEl.style.display = 'block';
+
+            if (window.initDisasterMap) {
+                window.initDisasterMap('shelters-map', {
+                    items: shelters,
+                    type: 'shelter',
+                    eventId
+                });
+            }
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', renderShelters);

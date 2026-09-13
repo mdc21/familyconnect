@@ -6,6 +6,7 @@
 <title>Safe water points — FamilyConnect</title>
 <meta name="description" content="Verified safe drinking water sources, distribution points, and purification stations.">
 <link rel="stylesheet" href="/css/styles.css">
+<link rel="stylesheet" href="/css/leaflet.css?v=20260913">
 </head>
 <body>
 <header class="site-header">
@@ -59,31 +60,55 @@
 </header>
 
 <main id="main" class="main-content container">
-    <div class="page-header" style="margin-top: 2rem; margin-bottom: 2rem;">
-        <h1>Safe water points</h1>
-        <p>Verified safe drinking water sources, distribution points, and purification stations.</p>
+    <div class="page-header" style="margin-top: 2rem; margin-bottom: 1.5rem;">
+        <h1 data-i18n="waterHeading">Safe water points</h1>
+        <p data-i18n="waterLede">Verified safe drinking water sources, distribution points, and purification stations.</p>
     </div>
-    <div class="notice notice-info" style="margin-bottom: 2rem;">
-        <p><strong>Never drink untreated water after a flood.</strong> Floodwater carries bacteria, viruses, and chemical contaminants. Use only verified water points or purify water by boiling for at least 1 minute.</p>
+
+    <!-- View Switcher -->
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.25rem;">
+        <span style="font-size:0.875rem;color:var(--text-muted)" data-i18n="showingWater">Showing potable drinking water and tanker distribution points</span>
+        <div class="view-switcher" style="display:inline-flex;border:1px solid var(--border-subtle);border-radius:6px;overflow:hidden;background:white">
+            <button type="button" id="btn-water-list" style="padding:0.4rem 0.85rem;font-size:0.82rem;font-weight:600;border:none;background:var(--primary);color:white;cursor:pointer" data-i18n="btnWaterList">📋 List View</button>
+            <button type="button" id="btn-water-map" style="padding:0.4rem 0.85rem;font-size:0.82rem;font-weight:600;border:none;background:white;color:var(--text-main);cursor:pointer" data-i18n="btnWaterMap">🗺️ Map View</button>
+        </div>
+    </div>
+
+    <div class="notice notice-info" style="margin-bottom: 1.5rem;">
+        <p><strong data-i18n="waterWarningBold">Never drink untreated water after a flood.</strong> <span data-i18n="waterWarningText">Floodwater carries bacteria, viruses, and chemical contaminants. Use only verified water points or purify water by boiling for at least 1 minute.</span></p>
     </div>
     
+    <div id="water-points-map" style="display:none;height:520px;width:100%;border-radius:6px;border:1px solid var(--border-subtle);margin-bottom:2.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#f1f5f9"></div>
     <div id="water-points-grid" class="assistance-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.25rem; margin-bottom: 4rem;">
     </div>
 </main>
 <footer class="site-footer">
     <div class="container footer-content">
-        <p class="footer-notice-bold">This is a public service humanitarian site.</p>
+        <p class="footer-notice-bold" data-i18n="footerNoticeBold">FamilyConnect coordinates information and assistance. It is not a police, medical, forensic or consular authority and does not replace them.</p>
+        <p data-i18n="footerNoticeEmergency">In an emergency contact the local emergency services. Information shown here always carries its source and verification state. Unverified information is never a confirmation.</p>
+        <p data-i18n="footerNoticeTranslation">Translations are provided to help you understand. Where a translation and the English record differ, coordinators work from the original record, which is language-neutral.</p>
     </div>
 </footer>
 <script src="/js/app.js?v=20260906"></script>
 <script src="/js/api.js?v=20260906"></script>
+<script src="/js/leaflet.js?v=20260913"></script>
+<script src="/js/map.js?v=20260913"></script>
 <script>
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
 const eventWaterPoints = {
     'EVENT-IN-FL-2026-1187': [
         {
             title: 'PHE Department & UNICEF Water Station — Guwahati',
-            status: 'OPEN',
+            status: 'POTABLE / OPEN',
             hours: '06:00–22:00 daily',
+            lat: 26.1738,
+            lng: 91.7580,
             address: 'Nehru Stadium Compound, B. Borooah Road, Ulubari, Guwahati',
             available: 'Safe drinking water, Chlorine purification tablets, Hygiene kits',
             note: 'Tanker refills available for community volunteers and relief camps.',
@@ -91,8 +116,10 @@ const eventWaterPoints = {
         },
         {
             title: 'Indian Red Cross Mobile Water Purification Unit — Sivasagar',
-            status: 'OPEN',
+            status: 'POTABLE / OPEN',
             hours: '24/7',
+            lat: 26.9880,
+            lng: 94.6390,
             address: 'Sivasagar Boarding Field Relief Camp, Sivasagar',
             available: 'Purified drinking water, 10L Jerry cans, Water test strips',
             note: 'Priority distribution for elderly, mothers, and infants.',
@@ -100,8 +127,10 @@ const eventWaterPoints = {
         },
         {
             title: 'ASDMA & PHED Clean Water Distribution Point — Goalpara',
-            status: 'OPEN',
+            status: 'POTABLE / OPEN',
             hours: '07:00–20:00 daily',
+            lat: 26.1734,
+            lng: 90.6253,
             address: 'Goalpara Town Hall Compound, Near DC Office',
             available: 'Potable water tankers, Halogen tablets, ORS sachets',
             note: 'Bring clean containers. Water tested hourly by district public health lab.',
@@ -111,8 +140,10 @@ const eventWaterPoints = {
     'EVENT-NP-TIBET-2026': [
         {
             title: 'WFP Water Distribution — Melamchi',
-            status: 'OPEN',
+            status: 'POTABLE / OPEN',
             hours: '08:00–18:00 daily',
+            lat: 27.8310,
+            lng: 85.5820,
             address: 'Melamchi Municipality compound',
             available: 'Safe drinking water, Emergency food rations, Hygiene kits',
             note: 'Priority lane for elderly and disabled.',
@@ -120,8 +151,10 @@ const eventWaterPoints = {
         },
         {
             title: 'Red Cross Purification Station — Dhunche',
-            status: 'OPEN',
+            status: 'POTABLE / OPEN',
             hours: '24/7',
+            lat: 28.1076,
+            lng: 85.2985,
             address: 'Dhunche Central Square',
             available: 'Safe drinking water, Jerry cans',
             note: 'Bring your own containers if possible.',
@@ -132,22 +165,56 @@ const eventWaterPoints = {
 
 function renderWaterPoints() {
     const urlParams = new URLSearchParams(window.location.search);
-    const eventId = urlParams.get('event') || localStorage.getItem('fc_current_event_id') || 'EVENT-IN-FL-2026-1187';
-    const points = eventWaterPoints[eventId] || eventWaterPoints['EVENT-IN-FL-2026-1187'];
+    const eventId = urlParams.get('event') || localStorage.getItem('fc_current_event_id') || 'EVENT-NP-TIBET-2026';
+    const points = eventWaterPoints[eventId] || eventWaterPoints['EVENT-NP-TIBET-2026'];
     
     const container = document.getElementById('water-points-grid');
     if (!container) return;
     
+    const tr = (k, def) => (typeof t === 'function' ? t(k) : def) || def;
     container.innerHTML = points.map(p => `
         <div style="border: 1px solid var(--border-subtle); background: var(--bg-card); padding: 1.25rem; border-radius: 6px;">
-            <h2 style="margin-top:0; font-size:1.2rem;">${p.title}</h2>
-            <p style="margin: 0.5rem 0;"><strong>Status:</strong> <span style="color: #166534; font-weight: bold;">${p.status}</span> (${p.hours})</p>
-            <p style="margin: 0.5rem 0;"><strong>Address:</strong> ${p.address}</p>
-            <p style="margin: 0.5rem 0;"><strong>Available:</strong> ${p.available}</p>
-            <p style="margin: 0.5rem 0;"><strong>Note:</strong> ${p.note}</p>
-            <p style="margin: 0.5rem 0;"><strong>Contact:</strong> <a href="tel:${p.contact}" style="color:var(--primary); font-weight:600;">${p.contact}</a></p>
+            <h2 style="margin-top:0; font-size:1.2rem;">${escapeHtml(p.title)}</h2>
+            <p style="margin: 0.5rem 0;"><strong>${escapeHtml(tr('lblStatus', 'Status:'))}</strong> <span style="color: #166534; font-weight: bold;">${escapeHtml(p.status)}</span> (${escapeHtml(p.hours)})</p>
+            <p style="margin: 0.5rem 0;"><strong>${escapeHtml(tr('lblAddress', 'Address:'))}</strong> ${escapeHtml(p.address)}</p>
+            <p style="margin: 0.5rem 0;"><strong>${escapeHtml(tr('lblAvailable', 'Available:'))}</strong> ${escapeHtml(p.available)}</p>
+            <p style="margin: 0.5rem 0;"><strong>${escapeHtml(tr('lblNote', 'Note:'))}</strong> ${escapeHtml(p.note)}</p>
+            <p style="margin: 0.5rem 0;"><strong>${escapeHtml(tr('lblContact', 'Contact:'))}</strong> <a href="tel:${escapeHtml(p.contact)}" style="color:var(--primary); font-weight:600;">${escapeHtml(p.contact)}</a></p>
         </div>
     `).join('');
+
+    // Setup view switcher
+    const btnList = document.getElementById('btn-water-list');
+    const btnMap = document.getElementById('btn-water-map');
+    const mapEl = document.getElementById('water-points-map');
+
+    if (btnList && btnMap && mapEl) {
+        btnList.addEventListener('click', () => {
+            btnList.style.background = 'var(--primary)';
+            btnList.style.color = 'white';
+            btnMap.style.background = 'white';
+            btnMap.style.color = 'var(--text-main)';
+            container.style.display = 'grid';
+            mapEl.style.display = 'none';
+        });
+
+        btnMap.addEventListener('click', () => {
+            btnMap.style.background = 'var(--primary)';
+            btnMap.style.color = 'white';
+            btnList.style.background = 'white';
+            btnList.style.color = 'var(--text-main)';
+            container.style.display = 'none';
+            mapEl.style.display = 'block';
+
+            if (window.initDisasterMap) {
+                window.initDisasterMap('water-points-map', {
+                    items: points,
+                    type: 'water',
+                    eventId
+                });
+            }
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', renderWaterPoints);

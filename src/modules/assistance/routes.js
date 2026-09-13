@@ -14,7 +14,7 @@ router.get('/', publicReadLimiter, async (req, res, next) => {
     try {
         const eventId = req.query.eventId || req.disasterEventId;
         const result = await pool.query(
-            `SELECT ac.centre_id, ac.name, ac.location, ac.opening_hours, ac.services, ac.languages,
+            `SELECT ac.centre_id, ac.event_id, ac.name, ac.location, ac.opening_hours, ac.services, ac.languages,
                     ac.accessibility, ac.emergency_contact, ac.operational_status,
                     o.name AS organisation_name, o.organisation_type
              FROM assistance_centre ac
@@ -24,9 +24,11 @@ router.get('/', publicReadLimiter, async (req, res, next) => {
              ORDER BY ac.operational_status, ac.name`,
             [eventId || null],
         );
+        res.set('Vary', 'X-Disaster-Event-ID, Accept-Language');
         res.set('Cache-Control', 'public, max-age=300'); // SPEC-005 §4 low-bandwidth caching
         res.json(result.rows.map((r) => ({
             centreId: r.centre_id,
+            eventId: r.event_id,
             name: r.name,
             location: r.location,
             openingHours: r.opening_hours,
