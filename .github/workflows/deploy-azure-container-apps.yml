@@ -77,6 +77,14 @@ jobs:
 
       - name: Deploy Revision to Azure Container Apps
         run: |
+          az acr update --name ${{ secrets.AZURE_ACR_NAME }} --admin-enabled true
+          ACR_PASSWORD=$(az acr credential show --name ${{ secrets.AZURE_ACR_NAME }} --query "passwords[0].value" -o tsv)
+          az containerapp registry set \
+            --name familyconnect \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP || 'rg-familyconnect-pilot' }} \
+            --server ${{ secrets.AZURE_ACR_NAME }}.azurecr.io \
+            --username ${{ secrets.AZURE_ACR_NAME }} \
+            --password "$ACR_PASSWORD"
           az containerapp update \
             --name familyconnect \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP || 'rg-familyconnect-pilot' }} \
