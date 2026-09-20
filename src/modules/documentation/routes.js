@@ -36,6 +36,14 @@ async function verifyFamilyAccess(familyUnitId, req) {
 }
 
 /**
+ * GET /api/v1/families/documentation/templates
+ * Public guidance templates for legal and civil registration processes.
+ */
+router.get('/documentation/templates', (req, res) => {
+    res.json({ templates: getAllTemplates() });
+});
+
+/**
  * GET /api/v1/families/:familyId/documentation
  * Retrieves active documentation processes for the family.
  * If none exist, initializes default templates (e.g. Nepali Death Certificate and Citizenship Restoration).

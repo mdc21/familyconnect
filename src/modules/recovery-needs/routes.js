@@ -53,7 +53,65 @@ router.post('/submissions/recovery-needs', async (req, res, next) => {
     }
 });
 
-// 2. GET /api/v1/recovery-needs/:id — Retrieve permitted need details
+// 2a. GET /api/v1/recovery-needs — Query recovery needs with status & locality filters
+router.get('/recovery-needs', async (req, res, next) => {
+    try {
+        const { status, category, community_id, eventId } = req.query;
+        const isPrivileged = req.actor && ['CASE_WORKER', 'AUTHORITY', 'ADMIN'].includes(req.actor.actorClass);
+        
+        let query = 'SELECT * FROM recovery_need WHERE 1=1';
+        const params = [];
+
+        // Shield disputed/restricted needs from general public (SPEC-004 & SPEC-008)
+        if (!isPrivileged) {
+            query += " AND (data_sharing_status IS NULL OR data_sharing_status != 'RESTRICTED_PENDING_REVIEW')";
+        }
+
+        if (status && status !== 'ALL') {
+            params.push(status);
+            query += ` AND status = $${params.length}`;
+        }
+        if (category) {
+            params.push(category);
+            query += ` AND category = $${params.length}`;
+        }
+        if (community_id) {
+            params.push(community_id);
+            query += ` AND (location->>'communityId' = $${params.length} OR location->>'district' = $${params.length})`;
+        }
+        if (eventId) {
+            params.push(eventId);
+            query += ` AND event_id = $${params.length}`;
+        }
+
+        query += ' ORDER BY created_at DESC LIMIT 100';
+
+        const result = await pool.query(query, params);
+        res.json({
+            needs: result.rows.map(r => ({
+                needId: r.need_id,
+                needReference: r.need_id.substring(0, 8).toUpperCase(),
+                eventId: r.event_id,
+                category: r.category,
+                status: r.status,
+                verificationState: r.verification_state,
+                dataSharingStatus: r.data_sharing_status,
+                urgency: r.severity || 'MEDIUM',
+                title: r.category ? r.category.replace(/_/g, ' ') : 'Community Recovery Need',
+                description: r.narrative,
+                location: r.location,
+                locality: r.location?.district || r.location?.address || 'Affected Zone',
+                affectedPopulation: r.affected_population,
+                createdAt: r.created_at,
+                updatedAt: r.updated_at
+            }))
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// 2b. GET /api/v1/recovery-needs/:id — Retrieve permitted need details
 router.get('/recovery-needs/:id', async (req, res, next) => {
     try {
         const result = await pool.query(

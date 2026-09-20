@@ -168,9 +168,30 @@ const api = {
     getMe: () => apiRequest('GET', '/auth/me', { headers: authHeader() }),
     // Visitor Analytics (SPEC-004)
     getVisitorOverview: (eventId) => apiRequest('GET', `/analytics/overview${eventId ? '?eventId=' + encodeURIComponent(eventId) : ''}`),
-    // SPEC-008 Community Recovery (M3)
+    // SPEC-008 Community Recovery (M3, M8, M6, M1, M10)
     getCommunities: (eventId) => apiRequest('GET', `/communities${eventId ? '?eventId=' + encodeURIComponent(eventId) : ''}`),
     getCommunityRecoverySummary: (communityId) => apiRequest('GET', `/communities/${encodeURIComponent(communityId)}/recovery-summary`),
+    getRecoveryProjects: (params) => apiRequest('GET', `/recovery-projects${params ? '?' + new URLSearchParams(params).toString() : ''}`, { headers: authHeader() }),
+    getRecoveryProject: (id) => apiRequest('GET', `/recovery-projects/${encodeURIComponent(id)}`, { headers: authHeader() }),
+    createRecoveryProject: (body) => apiRequest('POST', '/recovery-projects', { body, headers: authHeader() }),
+    createRecoveryTask: (projectId, body) => apiRequest('POST', `/recovery-projects/${encodeURIComponent(projectId)}/tasks`, { body, headers: authHeader() }),
+    submitResourceOffer: (body) => apiRequest('POST', '/resources/offers', { body }),
+    getResourceOffers: (params) => apiRequest('GET', `/resources/offers${params ? '?' + new URLSearchParams(params).toString() : ''}`, { headers: authHeader() }),
+    generateResourceMatchProposal: (offerId, body) => apiRequest('POST', `/resources/offers/${encodeURIComponent(offerId)}/match-proposal`, { body, headers: authHeader() }),
+    decideResourceMatch: (offerId, body) => apiRequest('POST', `/resources/offers/${encodeURIComponent(offerId)}/match-decision`, { body, headers: authHeader() }),
+    getRecoveryNeeds: (params) => apiRequest('GET', `/recovery-needs${params ? '?' + new URLSearchParams(params).toString() : ''}`, { headers: authHeader() }),
+    verifyRecoveryNeed: (needId, body) => apiRequest('POST', `/recovery-needs/${encodeURIComponent(needId)}/verify`, { body, headers: authHeader() }),
+    disputeRecoveryNeed: (needId, body) => apiRequest('POST', `/recovery-needs/${encodeURIComponent(needId)}/dispute`, { body, headers: authHeader() }),
+    verifyOrganisation: (orgId) => apiRequest('POST', `/organisations/${encodeURIComponent(orgId)}/verify`, { headers: authHeader() }),
+    getAllOrganisations: (params) => apiRequest('GET', `/organisations${params ? '?' + new URLSearchParams(params).toString() : ''}`, { headers: authHeader() }),
+    getDocumentationTemplates: () => apiRequest('GET', '/families/documentation/templates'),
+    // SPEC-009 & SPEC-010 AI Governance & Fleet Management
+    getAiProposals: (params) => apiRequest('GET', `/ai/proposals${params ? '?' + new URLSearchParams(params).toString() : ''}`, { headers: authHeader() }),
+    getAiProposal: (id) => apiRequest('GET', `/ai/proposals/${encodeURIComponent(id)}`, { headers: authHeader() }),
+    decideAiProposal: (id, body) => apiRequest('POST', `/ai/proposals/${encodeURIComponent(id)}/decision`, { body, headers: authHeader() }),
+    getAiAgents: () => apiRequest('GET', '/ai/agents', { headers: authHeader() }),
+    suspendAiAgent: (id, body) => apiRequest('POST', `/ai/agents/${encodeURIComponent(id)}/suspend`, { body, headers: authHeader() }),
+    reinstateAiAgent: (id, body) => apiRequest('POST', `/ai/agents/${encodeURIComponent(id)}/reinstate`, { body, headers: authHeader() }),
 };
 
 function authHeader() {

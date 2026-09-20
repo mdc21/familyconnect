@@ -176,6 +176,20 @@ router.post('/proposals/:id/decision', requireActor('CASE_WORKER', 'AUTHORITY', 
     }
 });
 
+// 4b. GET /api/v1/ai/agents — List all registered agents with fleet status
+router.get('/agents', requireActor('CASE_WORKER', 'AUTHORITY', 'ADMIN'), async (req, res, next) => {
+    try {
+        const result = await pool.query(
+            `SELECT agent_id, agent_role, agent_role AS agent_class, scoped_permissions, max_proposal_rate, max_proposal_rate AS max_rate_per_hour, status, suspended_by, suspended_at, created_at 
+             FROM agent_identity 
+             ORDER BY agent_id ASC`
+        );
+        res.json({ agents: result.rows });
+    } catch (err) {
+        next(err);
+    }
+});
+
 // 5. POST /api/v1/ai/agents/:id/suspend — Emergency kill switch (ADMIN only)
 router.post('/agents/:id/suspend', requireActor('ADMIN'), requireAssuranceLevel('IAL-2'), async (req, res, next) => {
     try {

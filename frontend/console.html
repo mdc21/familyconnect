@@ -260,6 +260,8 @@
         <a class="console-tab" href="/console/sources" data-route="sources">📰 AI News &amp; Sources</a>
         <a class="console-tab" href="/console/audit" data-route="audit">📜 Audit Trail</a>
         <a class="console-tab" href="/console/organisations" data-route="organisations">🏢 Organisations</a>
+        <a class="console-tab" href="/console/recovery" data-route="recovery">🏗️ Recovery &amp; Projects</a>
+        <a class="console-tab" href="/console/ai-governance" data-route="ai-governance">🤖 AI Fleet &amp; Governance</a>
         <a class="console-tab" href="/console/assistance-centres" data-route="assistance-centres">🏥 Assistance Centres</a>
         <a class="console-tab" href="/console/rumours" data-route="rumours">🗣️ Rumours &amp; Misinfo</a>
         <a class="console-tab" href="/console/admin" data-route="admin">⚙️ Admin &amp; Roles</a>
@@ -403,12 +405,39 @@
     <!-- 7. AI NEWS & SOURCES VIEW -->
     <div class="tab-panel" id="view-sources">
         <div class="panel-header">
-            <h2 style="margin:0">AI News Collector &amp; Source Monitoring</h2>
+            <div>
+                <h2 style="margin:0">AI News Collector &amp; Source Monitoring</h2>
+                <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--text-muted)">
+                    Autonomous feed ingestion, veracity scoring, and human-in-the-loop verification hub.
+                </p>
+            </div>
             <div style="display:flex;gap:0.5rem;align-items:center">
-                <button class="btn-outline" onclick="triggerNewsAgent()" style="font-size:0.875rem">⚡ Run AI Collector Now</button>
+                <button id="btn-run-collector" class="btn-outline" onclick="triggerNewsAgent()" style="font-size:0.875rem">⚡ Run AI Collector Now</button>
                 <button class="btn-primary" onclick="loadNewsQueue()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
             </div>
         </div>
+
+        <!-- Schedule & Telemetry Card -->
+        <div id="news-schedule-card" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:0.85rem 1rem;margin-bottom:1rem;display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center;font-size:0.85rem;">
+            <div><span style="color:var(--text-muted);display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Active Agent</span><strong id="sched-agent-id">NEPAL_TIBET_GLOF_AGENT</strong></div>
+            <div><span style="color:var(--text-muted);display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Schedule Phase</span><span id="sched-phase" class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:700;">WEEK_1 (6h)</span></div>
+            <div><span style="color:var(--text-muted);display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Last Crawl</span><span id="sched-last-run">—</span></div>
+            <div><span style="color:var(--text-muted);display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Next Scheduled Run</span><span id="sched-next-run">—</span></div>
+            <div><span style="color:var(--text-muted);display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Total Ingested</span><strong id="sched-ingested-count">0</strong></div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+            <div style="display:flex;align-items:center;gap:0.5rem">
+                <label for="news-status-filter" style="font-size:0.85rem;font-weight:600;color:var(--text-muted)">Show Queue:</label>
+                <select id="news-status-filter" onchange="loadNewsQueue()" style="padding:0.35rem 0.6rem;font-size:0.85rem;border-radius:4px;border:1px solid var(--border-subtle);background:white;">
+                    <option value="PENDING_REVIEW">Pending Review (Action Required)</option>
+                    <option value="PUBLISHED">Published &amp; Verified Updates</option>
+                    <option value="ALL">All Collected Feed Items</option>
+                </select>
+            </div>
+            <span id="news-queue-badge" class="badge" style="font-size:0.75rem;background:#f1f5f9;color:var(--text-muted)">Loading items…</span>
+        </div>
+
         <div id="news-queue-container"><p style="color:var(--text-muted)">Loading news queue…</p></div>
     </div>
 
@@ -492,6 +521,89 @@
         </table>
     </div>
 
+    <!-- 15. RECOVERY & PROJECTS VIEW (SPEC-008 M1, M8, M6) -->
+    <div class="tab-panel" id="view-recovery">
+        <div class="panel-header">
+            <div>
+                <h2 style="margin:0">🏗️ Community Recovery &amp; Reconstruction Coordination</h2>
+                <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--text-muted);">
+                    Triage community recovery needs, manage civil reconstruction projects, and inspect resource matches.
+                </p>
+            </div>
+            <div style="display:flex;gap:0.5rem">
+                <button class="btn-outline" onclick="openNewProjectModal()" style="font-size:0.875rem">+ New Recovery Project</button>
+                <button class="btn-primary" onclick="loadRecoveryView()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;border-bottom:1px solid var(--border-subtle);padding-bottom:0.5rem;">
+            <button id="tab-btn-rec-needs" class="guidance-tab-btn active" onclick="switchRecoverySubTab('needs')">Community Needs Triage</button>
+            <button id="tab-btn-rec-projects" class="guidance-tab-btn" onclick="switchRecoverySubTab('projects')">Reconstruction Projects &amp; Tasks</button>
+            <button id="tab-btn-rec-resources" class="guidance-tab-btn" onclick="switchRecoverySubTab('resources')">Available Resource Offers</button>
+        </div>
+
+        <!-- Subtab 1: Needs Triage -->
+        <div id="subtab-recovery-needs">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.5rem">
+                    <label for="recovery-needs-filter" style="font-size:0.85rem;font-weight:600;color:var(--text-muted)">Need Status:</label>
+                    <select id="recovery-needs-filter" onchange="loadRecoveryNeeds()" style="padding:0.35rem 0.6rem;font-size:0.85rem;border-radius:4px;border:1px solid var(--border-subtle);background:white;">
+                        <option value="ALL">All Recovery Needs</option>
+                        <option value="REPORTED">Reported / Unverified</option>
+                        <option value="VERIFIED">Verified Needs</option>
+                        <option value="ASSIGNED">Assigned / In Progress</option>
+                        <option value="RESTRICTED_PENDING_REVIEW">Disputed / Under Review</option>
+                    </select>
+                </div>
+                <span id="recovery-needs-badge" class="badge" style="background:#f1f5f9;font-size:0.75rem">Loading needs…</span>
+            </div>
+            <div id="recovery-needs-container"><p style="color:var(--text-muted)">Loading recovery needs…</p></div>
+        </div>
+
+        <!-- Subtab 2: Projects & Tasks -->
+        <div id="subtab-recovery-projects" style="display:none;">
+            <div id="recovery-projects-admin-container"><p style="color:var(--text-muted)">Loading projects…</p></div>
+        </div>
+
+        <!-- Subtab 3: Resource Offers -->
+        <div id="subtab-recovery-resources" style="display:none;">
+            <div id="recovery-resources-admin-container"><p style="color:var(--text-muted)">Loading resource offers…</p></div>
+        </div>
+    </div>
+
+    <!-- 16. AI FLEET & GOVERNANCE VIEW (SPEC-009 & SPEC-010) -->
+    <div class="tab-panel" id="view-ai-governance">
+        <div class="panel-header">
+            <div>
+                <h2 style="margin:0">🤖 Autonomous AI Fleet &amp; Governance Hub</h2>
+                <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--text-muted);">
+                    Multi-agent runtime oversight (A01–A05), kill-switch authority controls, and human-in-the-loop proposal verification.
+                </p>
+            </div>
+            <button class="btn-primary" onclick="loadAiGovernanceView()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh Fleet</button>
+        </div>
+
+        <!-- Agent Fleet Status Grid -->
+        <h3 style="margin:1rem 0 0.5rem 0;font-size:1.05rem;">Active Autonomous Agents</h3>
+        <div id="ai-agents-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;margin-bottom:1.5rem;">
+            <p style="color:var(--text-muted)">Loading agent fleet status…</p>
+        </div>
+
+        <!-- Human-in-the-Loop Proposal Queue -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+            <div>
+                <h3 style="margin:0;font-size:1.05rem;">Human-in-the-Loop AI Proposals Queue</h3>
+                <small style="color:var(--text-muted)">Review and authorize autonomous matching proposals, consolidations, or system policy updates</small>
+            </div>
+            <select id="ai-proposal-filter" onchange="loadAiProposals()" style="padding:0.35rem 0.6rem;font-size:0.85rem;border-radius:4px;border:1px solid var(--border-subtle);background:white;">
+                <option value="ALL">All Proposals</option>
+                <option value="APPROVED">Approved Decisions</option>
+                <option value="REJECTED">Rejected Proposals</option>
+            </select>
+        </div>
+        <div id="ai-proposals-container"><p style="color:var(--text-muted)">Loading AI proposals queue…</p></div>
+    </div>
+
     <!-- 14. AGENTIC AI EVENT ORCHESTRATOR VIEW -->
     <div class="tab-panel" id="view-orchestrator">
         <div class="panel-header">
@@ -564,6 +676,65 @@
             <button class="btn-outline" onclick="closeDnaModal()">Cancel</button>
             <button class="btn-primary" onclick="submitDnaUpdate()">Update</button>
         </div>
+    </div>
+</div>
+
+<!-- NEW RECOVERY PROJECT MODAL (M8) -->
+<div id="new-project-modal" class="modal-overlay" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);display:none;align-items:center;justify-content:center;z-index:1000;padding:1rem;">
+    <div style="background:#ffffff;border-radius:8px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;box-shadow:0 10px 25px rgba(0,0,0,0.15);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;border-bottom:1px solid #e2e8f0;padding-bottom:0.5rem;">
+            <h3 style="margin:0;font-size:1.15rem;">Create Reconstruction / Recovery Project</h3>
+            <button type="button" onclick="closeNewProjectModal()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#64748b;">&times;</button>
+        </div>
+        <form id="new-project-form" onsubmit="submitNewProject(event)">
+            <div style="margin-bottom:0.75rem">
+                <label for="proj-title" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Project Title *</label>
+                <input type="text" id="proj-title" required placeholder="e.g. Dhunche Trishuli Bridge Restoration" style="width:100%;padding:0.45rem 0.6rem;font-size:0.9rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">
+                <div>
+                    <label for="proj-community-id" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Community / Locality *</label>
+                    <select id="proj-community-id" required style="width:100%;padding:0.45rem 0.6rem;font-size:0.85rem;border:1px solid #cbd5e1;border-radius:4px;background:white;box-sizing:border-box;">
+                        <option value="comm-rasuwa-dhunche">Dhunche Bazaar (Rasuwa)</option>
+                        <option value="comm-sindhupalchok-chautara">Chautara (Sindhupalchok)</option>
+                        <option value="comm-langtang-kyangjin">Kyangjin Gomba (Langtang)</option>
+                        <option value="comm-assam-guwahati">Guwahati Riverfront (Kamrup)</option>
+                        <option value="comm-assam-goalpara">Goalpara Town (Goalpara)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="proj-visibility" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Visibility Tier *</label>
+                    <select id="proj-visibility" required style="width:100%;padding:0.45rem 0.6rem;font-size:0.85rem;border:1px solid #cbd5e1;border-radius:4px;background:white;box-sizing:border-box;">
+                        <option value="PUBLIC">PUBLIC (Transparency Portal)</option>
+                        <option value="CONTROLLED">CONTROLLED (Coordinating Agencies)</option>
+                        <option value="RESTRICTED">RESTRICTED (Authorities Only)</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-bottom:0.75rem">
+                <label for="proj-objective" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Objective &amp; Scope *</label>
+                <textarea id="proj-objective" required rows="2" placeholder="Civil rehabilitation objectives and geographic scope..." style="width:100%;padding:0.45rem 0.6rem;font-size:0.85rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;"></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">
+                <div>
+                    <label for="proj-budget-ref" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Budget Ref / Ledger ID</label>
+                    <input type="text" id="proj-budget-ref" placeholder="e.g. MOF-DRF-2026-081" style="width:100%;padding:0.45rem 0.6rem;font-size:0.85rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
+                </div>
+                <div>
+                    <label for="proj-budget-amount" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Approved Budget Amount (NPR)</label>
+                    <input type="number" id="proj-budget-amount" placeholder="e.g. 4500000" style="width:100%;padding:0.45rem 0.6rem;font-size:0.85rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
+                </div>
+            </div>
+            <div style="margin-bottom:0.75rem">
+                <label for="proj-milestones" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Milestones (comma separated)</label>
+                <input type="text" id="proj-milestones" placeholder="e.g. Debris clearing, Abutment repair, Deck installation, Safety certification" style="width:100%;padding:0.45rem 0.6rem;font-size:0.85rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
+            </div>
+            <div id="proj-result-msg" style="margin-bottom:0.75rem"></div>
+            <div style="display:flex;justify-content:flex-end;gap:0.5rem">
+                <button type="button" class="btn-outline" onclick="closeNewProjectModal()" style="padding:0.45rem 0.85rem;font-size:0.85rem;">Cancel</button>
+                <button type="submit" id="btn-save-project" class="btn-primary" style="padding:0.45rem 1.1rem;font-size:0.85rem;">Create Project</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -675,6 +846,8 @@ function switchTab(route) {
     if (route === 'sources') loadNewsQueue();
     if (route === 'audit') loadAuditTrail();
     if (route === 'organisations') loadOrganisations();
+    if (route === 'recovery') loadRecoveryView();
+    if (route === 'ai-governance') loadAiGovernanceView();
     if (route === 'assistance-centres') loadAssistanceCentres();
     if (route === 'rumours') loadRumours();
     if (route === 'admin') loadAdmin();
@@ -949,30 +1122,78 @@ async function loadSafeguarding() {
 }
 
 // ── 7. SOURCES & NEWS QUEUE VIEW ──────────────
+async function loadNewsSchedule() {
+    try {
+        const sched = await api.getNewsSchedule();
+        if (sched) {
+            const agentEl = document.getElementById('sched-agent-id');
+            const phaseEl = document.getElementById('sched-phase');
+            const lastRunEl = document.getElementById('sched-last-run');
+            const nextRunEl = document.getElementById('sched-next-run');
+            const countEl = document.getElementById('sched-ingested-count');
+            if (agentEl) agentEl.textContent = sched.agentId || 'AI_NEWS_AGENT';
+            if (phaseEl) phaseEl.textContent = `${sched.currentPhase || 'ACTIVE'} (${sched.intervalHours || 6}h)`;
+            if (lastRunEl) lastRunEl.textContent = sched.lastRunAt ? formatDate(sched.lastRunAt) : 'Never';
+            if (nextRunEl) nextRunEl.textContent = sched.nextRunAt ? formatDate(sched.nextRunAt) : 'On Demand';
+            if (countEl) countEl.textContent = sched.itemsIngestedCount || 0;
+        }
+    } catch (err) {
+        console.warn('Could not load news agent schedule:', err);
+    }
+}
+
 async function loadNewsQueue() {
     const c = document.getElementById('news-queue-container');
+    const badge = document.getElementById('news-queue-badge');
+    const filterEl = document.getElementById('news-status-filter');
+    const statusFilter = filterEl ? filterEl.value : 'PENDING_REVIEW';
+
     c.innerHTML = '<p style="color:var(--text-muted)">Loading AI collector queue…</p>';
+    loadNewsSchedule();
+
     try {
-        const data = await api.getNewsQueue('PENDING_REVIEW');
+        const data = await api.getNewsQueue(statusFilter);
+        if (badge) badge.textContent = `${(data || []).length} item${(data || []).length === 1 ? '' : 's'} (${statusFilter.replace(/_/g, ' ')})`;
+
         if (!data || !data.length) {
-            c.innerHTML = '<p class="notice notice-info">No pending news items requiring review.</p>';
+            c.innerHTML = statusFilter === 'PENDING_REVIEW'
+                ? '<p class="notice notice-info">No pending news items requiring review. Click "Run AI Collector Now" to check for fresh situational telemetry.</p>'
+                : `<p class="notice notice-info">No news items found with status '${escapeHtml(statusFilter)}'.</p>`;
             return;
         }
         c.innerHTML = `<table class="queue-table">
-            <thead><tr><th>Headline</th><th>Source</th><th>Category</th><th>Fetched</th><th>Action</th></tr></thead>
+            <thead><tr><th>Headline &amp; Telemetry</th><th>Source</th><th>Category</th><th>Status / Action</th></tr></thead>
             <tbody>
-            ${data.map(item => `<tr>
-                <td><strong>${escapeHtml(item.title || item.headline || 'Update')}</strong><br><small style="color:var(--text-muted)">${escapeHtml(item.summary ? item.summary.substring(0, 110) + '…' : '')}</small></td>
-                <td>${escapeHtml(item.sourceName || item.sourceType || '—')}</td>
-                <td>${escapeHtml(item.category || '—')}</td>
-                <td style="white-space:nowrap">${formatDate(item.fetchedAt || item.createdAt)}</td>
-                <td style="display:flex;gap:0.25rem">
-                    <button class="btn-primary" style="font-size:0.75rem;padding:0.2rem 0.5rem"
-                        onclick="reviewItem('${item.newsId || item.newsItemId || item.id}','PUBLISH_VERIFIED')">✓ Verify</button>
-                    <button class="btn-outline" style="font-size:0.75rem;padding:0.2rem 0.5rem"
-                        onclick="reviewItem('${item.newsId || item.newsItemId || item.id}','REJECT')">✗ Reject</button>
-                </td>
-            </tr>`).join('')}
+            ${data.map(item => {
+                let actionHtml = '';
+                if (item.status === 'PENDING_REVIEW') {
+                    actionHtml = `
+                        <div style="display:flex;gap:0.35rem">
+                            <button class="btn-primary" style="font-size:0.75rem;padding:0.25rem 0.55rem"
+                                onclick="reviewItem('${item.newsId || item.newsItemId || item.id}','PUBLISH_VERIFIED')">✓ Verify &amp; Publish</button>
+                            <button class="btn-outline" style="font-size:0.75rem;padding:0.25rem 0.55rem"
+                                onclick="reviewItem('${item.newsId || item.newsItemId || item.id}','REJECT')">✗ Reject</button>
+                        </div>
+                    `;
+                } else if (item.status === 'PUBLISHED') {
+                    actionHtml = `<span class="status-pill pill-VERIFIED">✓ PUBLISHED</span><br><small style="color:var(--text-muted);font-size:0.72rem">Live on Public Feed</small>`;
+                } else if (item.status === 'REJECTED') {
+                    actionHtml = `<span class="status-pill pill-REJECTED">✗ REJECTED</span>`;
+                } else {
+                    actionHtml = `<span class="badge">${escapeHtml(item.status)}</span>`;
+                }
+
+                return `<tr>
+                    <td>
+                        <strong>${escapeHtml(item.title || item.headline || 'Update')}</strong><br>
+                        <small style="color:var(--text-muted)">${escapeHtml(item.summary ? item.summary.substring(0, 140) + '…' : '')}</small><br>
+                        <small style="color:var(--text-muted);font-size:0.75rem">Credibility score: <strong>${Math.round((item.credibilityScore || 0.9) * 100)}%</strong> • Fetched: ${formatDate(item.fetchedAt || item.createdAt)}</small>
+                    </td>
+                    <td>${escapeHtml(item.sourceName || item.sourceType || '—')}</td>
+                    <td><span class="badge" style="background:#f1f5f9;font-size:0.75rem">${escapeHtml(item.category || 'GENERAL')}</span></td>
+                    <td style="white-space:nowrap;vertical-align:middle">${actionHtml}</td>
+                </tr>`;
+            }).join('')}
             </tbody>
         </table>`;
     } catch (err) {
@@ -981,11 +1202,30 @@ async function loadNewsQueue() {
 }
 
 async function triggerNewsAgent() {
+    const btn = document.getElementById('btn-run-collector');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Running collector…';
+    }
     try {
-        await api.runNewsAgent();
-        alert('AI Collector cycle completed.');
-        loadNewsQueue();
-    } catch (err) { alert(err.message); }
+        const res = await api.runNewsAgent();
+        const msg = res?.message || `AI Collector cycle completed. Ingested ${res?.insertedCount || 0} updates.`;
+        alert(msg);
+        // Switch filter to PENDING_REVIEW if new items arrived
+        const filterEl = document.getElementById('news-status-filter');
+        if (filterEl && res?.insertedCount > 0) {
+            filterEl.value = 'PENDING_REVIEW';
+        }
+        await loadNewsSchedule();
+        await loadNewsQueue();
+    } catch (err) {
+        alert('AI Collector failed: ' + err.message);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = '⚡ Run AI Collector Now';
+        }
+    }
 }
 
 async function reviewItem(id, verdict) {
@@ -1032,21 +1272,47 @@ async function loadOrganisations() {
     const c = document.getElementById('organisations-container');
     c.innerHTML = '<p style="color:var(--text-muted)">Loading organisations…</p>';
     try {
-        const orgs = await api.getActiveAgencies();
+        let orgs = [];
+        try {
+            const res = await api.getAllOrganisations({ status: 'ALL' });
+            orgs = res.organisations || [];
+        } catch (e) {
+            orgs = await api.getActiveAgencies();
+        }
+
         if (!orgs.length) {
             c.innerHTML = '<p class="notice notice-info">No partner organisations found.</p>';
             return;
         }
         c.innerHTML = `<table class="queue-table">
-            <thead><tr><th>Organisation Name</th><th>Type</th><th>Country</th><th>Assistance Centres</th><th>Updates Published</th></tr></thead>
+            <thead><tr><th>Organisation Name</th><th>Status</th><th>Capabilities</th><th>Scope</th><th>Admin Gate</th></tr></thead>
             <tbody>
-            ${orgs.map(o => `<tr>
-                <td><strong>${escapeHtml(o.organisationName)}</strong></td>
-                <td><span class="status-pill pill-VERIFIED">${escapeHtml(o.orgType)}</span></td>
-                <td>${escapeHtml(o.country)}</td>
-                <td>${o.centreCount} centres</td>
-                <td>${o.updateCount} bulletins</td>
-            </tr>`).join('')}
+            ${orgs.map(o => {
+                const isPending = (o.verificationStatus || o.status) === 'PENDING';
+                const caps = Array.isArray(o.capabilities) ? o.capabilities : [];
+                return `<tr>
+                    <td>
+                        <strong>${escapeHtml(o.name || o.organisationName)}</strong><br>
+                        <small style="color:var(--text-muted)">${escapeHtml(o.leadContact || o.contactEmail || o.country || '')}</small>
+                    </td>
+                    <td>
+                        <span class="status-pill pill-${isPending ? 'PENDING' : 'VERIFIED'}">
+                            ${isPending ? '⏳ PENDING' : '✓ VERIFIED ACTIVE'}
+                        </span>
+                    </td>
+                    <td>
+                        ${caps.length ? caps.map(cap => `<span class="badge" style="background:#f1f5f9;font-size:0.72rem;margin-right:0.25rem">${escapeHtml(cap)}</span>`).join('') : '<small style="color:var(--text-muted)">General Response</small>'}
+                    </td>
+                    <td><small style="color:var(--text-muted)">${escapeHtml(typeof o.geographicScope === 'object' ? JSON.stringify(o.geographicScope) : (o.country || 'National'))}</small></td>
+                    <td>
+                        ${isPending ? `
+                            <button class="btn-primary" style="font-size:0.75rem;padding:0.25rem 0.55rem" onclick="verifyOrg('${o.organisationId || o.id}')">
+                                ✓ Verify Partner
+                            </button>
+                        ` : '<span style="color:#059669;font-size:0.8rem">✓ Verified Partner</span>'}
+                    </td>
+                </tr>`;
+            }).join('')}
             </tbody>
         </table>`;
     } catch (err) {
@@ -1373,6 +1639,388 @@ function escapeHtml(str) {
     const d = document.createElement('div');
     d.textContent = String(str);
     return d.innerHTML;
+}
+
+// ── 15. RECOVERY & PROJECTS VIEW (SPEC-008) ────────
+let activeRecoverySubTab = 'needs';
+
+function switchRecoverySubTab(sub) {
+    activeRecoverySubTab = sub;
+    const needsEl = document.getElementById('subtab-recovery-needs');
+    const projEl = document.getElementById('subtab-recovery-projects');
+    const resEl = document.getElementById('subtab-recovery-resources');
+    if (needsEl) needsEl.style.display = sub === 'needs' ? 'block' : 'none';
+    if (projEl) projEl.style.display = sub === 'projects' ? 'block' : 'none';
+    if (resEl) resEl.style.display = sub === 'resources' ? 'block' : 'none';
+
+    const bNeeds = document.getElementById('tab-btn-rec-needs');
+    const bProj = document.getElementById('tab-btn-rec-projects');
+    const bRes = document.getElementById('tab-btn-rec-resources');
+    if (bNeeds) bNeeds.classList.toggle('active', sub === 'needs');
+    if (bProj) bProj.classList.toggle('active', sub === 'projects');
+    if (bRes) bRes.classList.toggle('active', sub === 'resources');
+
+    if (sub === 'needs') loadRecoveryNeeds();
+    if (sub === 'projects') loadRecoveryProjectsAdmin();
+    if (sub === 'resources') loadRecoveryResourcesAdmin();
+}
+
+async function loadRecoveryView() {
+    switchRecoverySubTab(activeRecoverySubTab);
+}
+
+async function loadRecoveryNeeds() {
+    const c = document.getElementById('recovery-needs-container');
+    const badge = document.getElementById('recovery-needs-badge');
+    const filterEl = document.getElementById('recovery-needs-filter');
+    const statusFilter = filterEl ? filterEl.value : 'ALL';
+    if (!c) return;
+    c.innerHTML = '<p style="color:var(--text-muted)">Loading recovery needs triage…</p>';
+
+    try {
+        const res = await api.getRecoveryNeeds(statusFilter === 'ALL' ? {} : { status: statusFilter });
+        const needs = res.needs || [];
+        if (badge) badge.textContent = `${needs.length} need${needs.length === 1 ? '' : 's'}`;
+
+        if (!needs.length) {
+            c.innerHTML = `<p class="notice notice-info">No recovery needs found matching status '${escapeHtml(statusFilter)}'.</p>`;
+            return;
+        }
+
+        c.innerHTML = `<table class="queue-table">
+            <thead><tr><th>Need Reference &amp; Locality</th><th>Category</th><th>Description &amp; Urgency</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+            ${needs.map(n => {
+                let actionHtml = '';
+                if (n.status === 'REPORTED' || n.verificationState === 'UNVERIFIED') {
+                    actionHtml += `<button class="btn-primary" style="font-size:0.75rem;padding:0.2rem 0.5rem;margin-right:0.25rem" onclick="verifyNeed('${n.needId}')">✓ Verify</button>`;
+                }
+                if (n.status !== 'RESTRICTED_PENDING_REVIEW') {
+                    actionHtml += `<button class="btn-outline" style="font-size:0.75rem;padding:0.2rem 0.5rem" onclick="disputeNeed('${n.needId}')">⚠️ Dispute</button>`;
+                } else {
+                    actionHtml = `<span class="badge" style="background:#fee2e2;color:#991b1b">Disputed (Access Frozen)</span>`;
+                }
+
+                return `<tr>
+                    <td>
+                        <strong style="font-family:monospace;font-size:0.8rem">${escapeHtml(n.needReference || n.needId)}</strong><br>
+                        <small style="color:var(--text-muted)">${escapeHtml(n.locality || n.communityId || 'General Area')}</small>
+                    </td>
+                    <td><span class="badge" style="background:#f1f5f9;font-size:0.75rem">${escapeHtml(n.category || 'RECOVERY')}</span></td>
+                    <td>
+                        <strong>${escapeHtml(n.title || n.category)}</strong><br>
+                        <small style="color:var(--text-muted)">${escapeHtml(n.description ? n.description.substring(0, 120) + '…' : '')}</small><br>
+                        <small style="color:var(--text-muted);font-size:0.72rem">Urgency: <strong>${escapeHtml(n.urgency || 'MEDIUM')}</strong> • Reported: ${formatDate(n.createdAt)}</small>
+                    </td>
+                    <td><span class="status-pill pill-${n.status === 'VERIFIED' ? 'VERIFIED' : (n.status === 'ASSIGNED' ? 'SAFE_CONFIRMED' : 'PENDING')}">${escapeHtml(n.status)}</span></td>
+                    <td style="white-space:nowrap">${actionHtml || '—'}</td>
+                </tr>`;
+            }).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        c.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+async function verifyNeed(needId) {
+    try {
+        await api.verifyRecoveryNeed(needId, { verifiedBy: 'COORDINATOR_DESK', notes: 'Field assessment validated.' });
+        alert('Recovery need verified successfully.');
+        loadRecoveryNeeds();
+    } catch (err) { alert('Verification failed: ' + err.message); }
+}
+
+async function disputeNeed(needId) {
+    const reason = prompt('Enter the rationale for flagging this need as disputed (FR-008-011):', 'Conflicting municipal assessment report');
+    if (!reason) return;
+    try {
+        await api.disputeRecoveryNeed(needId, { disputeReason: reason });
+        alert('Need placed in RESTRICTED_PENDING_REVIEW with dispute lock.');
+        loadRecoveryNeeds();
+    } catch (err) { alert('Dispute flag failed: ' + err.message); }
+}
+
+async function loadRecoveryProjectsAdmin() {
+    const c = document.getElementById('recovery-projects-admin-container');
+    if (!c) return;
+    c.innerHTML = '<p style="color:var(--text-muted)">Loading reconstruction projects…</p>';
+    try {
+        const res = await api.getRecoveryProjects();
+        const projects = res.projects || [];
+        if (!projects.length) {
+            c.innerHTML = '<p class="notice notice-info">No recovery projects created yet. Click "+ New Recovery Project" to create one.</p>';
+            return;
+        }
+
+        c.innerHTML = `<table class="queue-table">
+            <thead><tr><th>Project Ref &amp; Title</th><th>Locality</th><th>Objective &amp; Milestones</th><th>Budget (NPR)</th><th>Status</th></tr></thead>
+            <tbody>
+            ${projects.map(p => {
+                const milestones = Array.isArray(p.milestones) ? p.milestones : [];
+                return `<tr>
+                    <td>
+                        <strong style="font-family:monospace;font-size:0.8rem">${escapeHtml(p.projectReference)}</strong><br>
+                        <strong>${escapeHtml(p.title)}</strong>
+                    </td>
+                    <td><span class="badge" style="background:#f1f5f9">${escapeHtml(p.communityId || 'Regional')}</span></td>
+                    <td>
+                        <p style="margin:0 0 0.35rem 0;font-size:0.85rem">${escapeHtml(p.objective || '')}</p>
+                        <small style="color:var(--text-muted)">${milestones.length} milestone${milestones.length === 1 ? '' : 's'}</small>
+                    </td>
+                    <td>
+                        <strong>${p.budgetAmount ? 'NPR ' + Number(p.budgetAmount).toLocaleString() : '—'}</strong><br>
+                        <small style="color:var(--text-muted);font-family:monospace">${escapeHtml(p.budgetRef || '')}</small>
+                    </td>
+                    <td><span class="status-pill pill-${p.status === 'COMPLETED' ? 'SAFE_CONFIRMED' : 'VERIFIED'}">${escapeHtml(p.status)}</span></td>
+                </tr>`;
+            }).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        c.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+async function loadRecoveryResourcesAdmin() {
+    const c = document.getElementById('recovery-resources-admin-container');
+    if (!c) return;
+    c.innerHTML = '<p style="color:var(--text-muted)">Loading available resource offers…</p>';
+    try {
+        const res = await api.getResourceOffers();
+        const offers = res.offers || [];
+        if (!offers.length) {
+            c.innerHTML = '<p class="notice notice-info">No resource offers currently in pool.</p>';
+            return;
+        }
+
+        c.innerHTML = `<table class="queue-table">
+            <thead><tr><th>Provider</th><th>Type</th><th>Capacity &amp; Location</th><th>Status</th><th>AI Matching Gate</th></tr></thead>
+            <tbody>
+            ${offers.map(o => `<tr>
+                <td><strong>${escapeHtml(o.providerName)}</strong></td>
+                <td><span class="badge" style="background:#f1f5f9">${escapeHtml(o.resourceType)}</span></td>
+                <td>
+                    ${escapeHtml(o.capacity?.quantity || '—')} ${escapeHtml(o.capacity?.unit || '')}<br>
+                    <small style="color:var(--text-muted)">District: ${escapeHtml(o.location?.district || 'General')}</small>
+                </td>
+                <td><span class="status-pill pill-${o.status === 'MATCHED' ? 'SAFE_CONFIRMED' : (o.status === 'AVAILABLE' ? 'VERIFIED' : 'PENDING')}">${escapeHtml(o.status)}</span></td>
+                <td>
+                    ${o.status === 'AVAILABLE' ? `
+                        <button class="btn-outline" style="font-size:0.75rem;padding:0.25rem 0.5rem" onclick="proposeResourceMatch('${o.offerId}')">
+                            🤖 Generate AI Match (A03)
+                        </button>
+                    ` : (o.status === 'MATCH_PROPOSED' ? `
+                        <span class="badge" style="background:#fef3c7;color:#92400e">Match Proposed (Pending Review)</span>
+                    ` : '—')}
+                </td>
+            </tr>`).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        c.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+async function proposeResourceMatch(offerId) {
+    try {
+        const res = await api.generateResourceMatchProposal(offerId, { trigger: 'MANUAL_DISPATCH' });
+        alert(res.message || 'AI proposal formulated by A03-NEEDS agent. Check the AI Fleet & Governance tab to review and approve.');
+        loadRecoveryResourcesAdmin();
+    } catch (err) { alert('Match proposal failed: ' + err.message); }
+}
+
+function openNewProjectModal() {
+    const m = document.getElementById('new-project-modal');
+    if (m) m.style.display = 'flex';
+}
+
+function closeNewProjectModal() {
+    const m = document.getElementById('new-project-modal');
+    if (m) m.style.display = 'none';
+    const msg = document.getElementById('proj-result-msg');
+    if (msg) msg.innerHTML = '';
+}
+
+async function submitNewProject(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-save-project');
+    const msg = document.getElementById('proj-result-msg');
+    btn.disabled = true;
+    btn.textContent = 'Creating project…';
+    msg.innerHTML = '';
+
+    const title = document.getElementById('proj-title').value.trim();
+    const communityId = document.getElementById('proj-community-id').value;
+    const visibility = document.getElementById('proj-visibility').value;
+    const objective = document.getElementById('proj-objective').value.trim();
+    const budgetRef = document.getElementById('proj-budget-ref').value.trim();
+    const budgetAmount = parseFloat(document.getElementById('proj-budget-amount').value) || null;
+    const rawMilestones = document.getElementById('proj-milestones').value.trim();
+    const milestones = rawMilestones ? rawMilestones.split(',').map(s => ({ title: s.trim(), completed: false })) : [];
+
+    try {
+        const res = await api.createRecoveryProject({
+            title,
+            communityId,
+            visibility,
+            objective,
+            budgetRef,
+            budgetAmount,
+            milestones,
+            verificationMethod: 'Municipal engineering field audit'
+        });
+
+        msg.innerHTML = `<div class="notice notice-info" style="color:#065f46">✅ Project created: <strong>${escapeHtml(res.project?.projectReference || 'CREATED')}</strong></div>`;
+        document.getElementById('new-project-form').reset();
+        setTimeout(() => {
+            closeNewProjectModal();
+            loadRecoveryProjectsAdmin();
+        }, 1500);
+    } catch (err) {
+        msg.innerHTML = `<div class="notice notice-error">${escapeHtml(err.message)}</div>`;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Project';
+    }
+}
+
+// ── 16. AI FLEET & GOVERNANCE VIEW (SPEC-009) ──────
+async function loadAiGovernanceView() {
+    await loadAiAgents();
+    await loadAiProposals();
+}
+
+async function loadAiAgents() {
+    const grid = document.getElementById('ai-agents-grid');
+    if (!grid) return;
+    grid.innerHTML = '<p style="color:var(--text-muted)">Loading autonomous agent fleet…</p>';
+    try {
+        const res = await api.getAiAgents();
+        const agents = res.agents || [];
+        if (!agents.length) {
+            grid.innerHTML = '<p style="color:var(--text-muted)">No registered agents found.</p>';
+            return;
+        }
+
+        grid.innerHTML = agents.map(a => {
+            const isSuspended = a.status === 'SUSPENDED';
+            return `
+                <div style="background:#ffffff;border:1px solid ${isSuspended ? '#fca5a5' : '#cbd5e1'};border-radius:8px;padding:1rem;box-shadow:0 1px 2px rgba(0,0,0,0.04);">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                        <strong style="font-size:0.95rem;">${escapeHtml(a.agent_id)}</strong>
+                        <span class="status-pill pill-${isSuspended ? 'REJECTED' : 'SAFE_CONFIRMED'}">
+                            ${isSuspended ? '🔴 SUSPENDED' : '🟢 ACTIVE'}
+                        </span>
+                    </div>
+                    <small style="color:var(--text-muted);display:block;margin:0.25rem 0 0.5rem 0;">Class: ${escapeHtml(a.agent_class || 'Autonomous Agent')}</small>
+                    <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.75rem;">
+                        <span>Permissions: <code>${(a.scoped_permissions || []).join(', ') || 'none'}</code></span><br>
+                        <span>Rate Limit: <strong>${a.max_rate_per_hour || 50}/hr</strong></span>
+                        ${isSuspended ? `<br><span style="color:#b91c1c;">Suspended by ${escapeHtml(a.suspended_by)}: ${escapeHtml(a.suspended_reason || 'Kill-switch')}</span>` : ''}
+                    </div>
+                    <div style="display:flex;justify-content:flex-end">
+                        ${isSuspended ? `
+                            <button class="btn-primary" style="font-size:0.75rem;padding:0.2rem 0.5rem;background:#16a34a;border-color:#16a34a" onclick="toggleAgentKillSwitch('${a.agent_id}', 'reinstate')">
+                                🔄 Reinstate Agent
+                            </button>
+                        ` : `
+                            <button class="btn-outline" style="font-size:0.75rem;padding:0.2rem 0.5rem;color:#b91c1c;border-color:#f87171" onclick="toggleAgentKillSwitch('${a.agent_id}', 'suspend')">
+                                🛑 Kill Switch
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        grid.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+async function toggleAgentKillSwitch(agentId, action) {
+    const reason = prompt(`Reason for ${action === 'suspend' ? 'EMERGENCY KILL SWITCH' : 'reinstating'} agent ${agentId}:`, 'Administrative security control');
+    if (!reason) return;
+    try {
+        if (action === 'suspend') {
+            await api.suspendAiAgent(agentId, { reason });
+            alert(`Agent ${agentId} suspended immediately.`);
+        } else {
+            await api.reinstateAiAgent(agentId, { reason });
+            alert(`Agent ${agentId} reinstated.`);
+        }
+        loadAiAgents();
+    } catch (err) { alert('Kill switch action failed: ' + err.message); }
+}
+
+async function loadAiProposals() {
+    const c = document.getElementById('ai-proposals-container');
+    const filterEl = document.getElementById('ai-proposal-filter');
+    const statusFilter = filterEl ? filterEl.value : 'ALL';
+    if (!c) return;
+    c.innerHTML = '<p style="color:var(--text-muted)">Loading AI proposals…</p>';
+    try {
+        const params = statusFilter === 'ALL' ? {} : { decision: statusFilter };
+        const res = await api.getAiProposals(params);
+        const proposals = res.proposals || [];
+
+        if (!proposals.length) {
+            c.innerHTML = '<p class="notice notice-info">No AI proposals requiring review right now.</p>';
+            return;
+        }
+
+        c.innerHTML = `<table class="queue-table">
+            <thead><tr><th>Proposal ID &amp; Agent</th><th>Tier</th><th>Problem Statement &amp; Change</th><th>Decision</th><th>Human Review Gate</th></tr></thead>
+            <tbody>
+            ${proposals.map(p => {
+                const isPending = !p.decision || p.decision === 'PENDING';
+                return `<tr>
+                    <td>
+                        <strong style="font-family:monospace;font-size:0.8rem">${escapeHtml(p.proposal_id.substring(0, 8))}…</strong><br>
+                        <span class="badge" style="background:#e0f2fe;font-size:0.75rem">${escapeHtml(p.agent_id)}</span>
+                    </td>
+                    <td><span class="badge" style="background:#fef3c7;color:#92400e;font-weight:700">${escapeHtml(p.impact_class || 'L2')}</span></td>
+                    <td>
+                        <strong>${escapeHtml(p.affected_capability || 'CAPABILITY')}</strong><br>
+                        <p style="margin:0.2rem 0;font-size:0.85rem">${escapeHtml(p.problem_statement || '')}</p>
+                        <small style="color:var(--text-muted)">Change: ${escapeHtml(JSON.stringify(p.proposed_change || {}).substring(0, 100))}…</small>
+                    </td>
+                    <td><span class="status-pill pill-${p.decision === 'APPROVED' ? 'SAFE_CONFIRMED' : (p.decision === 'REJECTED' ? 'REJECTED' : 'PENDING')}">${escapeHtml(p.decision || 'PENDING')}</span></td>
+                    <td>
+                        ${isPending ? `
+                            <div style="display:flex;gap:0.35rem">
+                                <button class="btn-primary" style="font-size:0.75rem;padding:0.25rem 0.5rem" onclick="decideProposal('${p.proposal_id}', 'APPROVED')">✓ Approve</button>
+                                <button class="btn-outline" style="font-size:0.75rem;padding:0.25rem 0.5rem" onclick="decideProposal('${p.proposal_id}', 'REJECTED')">✗ Reject</button>
+                            </div>
+                        ` : `
+                            <small style="color:var(--text-muted)">Decided by ${escapeHtml(p.decision_maker || 'HUMAN_AUTHORITY')}</small>
+                        `}
+                    </td>
+                </tr>`;
+            }).join('')}
+            </tbody>
+        </table>`;
+    } catch (err) {
+        c.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+async function decideProposal(proposalId, verdict) {
+    const rationale = prompt(`Enter mandatory human review rationale for ${verdict}:`, `Authorized by coordinator following operational check`);
+    if (!rationale) return;
+    try {
+        await api.decideAiProposal(proposalId, { decision: verdict, rationale });
+        alert(`Decision registered: ${verdict}`);
+        loadAiProposals();
+    } catch (err) { alert('Decision submission failed: ' + err.message); }
+}
+
+async function verifyOrg(orgId) {
+    try {
+        await api.verifyOrganisation(orgId);
+        alert('Organisation successfully verified and activated.');
+        loadOrganisations();
+    } catch (err) { alert('Verification failed: ' + err.message); }
 }
 
 document.addEventListener('DOMContentLoaded', checkSession);
