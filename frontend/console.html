@@ -291,6 +291,52 @@
                 <div class="metric-lbl">Verified Bulletins</div>
             </div>
         </div>
+
+        <!-- Portal Visitor Reach & Traffic (SPEC-004 ICRC Compliant) -->
+        <div class="metrics-grid">
+            <div class="metric-card" style="border-left: 4px solid #2563eb">
+                <div class="metric-val" id="metric-visitors-today" style="color:#1d4ed8">-</div>
+                <div class="metric-lbl">Unique Visitors (Today)</div>
+            </div>
+            <div class="metric-card" style="border-left: 4px solid #0284c7">
+                <div class="metric-val" id="metric-views-today" style="color:#0284c7">-</div>
+                <div class="metric-lbl">Portal Page Views (Today)</div>
+            </div>
+            <div class="metric-card" style="border-left: 4px solid #4f46e5">
+                <div class="metric-val" id="metric-visitors-7d" style="color:#4338ca">-</div>
+                <div class="metric-lbl">7-Day Unique Reach</div>
+            </div>
+            <div class="metric-card" style="border-left: 4px solid #7c3aed">
+                <div class="metric-val" id="metric-views-7d" style="color:#6d28d9">-</div>
+                <div class="metric-lbl">7-Day Total Views</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom:2rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:6px;padding:1.25rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem">
+                <div>
+                    <h3 style="margin:0;display:flex;align-items:center;gap:0.5rem">
+                        <span>📊 Public Portal Reach &amp; Traffic Breakdown</span>
+                        <span style="font-size:0.7rem;background:#e0f2fe;color:#0369a1;padding:0.2rem 0.5rem;border-radius:4px;font-weight:700;letter-spacing:0.03em">ICRC SPEC-004 PRIVACY</span>
+                    </h3>
+                    <p style="margin:0.35rem 0 0;font-size:0.825rem;color:var(--text-muted)">
+                        Anonymous real-time visitor counter. Zero cookies, salted daily SHA-256 IP hashing (no PII stored).
+                    </p>
+                </div>
+                <button class="btn-primary" onclick="loadVisitorMetrics()" style="padding:0.3rem 0.65rem;font-size:0.8rem;background:transparent;color:var(--primary);border:1px solid var(--primary)">Refresh Traffic</button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.5rem" id="analytics-details-grid">
+                <div>
+                    <h4 style="margin:0 0 0.5rem;font-size:0.875rem;color:var(--text)">Top Visited Public Pages</h4>
+                    <div id="analytics-top-pages"><p style="color:var(--text-muted);font-size:0.825rem">Loading page metrics…</p></div>
+                </div>
+                <div>
+                    <h4 style="margin:0 0 0.5rem;font-size:0.875rem;color:var(--text)">Daily Traffic Trend (Last 7 Days)</h4>
+                    <div id="analytics-daily-trend"><p style="color:var(--text-muted);font-size:0.825rem">Loading trend…</p></div>
+                </div>
+            </div>
+        </div>
+
         <h3>Most Recent Situation Bulletins &amp; Tracing Updates</h3>
         <div id="overview-recent-container"><p style="color:var(--text-muted)">Loading updates…</p></div>
     </div>
@@ -649,6 +695,7 @@ window.addEventListener('popstate', () => {
 
 // ── 1. OVERVIEW VIEW ──────────────────────────
 async function loadOverview() {
+    loadVisitorMetrics();
     const container = document.getElementById('overview-recent-container');
     container.innerHTML = '<p style="color:var(--text-muted)">Loading updates…</p>';
     try {
@@ -669,6 +716,63 @@ async function loadOverview() {
         </table>`;
     } catch (err) {
         container.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+async function loadVisitorMetrics() {
+    try {
+        const data = await api.getVisitorOverview(EVENT_ID);
+        if (!data) return;
+
+        const elVisToday = document.getElementById('metric-visitors-today');
+        const elViewsToday = document.getElementById('metric-views-today');
+        const elVis7d = document.getElementById('metric-visitors-7d');
+        const elViews7d = document.getElementById('metric-views-7d');
+
+        if (elVisToday) elVisToday.textContent = (data.today?.uniqueVisitors ?? 0).toLocaleString();
+        if (elViewsToday) elViewsToday.textContent = (data.today?.pageViews ?? 0).toLocaleString();
+        if (elVis7d) elVis7d.textContent = (data.last7Days?.uniqueVisitors ?? 0).toLocaleString();
+        if (elViews7d) elViews7d.textContent = (data.last7Days?.pageViews ?? 0).toLocaleString();
+
+        // Top pages breakdown
+        const topPagesContainer = document.getElementById('analytics-top-pages');
+        if (topPagesContainer) {
+            if (!data.topPages || !data.topPages.length) {
+                topPagesContainer.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">No portal page views recorded yet.</p>';
+            } else {
+                topPagesContainer.innerHTML = `<table class="queue-table" style="font-size:0.85rem">
+                    <thead><tr><th>Public Page</th><th style="text-align:right">Views</th><th style="text-align:right">Unique Visitors</th></tr></thead>
+                    <tbody>
+                        ${data.topPages.map(p => `<tr>
+                            <td><code>${escapeHtml(p.page_path)}</code></td>
+                            <td style="text-align:right;font-weight:700;color:var(--primary)">${Number(p.views).toLocaleString()}</td>
+                            <td style="text-align:right;font-weight:600">${Number(p.uniques).toLocaleString()}</td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>`;
+            }
+        }
+
+        // Daily trend
+        const trendContainer = document.getElementById('analytics-daily-trend');
+        if (trendContainer) {
+            if (!data.dailyTrend || !data.dailyTrend.length) {
+                trendContainer.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">No historical trend data yet.</p>';
+            } else {
+                trendContainer.innerHTML = `<table class="queue-table" style="font-size:0.85rem">
+                    <thead><tr><th>Date</th><th style="text-align:right">Views</th><th style="text-align:right">Unique Visitors</th></tr></thead>
+                    <tbody>
+                        ${data.dailyTrend.map(d => `<tr>
+                            <td>${escapeHtml(d.date ? String(d.date).slice(0, 10) : 'Today')}</td>
+                            <td style="text-align:right;font-weight:700;color:var(--primary)">${Number(d.views).toLocaleString()}</td>
+                            <td style="text-align:right;font-weight:600">${Number(d.uniques).toLocaleString()}</td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>`;
+            }
+        }
+    } catch (err) {
+        console.warn('Failed to load visitor metrics:', err.message);
     }
 }
 

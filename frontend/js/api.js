@@ -166,6 +166,8 @@ const api = {
     // Auth
     login: (body) => apiRequest('POST', '/auth/login', { body }),
     getMe: () => apiRequest('GET', '/auth/me', { headers: authHeader() }),
+    // Visitor Analytics (SPEC-004)
+    getVisitorOverview: (eventId) => apiRequest('GET', `/analytics/overview${eventId ? '?eventId=' + encodeURIComponent(eventId) : ''}`),
 };
 
 function authHeader() {

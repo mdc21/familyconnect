@@ -36,6 +36,8 @@ const eventsRoutes = require('./modules/events/routes');
 const aiRoutes = require('./modules/ai/routes');
 const gatewayRoutes = require('./modules/gateways/routes');    // Two-way SMS & WhatsApp Gateway
 const tilesRoutes = require('./modules/tiles/routes');          // Geospatial basemap tile proxy & cache
+const analyticsRoutes = require('./modules/analytics/routes');  // Privacy-preserving visitor metrics
+const { visitorAnalytics } = require('./middleware/visitorAnalytics');
 
 const path = require('path');
 
@@ -76,6 +78,9 @@ app.use((req, res, next) => {
 app.get(['/dna', '/dna.html', '/family-dna', '/family-dna.html'], (req, res) => res.redirect(301, '/dna-request.html' + (req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '')));
 app.get(['/report-missing', '/report-missing.html'], (req, res) => res.redirect(301, '/missing.html' + (req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '')));
 app.get(['/rescue-sites', '/rescue-sites.html'], (req, res) => res.redirect(301, '/tunnels.html' + (req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '')));
+
+// Privacy-preserving visitor analytics (ICRC/SPEC-004 compliant)
+app.use(visitorAnalytics);
 
 // Serve frontend static files (HTML, CSS, JS, etc.) before API rate limiting
 // extensions: ['html'] allows accessing clean URLs like /partner-updates as well as /partner-updates.html
@@ -129,6 +134,7 @@ app.use('/api/v1/orchestrator', orchestratorRoutes);  // Autonomous event portal
 app.use('/api/v1/ai', aiRoutes);                      // AI translation endpoint
 app.use('/api/v1/gateways', gatewayRoutes);            // Two-way SMS & WhatsApp Gateway (Twilio / Meta)
 app.use('/api/v1/tiles', tilesRoutes);                // High-performance geospatial basemap tile cache
+app.use('/api/v1/analytics', analyticsRoutes);        // In-app privacy-preserving visitor analytics (SPEC-004)
 
 // Serve static assets under /console only if request is for CSS, JS, images, or fonts
 app.use('/console', (req, res, next) => {
