@@ -168,6 +168,9 @@ const api = {
     getMe: () => apiRequest('GET', '/auth/me', { headers: authHeader() }),
     // Visitor Analytics (SPEC-004)
     getVisitorOverview: (eventId) => apiRequest('GET', `/analytics/overview${eventId ? '?eventId=' + encodeURIComponent(eventId) : ''}`),
+    // SPEC-008 Community Recovery (M3)
+    getCommunities: (eventId) => apiRequest('GET', `/communities${eventId ? '?eventId=' + encodeURIComponent(eventId) : ''}`),
+    getCommunityRecoverySummary: (communityId) => apiRequest('GET', `/communities/${encodeURIComponent(communityId)}/recovery-summary`),
 };
 
 function authHeader() {

@@ -23,7 +23,7 @@ familyRouter.post('/:familyId/locations', async (req, res, next) => {
         return next(new ProblemError('DEGRADED_MODE', 'Database temporarily unavailable.', req.originalUrl));
     }
     try {
-        if (!['FAMILY', 'PROXY', 'CASE_WORKER'].includes(req.actor.actorClass)) {
+        if (!['FAMILY', 'CASE_WORKER'].includes(req.actor.actorClass)) {
             throw new ProblemError('NOT_FOUND', 'Not found', req.originalUrl);
         }
         await client.query('BEGIN');

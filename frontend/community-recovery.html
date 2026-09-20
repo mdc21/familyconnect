@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Community Recovery Status — FamilyConnect</title>
+<meta name="description" content="Public status view of disaster recovery, verified service restoration, and aggregated community needs.">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.recovery-header-card {
+    background: var(--bg-card, #ffffff);
+    border: 1px solid var(--border-subtle, #e2e8f0);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.community-picker-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.community-select {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+    border: 1px solid var(--primary, #005eb8);
+    border-radius: 6px;
+    background: #ffffff;
+    color: var(--text-main, #0f172a);
+    font-weight: 500;
+    min-width: 280px;
+}
+.hierarchy-breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-muted, #64748b);
+    margin-top: 0.5rem;
+}
+.hierarchy-tag {
+    background: #f1f5f9;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+.metric-card {
+    background: var(--bg-card, #ffffff);
+    border: 1px solid var(--border-subtle, #e2e8f0);
+    border-radius: 8px;
+    padding: 1.25rem;
+    text-align: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.metric-number {
+    font-family: var(--font-heading, inherit);
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--primary, #005eb8);
+    line-height: 1.1;
+    margin: 0.35rem 0;
+}
+.metric-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted, #64748b);
+}
+.privacy-banner {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 5px solid #d97706;
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    color: #92400e;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+.privacy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 9999px;
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+.services-section {
+    margin-top: 2rem;
+}
+.service-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.service-card {
+    background: var(--bg-card, #ffffff);
+    border: 1px solid var(--border-subtle, #e2e8f0);
+    border-radius: 8px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.service-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+.service-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-main, #0f172a);
+    margin: 0;
+}
+.status-tag {
+    padding: 0.2rem 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
+}
+.status-OPERATIONAL { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.status-PARTIAL { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+.status-RESTORATION_IN_PROGRESS { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+.status-RESTRICTED { background: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
+.status-DISRUPTED, .status-CLOSED { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+.service-details {
+    font-size: 0.88rem;
+    color: var(--text-muted, #475569);
+    line-height: 1.5;
+    margin: 0.5rem 0 1rem 0;
+}
+.service-footer {
+    font-size: 0.75rem;
+    color: var(--text-muted, #94a3b8);
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.5rem;
+}
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+            </span>
+        </a>
+        <div style="display:flex;align-items:center;gap:1rem">
+            <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+                <select id="event-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
+                    aria-label="Active Event">
+                </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.35rem">
+                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+                <select id="lang-switcher"
+                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
+                    aria-label="Language / भाषा">
+                </select>
+            </div>
+            <a href="console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="community-recovery.html" class="active" style="font-weight:700;border-bottom:2px solid #fff">Community Recovery</a></li>
+                <li><a href="water-points.html" data-i18n="navWater">Water Points</a></li>
+                <li><a href="shelters.html" data-i18n="navShelter">Shelters</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information Updates</a></li>
+                <li><a href="partner-updates.html" data-i18n="navPartner">Partner Updates</a></li>
+                <li><a href="agencies.html" data-i18n="navAgencies">Agencies</a></li>
+                <li><a href="guides.html" data-i18n="navGuides">Guides</a></li>
+                <li><a href="for-authorities.html" data-i18n="navAuthorities">For Authorities</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main class="container">
+    <div style="margin-top: 1.5rem; margin-bottom: 1rem;">
+        <span class="badge" style="background:#e0f2fe;color:#0369a1;padding:0.25rem 0.5rem;border-radius:4px;font-size:0.75rem;font-weight:700;">SPEC-008 Module M3</span>
+        <h1 style="margin: 0.35rem 0 0.25rem 0;">Community Recovery & Status</h1>
+        <p class="lede" style="margin-top:0;color:var(--text-muted);">
+            Aggregated locality profiles, verified essential service status, and community-level reconstruction indicators.
+        </p>
+    </div>
+
+    <!-- Community Selector Header Card -->
+    <section class="recovery-header-card" aria-label="Locality Selection">
+        <label for="community-select" style="font-size:0.85rem;font-weight:700;color:var(--text-main);text-transform:uppercase;letter-spacing:0.05em;">Select Affected Locality / Community</label>
+        <div class="community-picker-row">
+            <select id="community-select" class="community-select" aria-label="Select community locality">
+                <option value="">Loading disaster localities…</option>
+            </select>
+            <span id="threshold-badge-container"></span>
+        </div>
+        <div id="hierarchy-container" class="hierarchy-breadcrumbs"></div>
+    </section>
+
+    <!-- Privacy Banner (BR-008-013) -->
+    <div id="privacy-warning" class="privacy-banner" style="display:none;" role="alert">
+        <div style="font-size:1.3rem;">🛡️</div>
+        <div>
+            <strong style="display:block;margin-bottom:0.2rem;">Privacy Safeguard Active (BR-008-013)</strong>
+            <span id="privacy-warning-text">
+                Locality population is below the minimum aggregation threshold (25). Granular counts are suppressed to prevent re-identification of affected individuals in this community.
+            </span>
+        </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <section aria-label="Community Need Metrics">
+        <h2 class="sr-only">Need Aggregate Metrics</h2>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Reported Needs</div>
+                <div id="metric-total" class="metric-number">—</div>
+                <div style="font-size:0.75rem;color:var(--text-muted)">Public & agency filings</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Verified Needs</div>
+                <div id="metric-verified" class="metric-number" style="color:#059669">—</div>
+                <div style="font-size:0.75rem;color:var(--text-muted)">Authority validated</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Active / Unmet Needs</div>
+                <div id="metric-unmet" class="metric-number" style="color:#d97706">—</div>
+                <div style="font-size:0.75rem;color:var(--text-muted)">Assigned or in-progress</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Essential Services Status Section -->
+    <section class="services-section" aria-label="Essential Services Restoration Status">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:0.5rem">
+            <div>
+                <h2 style="margin:0;font-size:1.3rem;">Essential Service Restoration</h2>
+                <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--text-muted);">
+                    Status as reported by municipal authorities and sector coordination leads.
+                </p>
+            </div>
+            <a href="assistance.html" class="btn btn-sm btn-primary" style="text-decoration:none;padding:0.4rem 0.8rem;border-radius:4px;font-size:0.85rem;">
+                Submit Local Need
+            </a>
+        </div>
+        <div id="services-grid" class="service-cards">
+            <p style="color:var(--text-muted);font-style:italic;">Select a community to view service statuses.</p>
+        </div>
+    </section>
+</main>
+
+<script src="js/api.js?v=20260920"></script>
+<script>
+let allCommunities = [];
+
+function escapeHtml(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = String(str);
+    return d.innerHTML;
+}
+
+function formatServiceType(type) {
+    const map = {
+        DRINKING_WATER: '💧 Drinking Water',
+        ELECTRICITY: '⚡ Power & Grid',
+        TELECOMMUNICATIONS: '📡 Telecom & Internet',
+        HEALTHCARE: '🏥 Health & Medical',
+        ROAD_ACCESS: '🛣️ Road & Bridge Access'
+    };
+    return map[type] || type.replace(/_/g, ' ');
+}
+
+function formatDate(isoStr) {
+    if (!isoStr) return 'Recently verified';
+    try {
+        const d = new Date(isoStr);
+        return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+        return isoStr;
+    }
+}
+
+async function loadCommunitySummary(communityId) {
+    if (!communityId) return;
+    const totalEl = document.getElementById('metric-total');
+    const verifiedEl = document.getElementById('metric-verified');
+    const unmetEl = document.getElementById('metric-unmet');
+    const privacyEl = document.getElementById('privacy-warning');
+    const privacyTextEl = document.getElementById('privacy-warning-text');
+    const badgeContainer = document.getElementById('threshold-badge-container');
+    const hierarchyEl = document.getElementById('hierarchy-container');
+    const servicesGrid = document.getElementById('services-grid');
+
+    totalEl.textContent = '…';
+    verifiedEl.textContent = '…';
+    unmetEl.textContent = '…';
+    servicesGrid.innerHTML = '<p style="color:var(--text-muted);font-style:italic">Updating recovery summary…</p>';
+
+    try {
+        const data = await api.getCommunityRecoverySummary(communityId);
+        
+        // Render hierarchy breadcrumbs
+        if (data.adminHierarchy && typeof data.adminHierarchy === 'object') {
+            const crumbs = Object.entries(data.adminHierarchy)
+                .map(([k, v]) => `<span class="hierarchy-tag">${escapeHtml(v)}</span>`)
+                .join('<span style="color:#cbd5e1">/</span>');
+            hierarchyEl.innerHTML = `<span>Administrative scope:</span> ${crumbs}`;
+        } else {
+            hierarchyEl.innerHTML = '';
+        }
+
+        // BR-008-013 privacy threshold enforcement handling
+        if (!data.thresholdMet) {
+            privacyEl.style.display = 'flex';
+            privacyTextEl.textContent = data.disclosureWarning || 'Locality population is below threshold (25). Counts suppressed.';
+            badgeContainer.innerHTML = `<span class="privacy-badge" style="background:#fef2f2;color:#991b1b;border-color:#fecaca">⚠️ Disclosure Suppressed (&lt;25 pop)</span>`;
+            totalEl.textContent = 'SUPPRESSED';
+            verifiedEl.textContent = 'SUPPRESSED';
+            unmetEl.textContent = 'SUPPRESSED';
+            totalEl.style.fontSize = '1.3rem';
+            verifiedEl.style.fontSize = '1.3rem';
+            unmetEl.style.fontSize = '1.3rem';
+        } else {
+            privacyEl.style.display = 'none';
+            badgeContainer.innerHTML = `<span class="privacy-badge">🛡️ Anonymity Protected (pop &ge; 25)</span>`;
+            totalEl.style.fontSize = '2.2rem';
+            verifiedEl.style.fontSize = '2.2rem';
+            unmetEl.style.fontSize = '2.2rem';
+            totalEl.textContent = data.metrics.totalReportedNeeds;
+            verifiedEl.textContent = data.metrics.verifiedNeedsCount;
+            unmetEl.textContent = data.metrics.unmetNeedsCount;
+        }
+
+        // Render Service States
+        if (data.serviceStates && data.serviceStates.length > 0) {
+            servicesGrid.innerHTML = data.serviceStates.map(svc => {
+                const statusClass = `status-${svc.status || 'PARTIAL'}`;
+                const statusLabel = (svc.status || 'UNKNOWN').replace(/_/g, ' ');
+                return `
+                    <article class="service-card" aria-label="${escapeHtml(svc.service_type)} status">
+                        <div>
+                            <div class="service-header">
+                                <h3 class="service-title">${formatServiceType(svc.service_type)}</h3>
+                                <span class="status-tag ${statusClass}">${escapeHtml(statusLabel)}</span>
+                            </div>
+                            <p class="service-details">${escapeHtml(svc.details || 'No additional status details reported.')}</p>
+                        </div>
+                        <div class="service-footer">
+                            Verified: ${formatDate(svc.last_verified)}
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        } else {
+            servicesGrid.innerHTML = '<p style="color:var(--text-muted);">No verified service status updates on file for this locality.</p>';
+        }
+
+    } catch (err) {
+        console.error('Error loading community summary:', err);
+        servicesGrid.innerHTML = `<p class="notice notice-error">Could not load community summary: ${escapeHtml(err.message)}</p>`;
+    }
+}
+
+async function initCommunityView() {
+    const select = document.getElementById('community-select');
+    const urlCommunity = new URLSearchParams(window.location.search).get('community');
+    const activeEvent = getActiveEventId();
+
+    try {
+        const res = await api.getCommunities(activeEvent);
+        allCommunities = res.communities || [];
+
+        if (allCommunities.length === 0) {
+            // If no communities for this event, fetch all
+            const allRes = await api.getCommunities();
+            allCommunities = allRes.communities || [];
+        }
+
+        if (allCommunities.length === 0) {
+            select.innerHTML = '<option value="">No disaster communities registered</option>';
+            return;
+        }
+
+        select.innerHTML = allCommunities.map(c => 
+            `<option value="${escapeHtml(c.communityId)}">${escapeHtml(c.name)} (${c.thresholdMet ? 'Pop ' + c.populationEstimate : 'Sparse Locality'})</option>`
+        ).join('');
+
+        let selectedId = urlCommunity;
+        if (!selectedId || !allCommunities.find(c => c.communityId === selectedId)) {
+            selectedId = allCommunities[0].communityId;
+        }
+
+        select.value = selectedId;
+        select.addEventListener('change', (e) => {
+            const newId = e.target.value;
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('community', newId);
+            window.history.replaceState({}, '', newUrl);
+            loadCommunitySummary(newId);
+        });
+
+        loadCommunitySummary(selectedId);
+    } catch (err) {
+        console.error('Failed to load communities:', err);
+        select.innerHTML = '<option value="">Error loading communities</option>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initCommunityView);
+</script>
+</body>
+</html>

@@ -21,9 +21,12 @@ async function seed() {
             { path: '../src/db/schema.sql', skipIfExists: true },
             { path: '../src/db/migration-orchestrator.sql', skipIfExists: false },
             { path: '../src/db/migration-spec008-009-010.sql', skipIfExists: false },
+            { path: '../src/db/migration-spec008-phase2.sql', skipIfExists: false },
+            { path: '../src/db/migration-spec008-phase3.sql', skipIfExists: false },
             { path: '../src/db/seed-modules.sql', skipIfExists: false },
             { path: '../src/db/seed.sql', skipIfExists: false },
-            { path: '../src/db/seed_assam.sql', skipIfExists: false }
+            { path: '../src/db/seed_assam.sql', skipIfExists: false },
+            { path: '../src/db/seed_community_profiles.sql', skipIfExists: false }
         ];
 
         for (const fileObj of sqlFiles) {

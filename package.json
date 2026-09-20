@@ -9,7 +9,8 @@
     "start": "node src/app.js",
     "test": "node --test test/*.test.js",
     "test:integration": "node --test test/integration/*.test.js",
-    "db:seed": "node scripts/seed.js"
+    "db:seed": "node scripts/seed.js",
+    "db:clean-seeds": "node scripts/cleanup-seed-data.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

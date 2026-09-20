@@ -173,7 +173,34 @@ router.post('/recovery-needs/:id/disputes', async (req, res, next) => {
     }
 });
 
-// 7. GET /api/v1/communities/:id/recovery-summary — Public community summary (enforces BR-008-013)
+// 7. GET /api/v1/communities — List active disaster communities
+router.get('/communities', async (req, res, next) => {
+    try {
+        const { eventId } = req.query;
+        let query = 'SELECT community_id, name, event_id, admin_hierarchy, population_estimate, min_aggregation_threshold, min_aggregation_threshold_met FROM community_profile';
+        const params = [];
+        if (eventId) {
+            query += ' WHERE event_id = $1';
+            params.push(eventId);
+        }
+        query += ' ORDER BY name ASC';
+        const result = await pool.query(query, params);
+        res.json({
+            communities: result.rows.map(r => ({
+                communityId: r.community_id,
+                name: r.name,
+                eventId: r.event_id,
+                adminHierarchy: r.admin_hierarchy,
+                populationEstimate: r.population_estimate,
+                thresholdMet: r.min_aggregation_threshold_met
+            }))
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// 8. GET /api/v1/communities/:id/recovery-summary — Public community summary (enforces BR-008-013)
 router.get('/communities/:id/recovery-summary', async (req, res, next) => {
     try {
         const summary = await needsService.getCommunitySummary(req.params.id);

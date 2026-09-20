@@ -18,6 +18,8 @@ const rumoursRoutes = require('./modules/rumours/routes');       // gap fix #2
 const assistanceRoutes = require('./modules/assistance/routes'); // gap fix #6
 const assistanceRequestsRoutes = require('./modules/assistance/requests'); // Phase 2
 const { familyRouter, proxyRouter } = require('./modules/families/routes');  // Phase 2
+const documentationRoutes = require('./modules/documentation/routes');        // SPEC-008 M10
+const familyRecoveryRoutes = require('./modules/family-recovery/routes');     // SPEC-008 M2
 const communicationsRoutes = require('./modules/communications/routes');     // Phase 2
 const notificationsRoutes = require('./modules/notifications/routes');      // Phase 2
 const safeguardingRoutes = require('./modules/safeguarding/routes');
@@ -36,11 +38,14 @@ const eventsRoutes = require('./modules/events/routes');
 const aiRoutes = require('./modules/ai/routes');
 const aiGovernanceRoutes = require('./modules/ai-governance/routes');  // SPEC-009 Agent Governance & Proposals
 const recoveryNeedsRoutes = require('./modules/recovery-needs/routes'); // SPEC-008 Community Recovery & Reconstruction
+const resourcesRoutes = require('./modules/resources/routes');              // SPEC-008 M6 Resource Exchange
+const recoveryProjectsRoutes = require('./modules/recovery-projects/routes'); // SPEC-008 M8 Recovery Projects
 const learningRoutes = require('./modules/learning/routes');          // SPEC-010 Humanitarian Learning & Precedents
 const gatewayRoutes = require('./modules/gateways/routes');    // Two-way SMS & WhatsApp Gateway
 const tilesRoutes = require('./modules/tiles/routes');          // Geospatial basemap tile proxy & cache
 const analyticsRoutes = require('./modules/analytics/routes');  // Privacy-preserving visitor metrics
 const { visitorAnalytics } = require('./middleware/visitorAnalytics');
+const { sloLatencyMiddleware, healthHandler } = require('./services/analytics/sloMonitor'); // SPEC-008 §11 G6 SLO monitoring
 
 const path = require('path');
 
@@ -84,6 +89,7 @@ app.get(['/rescue-sites', '/rescue-sites.html'], (req, res) => res.redirect(301,
 
 // Privacy-preserving visitor analytics (ICRC/SPEC-004 compliant)
 app.use(visitorAnalytics);
+app.use(sloLatencyMiddleware); // Phase 1 SLO latency instrumentation (SPEC-008 §11 G6)
 
 // Serve frontend static files (HTML, CSS, JS, etc.) before API rate limiting
 // extensions: ['html'] allows accessing clean URLs like /partner-updates as well as /partner-updates.html
@@ -120,6 +126,8 @@ app.use('/api/v1/events', rumoursRoutes);            // /events/:eventId/rumours
 app.use('/api/v1/assistance-centres', assistanceRoutes);
 app.use('/api/v1/cases', assistanceRequestsRoutes);  // /cases/:caseId/assistance
 app.use('/api/v1/families', familyRouter);           // /families/:familyId/locations
+app.use('/api/v1/families', documentationRoutes);    // /families/:familyId/documentation
+app.use('/api/v1/families', familyRecoveryRoutes);   // /families/:familyId/recovery-case
 app.use('/api/v1/cases', proxyRouter);               // /cases/:caseId/proxies
 app.use('/api/v1/cases', communicationsRoutes);      // /cases/:caseId/communications[/batch]
 app.use('/api/v1/cases', notificationsRoutes);       // /cases/:caseId/notifications
@@ -137,6 +145,8 @@ app.use('/api/v1/orchestrator', orchestratorRoutes);  // Autonomous event portal
 app.use('/api/v1/ai', aiRoutes);                      // AI translation endpoint
 app.use('/api/v1/ai', aiGovernanceRoutes);            // SPEC-009 Agent governance, proposals & kill switch
 app.use('/api/v1', recoveryNeedsRoutes);               // SPEC-008 Recovery needs & community summary
+app.use('/api/v1/resources', resourcesRoutes);         // SPEC-008 M6 Resource Exchange & Match Proposals
+app.use('/api/v1/recovery-projects', recoveryProjectsRoutes); // SPEC-008 M8 Recovery Projects & Tasks
 app.use('/api/v1/learning', learningRoutes);          // SPEC-010 Humanitarian intelligence & precedents
 app.use('/api/v1/gateways', gatewayRoutes);            // Two-way SMS & WhatsApp Gateway (Twilio / Meta)
 app.use('/api/v1/tiles', tilesRoutes);                // High-performance geospatial basemap tile cache
@@ -151,7 +161,8 @@ app.use('/console', (req, res, next) => {
 });
 
 app.get('/console*', (req, res) => res.sendFile(path.join(__dirname, '../frontend/console.html')));
-app.get('/healthz', (req, res) => res.json({ status: 'ok' }));
+app.get('/healthz', (req, res) => res.json({ status: 'ok' }));  // Shallow liveness probe (load balancer / container health check)
+app.get('/api/v1/ops/health', healthHandler);                   // Full SLO compliance report (SPEC-008 §11 Gate G6)
 
 // RFC 9457 problem+json for every error, per SPEC-003 §6
 app.use(problemJsonErrorHandler);

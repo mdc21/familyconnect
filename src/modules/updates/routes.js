@@ -18,10 +18,13 @@ const router = express.Router({ mergeParams: true });
  * enter the system at all.
  *
  * Actors: CASE_WORKER, AUTHORITY, PARTNER (with lower default visibility),
- * SYSTEM_AUDITOR for AI-assisted drafts (which must land as PENDING, per
- * BR-016/BR-018 — AI can draft/summarise but never verifies itself).
+ * Actors: CASE_WORKER, AUTHORITY, PARTNER (with lower default visibility).
+ * AI agents post updates through SPEC-009 AgentIdentity credentials, which
+ * resolve to the PARTNER actor class. Their updates always land as PENDING
+ * per BR-016/BR-018 since only AUTHORITY/ADMIN can self-verify.
+ * (SYSTEM_AUDITOR retired — SPEC-008 DELTA Fix #2; AgentIdentity replaces it.)
  */
-router.post('/:caseId/updates', requireActor('CASE_WORKER', 'AUTHORITY', 'PARTNER', 'SYSTEM_AUDITOR', 'ADMIN'), requireIdempotencyKey, async (req, res, next) => {
+router.post('/:caseId/updates', requireActor('CASE_WORKER', 'AUTHORITY', 'PARTNER', 'ADMIN'), requireIdempotencyKey, async (req, res, next) => {
     let client;
     try {
         client = await pool.connect();
@@ -39,14 +42,11 @@ router.post('/:caseId/updates', requireActor('CASE_WORKER', 'AUTHORITY', 'PARTNE
         }
 
         // AI-assisted actors can never self-verify (BR-016/BR-018/PRP-06)
-        // C5 fix: Only AUTHORITY and ADMIN can directly self-verify. 
-        // Other actors' updates default to PENDING.
+        // C5 fix: Only AUTHORITY and ADMIN can directly self-verify.
+        // Other actors' updates (including PARTNER/AI agents) default to PENDING.
         let effectiveStatus = verificationStatus || 'PENDING';
         if (effectiveStatus === 'VERIFIED' && !['AUTHORITY', 'ADMIN'].includes(req.actor.actorClass)) {
             effectiveStatus = 'PENDING'; // Force to pending if they don't have authority
-        }
-        if (req.actor.actorClass === 'SYSTEM_AUDITOR') {
-            effectiveStatus = 'PENDING';
         }
 
         const update = await client.query(

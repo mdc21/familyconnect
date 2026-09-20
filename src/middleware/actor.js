@@ -8,18 +8,31 @@
  * Here we decode a stubbed bearer token so downstream ABAC logic has a
  * consistent shape to evaluate against.
  *
- * Gap fix #7: SPEC-003's actor matrix (§2) never defined ADMIN, even
- * though the case-handover endpoint lists it as a permitted actor and
- * SPEC-001 §5.11 explicitly warns admins must not get blanket sensitive
- * access. ADMIN is added here as its own class with narrow permitted
- * surfaces (governance/config, not case content) rather than folding it
- * into AUTHORITY.
+ * SPEC-008 DELTA Fix #2 (v0.3): Actor model trimmed from 9 to 6 classes.
+ * Canonical set: PUBLIC, FAMILY, PARTNER, CASE_WORKER, AUTHORITY, ADMIN.
+ *
+ * Migration map for JWT tokens issued under the old 9-class model:
+ *   PERSON        → PUBLIC  (unregistered self-reporters are public actors)
+ *   PROXY         → FAMILY  (proxy contacts are family-authorised actors)
+ *   SYSTEM_AUDITOR → PARTNER (AI agent role superseded by SPEC-009 AgentIdentity;
+ *                             any in-flight SYSTEM_AUDITOR tokens map to PARTNER
+ *                             which correctly restricts to PENDING update status)
  */
 const ACTOR_CLASSES = [
-    'PUBLIC', 'PERSON', 'FAMILY', 'PROXY',
-    'CASE_WORKER', 'PARTNER', 'AUTHORITY',
-    'SYSTEM_AUDITOR', 'ADMIN',
+    'PUBLIC', 'FAMILY', 'PARTNER',
+    'CASE_WORKER', 'AUTHORITY', 'ADMIN',
 ];
+
+/**
+ * JWT legacy role migration map — silently upgrades deprecated role claims
+ * in tokens issued before the SPEC-008 DELTA Fix #2 cutover.
+ * Remove this map once all tokens have been reissued (≥ 90 days after deploy).
+ */
+const LEGACY_ROLE_MAP = {
+    'PERSON':         'PUBLIC',
+    'PROXY':          'FAMILY',
+    'SYSTEM_AUDITOR': 'PARTNER',
+};
 
 const jwt = require('jsonwebtoken');
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
@@ -39,7 +52,9 @@ function resolveActor(req, res, next) {
         const token = auth.slice(7);
         try {
             const decoded = jwt.verify(token, JWT_SECRET);
-            actorClass = decoded.role || 'PUBLIC';
+            const rawRole = decoded.role || 'PUBLIC';
+            // Apply JWT migration map for deprecated roles (SPEC-008 DELTA Fix #2)
+            actorClass = LEGACY_ROLE_MAP[rawRole] || (ACTOR_CLASSES.includes(rawRole) ? rawRole : 'PUBLIC');
             actorId = decoded.sub || null;
             organisationId = decoded.organisationId || null;
             assuranceLevel = 'IAL-2'; // Authenticated coordinator session meets IAL-2
@@ -51,8 +66,11 @@ function resolveActor(req, res, next) {
     // Local debug headers escape hatch
     if (process.env.NODE_ENV !== 'production') {
         const declaredClass = req.get('X-Debug-Actor-Class');
-        if (declaredClass && ACTOR_CLASSES.includes(declaredClass)) {
-            actorClass = declaredClass;
+        const rawDebugClass = declaredClass || null;
+        // Apply migration map for debug headers too, so test scripts using old class names still work
+        if (rawDebugClass) {
+            const mapped = LEGACY_ROLE_MAP[rawDebugClass] || (ACTOR_CLASSES.includes(rawDebugClass) ? rawDebugClass : null);
+            if (mapped) actorClass = mapped;
         }
         if (req.get('X-Debug-Actor-Id')) actorId = req.get('X-Debug-Actor-Id');
         if (req.get('X-Debug-Org-Id')) organisationId = req.get('X-Debug-Org-Id');
@@ -106,4 +124,4 @@ function requireActor(...allowedClasses) {
     };
 }
 
-module.exports = { resolveActor, evaluateAbac, requireActor, ACTOR_CLASSES };
+module.exports = { resolveActor, evaluateAbac, requireActor, ACTOR_CLASSES, LEGACY_ROLE_MAP };

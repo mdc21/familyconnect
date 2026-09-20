@@ -113,4 +113,201 @@ router.get('/active', async (req, res, next) => {
     }
 });
 
+/**
+ * POST /api/v1/organisations
+ * Module M7 — Submits an organisation registration (SPEC-008 §8).
+ * Sets verification_status = 'PENDING' pending admin review.
+ */
+router.post('/', writeLimiter, async (req, res, next) => {
+    let client;
+    try {
+        client = await pool.connect();
+    } catch {
+        return next(new ProblemError('DEGRADED_MODE', 'Database temporarily unavailable.', req.originalUrl));
+    }
+
+    try {
+        const { name, organisationType, country, contactDetails, capabilities, geographicScope } = req.body || {};
+
+        if (!name || !organisationType) {
+            throw new ProblemError('INVALID_SCHEMA', 'name and organisationType are required.', req.originalUrl);
+        }
+
+        await client.query('BEGIN');
+
+        const insertRes = await client.query(
+            `INSERT INTO organisation (
+                name, organisation_type, country, contact_details,
+                capabilities, geographic_scope, verification_status, operational_status
+            ) VALUES ($1, $2, $3, $4, $5, $6, 'PENDING', 'PENDING')
+            RETURNING *`,
+            [
+                name,
+                organisationType,
+                country || 'NP',
+                JSON.stringify(contactDetails || {}),
+                capabilities || [],
+                JSON.stringify(geographicScope || {})
+            ]
+        );
+
+        const org = insertRes.rows[0];
+
+        await writeAuditEvent(client, {
+            actor: req.actor?.actorId || req.actor?.actorClass || 'PUBLIC',
+            organisation: org.organisation_id,
+            action: 'ORGANISATION_REGISTERED',
+            entityType: 'ORGANISATION',
+            entityId: org.organisation_id,
+            newState: { name, organisationType, status: 'PENDING' },
+            accessReason: 'Submitted organisation profile for accreditation',
+            outcome: 'SUCCESS'
+        });
+
+        await client.query('COMMIT');
+
+        res.status(201).json({
+            message: 'Organisation registered. Verification by platform administrator is required before activation.',
+            organisation: {
+                organisationId: org.organisation_id,
+                name: org.name,
+                organisationType: org.organisation_type,
+                country: org.country,
+                verificationStatus: org.verification_status,
+                operationalStatus: org.operational_status,
+                capabilities: org.capabilities,
+                geographicScope: org.geographic_scope
+            }
+        });
+    } catch (err) {
+        await client.query('ROLLBACK').catch(() => {});
+        next(err);
+    } finally {
+        client.release();
+    }
+});
+
+/**
+ * POST /api/v1/organisations/:id/verify
+ * Module M7 — Admin-gated verification flow (SPEC-008 §4 & §8).
+ * Strictly requires ADMIN or AUTHORITY actor class.
+ */
+router.post('/:id/verify', async (req, res, next) => {
+    let client;
+    try {
+        client = await pool.connect();
+    } catch {
+        return next(new ProblemError('DEGRADED_MODE', 'Database temporarily unavailable.', req.originalUrl));
+    }
+
+    try {
+        const actorClass = req.actor?.actorClass;
+        if (!['ADMIN', 'AUTHORITY'].includes(actorClass)) {
+            // Shielded per security invariants
+            throw new ProblemError('NOT_FOUND', 'Not found', req.originalUrl);
+        }
+
+        const orgId = req.params.id;
+        const { note, operationalStatus = 'ACTIVE' } = req.body || {};
+
+        await client.query('BEGIN');
+
+        const existingRes = await client.query(
+            'SELECT * FROM organisation WHERE organisation_id::text = $1 FOR UPDATE',
+            [orgId]
+        );
+
+        if (existingRes.rows.length === 0) {
+            throw new ProblemError('NOT_FOUND', 'Organisation not found.', req.originalUrl);
+        }
+
+        const updateRes = await client.query(
+            `UPDATE organisation
+             SET verification_status = 'VERIFIED',
+                 operational_status = $1,
+                 verified_by = $2,
+                 verified_at = now()
+             WHERE organisation_id::text = $3
+             RETURNING *`,
+            [operationalStatus, req.actor.actorId || req.actor.actorClass, orgId]
+        );
+
+        const verifiedOrg = updateRes.rows[0];
+
+        await writeAuditEvent(client, {
+            actor: req.actor.actorId || req.actor.actorClass,
+            organisation: req.actor.organisationId || 'ADMINISTRATION',
+            action: 'ORGANISATION_VERIFIED',
+            entityType: 'ORGANISATION',
+            entityId: verifiedOrg.organisation_id,
+            previousState: { verification_status: existingRes.rows[0].verification_status },
+            newState: { verification_status: 'VERIFIED', operational_status: operationalStatus, note },
+            accessReason: 'Administrator verified partner credentials',
+            outcome: 'SUCCESS'
+        });
+
+        await client.query('COMMIT');
+
+        res.json({
+            message: 'Organisation verified successfully.',
+            organisation: {
+                organisationId: verifiedOrg.organisation_id,
+                name: verifiedOrg.name,
+                organisationType: verifiedOrg.organisation_type,
+                verificationStatus: verifiedOrg.verification_status,
+                operationalStatus: verifiedOrg.operational_status,
+                verifiedBy: verifiedOrg.verified_by,
+                verifiedAt: verifiedOrg.verified_at
+            }
+        });
+    } catch (err) {
+        await client.query('ROLLBACK').catch(() => {});
+        next(err);
+    } finally {
+        client.release();
+    }
+});
+
+/**
+ * GET /api/v1/organisations
+ * Module M7 — Returns organisations directory.
+ * If caller is ADMIN/AUTHORITY and passes status=PENDING, returns pending queue.
+ * Public actors only receive VERIFIED organisations.
+ */
+router.get('/', async (req, res, next) => {
+    try {
+        const actorClass = req.actor?.actorClass;
+        const requestedStatus = req.query.status;
+
+        let query = 'SELECT organisation_id, name, organisation_type, country, capabilities, geographic_scope, verification_status, operational_status, verified_at FROM organisation';
+        const params = [];
+
+        if (['ADMIN', 'AUTHORITY'].includes(actorClass) && requestedStatus) {
+            query += ' WHERE verification_status = $1';
+            params.push(requestedStatus);
+        } else if (!['ADMIN', 'AUTHORITY'].includes(actorClass)) {
+            query += " WHERE verification_status = 'VERIFIED' AND operational_status = 'ACTIVE'";
+        }
+
+        query += ' ORDER BY name ASC';
+        const result = await pool.query(query, params);
+
+        res.json({
+            organisations: result.rows.map(r => ({
+                organisationId: r.organisation_id,
+                name: r.name,
+                organisationType: r.organisation_type,
+                country: r.country,
+                capabilities: r.capabilities,
+                geographicScope: r.geographic_scope,
+                verificationStatus: r.verification_status,
+                operationalStatus: r.operational_status,
+                verifiedAt: r.verified_at
+            }))
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;

@@ -7,12 +7,13 @@ const router = express.Router({ mergeParams: true });
 
 /**
  * POST /api/v1/cases/:caseId/assistance — SPEC-003 §3.4.
- * Actors: FAMILY, PROXY. Records a FamilyNeed + AssistanceRequest
+ * Actors: FAMILY (including proxy contacts, who map to FAMILY per SPEC-008 DELTA Fix #2).
+ * Records a FamilyNeed + AssistanceRequest
  * (SPEC-002 §27/§28). Triggers a notification to the receiving
  * organisation via the minimum-necessary-disclosure pipeline (SPEC-005 §12).
  */
 router.post('/:caseId/assistance', async (req, res, next) => {
-    if (!['FAMILY', 'PROXY', 'CASE_WORKER'].includes(req.actor.actorClass)) {
+    if (!['FAMILY', 'CASE_WORKER'].includes(req.actor.actorClass)) {
         return next(new ProblemError('NOT_FOUND', 'Not found', req.originalUrl));
     }
     const { needType, priority, description, receivingOrganisationId } = req.body || {};

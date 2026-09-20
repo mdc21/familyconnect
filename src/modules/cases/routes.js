@@ -211,8 +211,9 @@ router.post('/:caseId/actions/:action', requireActor('CASE_WORKER', 'AUTHORITY',
                 throw new ProblemError('INVALID_SCHEMA', `${field} is required for this transition.`, req.originalUrl);
             }
         }
-        // BR-016/BR-017/BR-018: AI can never execute these transitions itself.
-        if (req.actor.actorClass === 'SYSTEM_AUDITOR' && req.params.action !== 'triage') {
+        // BR-016/BR-017/BR-018: AI agents (PARTNER class post-SPEC-008 DELTA Fix #2) cannot
+        // execute case state transitions themselves; human authority required.
+        if (req.actor.actorClass === 'PARTNER' && req.params.action !== 'triage') {
             throw new ProblemError('ILLEGAL_TRANSITION', 'AI/automated actors cannot execute this transition; human authority required.', req.originalUrl);
         }
 
