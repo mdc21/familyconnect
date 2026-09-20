@@ -34,6 +34,9 @@ const authRoutes = require('./modules/auth/routes');                    // JWT c
 const orchestratorRoutes = require('./modules/orchestrator/routes');        // Agentic AI Event Orchestrator
 const eventsRoutes = require('./modules/events/routes');
 const aiRoutes = require('./modules/ai/routes');
+const aiGovernanceRoutes = require('./modules/ai-governance/routes');  // SPEC-009 Agent Governance & Proposals
+const recoveryNeedsRoutes = require('./modules/recovery-needs/routes'); // SPEC-008 Community Recovery & Reconstruction
+const learningRoutes = require('./modules/learning/routes');          // SPEC-010 Humanitarian Learning & Precedents
 const gatewayRoutes = require('./modules/gateways/routes');    // Two-way SMS & WhatsApp Gateway
 const tilesRoutes = require('./modules/tiles/routes');          // Geospatial basemap tile proxy & cache
 const analyticsRoutes = require('./modules/analytics/routes');  // Privacy-preserving visitor metrics
@@ -132,6 +135,9 @@ app.use('/api/v1/organisations', organisationsRoutes); // /organisations/registe
 app.use('/api/v1/tunnels', tunnelsRoutes);            // /tunnels, /tunnels/:siteId/roster, /tunnels/worker-report
 app.use('/api/v1/orchestrator', orchestratorRoutes);  // Autonomous event portal generator & review workflow
 app.use('/api/v1/ai', aiRoutes);                      // AI translation endpoint
+app.use('/api/v1/ai', aiGovernanceRoutes);            // SPEC-009 Agent governance, proposals & kill switch
+app.use('/api/v1', recoveryNeedsRoutes);               // SPEC-008 Recovery needs & community summary
+app.use('/api/v1/learning', learningRoutes);          // SPEC-010 Humanitarian intelligence & precedents
 app.use('/api/v1/gateways', gatewayRoutes);            // Two-way SMS & WhatsApp Gateway (Twilio / Meta)
 app.use('/api/v1/tiles', tilesRoutes);                // High-performance geospatial basemap tile cache
 app.use('/api/v1/analytics', analyticsRoutes);        // In-app privacy-preserving visitor analytics (SPEC-004)

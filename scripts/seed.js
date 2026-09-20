@@ -20,6 +20,7 @@ async function seed() {
         const sqlFiles = [
             { path: '../src/db/schema.sql', skipIfExists: true },
             { path: '../src/db/migration-orchestrator.sql', skipIfExists: false },
+            { path: '../src/db/migration-spec008-009-010.sql', skipIfExists: false },
             { path: '../src/db/seed-modules.sql', skipIfExists: false },
             { path: '../src/db/seed.sql', skipIfExists: false },
             { path: '../src/db/seed_assam.sql', skipIfExists: false }

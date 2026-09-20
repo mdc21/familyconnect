@@ -94,11 +94,20 @@ async function planEvent(detectionId) {
         ];
         const resolvedIds = resolveDependencies(allModuleIds, applicableModules);
         
-        // Insert module activations
+        // SPEC-010 §8 (FR-010-001): Query institutional memory for applicable precedents
+        let applicablePrecedents = [];
+        try {
+            const evaluationService = require('../learning/evaluationService');
+            applicablePrecedents = await evaluationService.queryPrecedents({ hazardType: event.event_type });
+        } catch (precErr) {
+            console.warn('Institutional memory query skipped:', precErr.message);
+        }
+
+        // Insert module activations attributed to A04-PLANNER (SPEC-009 §5)
         for (const mod of applicableModules) {
             await client.query(
                 `INSERT INTO event_module_activation (detection_id, module_id, is_active, activated_by)
-                 VALUES ($1, $2, $3, 'AI_PLANNER')
+                 VALUES ($1, $2, $3, 'A04-PLANNER')
                  ON CONFLICT (detection_id, module_id) DO UPDATE SET is_active = EXCLUDED.is_active`,
                 [detectionId, mod.module_id, resolvedIds.includes(mod.module_id)]
             );
@@ -149,7 +158,8 @@ async function planEvent(detectionId) {
                 })),
             deactivatedModules: applicableModules
                 .filter(m => !resolvedIds.includes(m.module_id))
-                .map(m => m.module_id)
+                .map(m => m.module_id),
+            precedentsConsulted: applicablePrecedents
         };
         
         // Update detected event status and save manifest

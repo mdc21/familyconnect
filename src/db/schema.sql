@@ -662,9 +662,27 @@ CREATE TABLE tunnel_worker_roster (
     created_at              TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_tunnel_site_status ON tunnel_site(operational_status);
-CREATE INDEX idx_tunnel_roster_site ON tunnel_worker_roster(site_id);
+-- ============================================================
+-- PRIVACY-FIRST VISITOR ANALYTICS (SPEC-004 & SPEC-006)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS portal_visitor_metric (
+    id                      SERIAL PRIMARY KEY,
+    metric_date             DATE NOT NULL DEFAULT CURRENT_DATE,
+    event_id                TEXT NOT NULL,
+    page_path               TEXT NOT NULL,
+    page_views              INT NOT NULL DEFAULT 1,
+    unique_visitors         INT NOT NULL DEFAULT 1,
+    created_at              TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at              TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT uq_portal_visitor_metric UNIQUE (metric_date, event_id, page_path)
+);
 
+CREATE TABLE IF NOT EXISTS portal_daily_visitor_hash (
+    metric_date             DATE NOT NULL DEFAULT CURRENT_DATE,
+    event_id                TEXT NOT NULL,
+    visitor_hash            TEXT NOT NULL,
+    PRIMARY KEY (metric_date, event_id, visitor_hash)
+);
 
-
-
+CREATE INDEX IF NOT EXISTS idx_visitor_metric_date_event ON portal_visitor_metric(metric_date, event_id);
+CREATE INDEX IF NOT EXISTS idx_visitor_hash_date_event ON portal_daily_visitor_hash(metric_date, event_id);
