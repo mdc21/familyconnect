@@ -48,6 +48,7 @@ const FC_STRINGS = {
         navTunnel: 'Tunnel rescue',
         navDNA: 'DNA identification',
         navAssistance: 'Assistance centres',
+        navCommunityRecovery: 'Community recovery',
         navWater: 'Safe water',
         navShelter: 'Shelters',
         navInfo: 'Verified information',
@@ -231,6 +232,7 @@ const FC_STRINGS = {
         navTunnel: 'सुरुङ उद्धार',
         navDNA: 'DNA पहिचान',
         navAssistance: 'सहायता केन्द्र',
+        navCommunityRecovery: 'समुदाय पुनर्लाभ',
         navWater: 'सुरक्षित पानी',
         navShelter: 'आश्रय',
         navInfo: 'प्रमाणित जानकारी',
@@ -414,6 +416,7 @@ const FC_STRINGS = {
         navTunnel: 'सुरंग बचाव',
         navDNA: 'DNA पहचान',
         navAssistance: 'सहायता केंद्र',
+        navCommunityRecovery: 'सामुदायिक पुनर्लाभ',
         navWater: 'सुरक्षित पानी',
         navShelter: 'आश्रय',
         navInfo: 'सत्यापित जानकारी',
@@ -597,6 +600,7 @@ const FC_STRINGS = {
         navTunnel: 'সুৰংগ উদ্ধাৰ',
         navDNA: 'ডি এন এ চিনাক্তকৰণ',
         navAssistance: 'সাহায্য কেন্দ্ৰ',
+        navCommunityRecovery: 'সম্প্ৰদায় পুনৰুদ্ধাৰ',
         navWater: 'সুৰক্ষিত পানী',
         navShelter: 'আশ্রয় কেন্দ্র',
         navInfo: 'সত্যাাপিত তথ্য',
@@ -905,11 +909,13 @@ function renderChrome() {
                             const localFileMap = {
                                 'MOD-TUNNEL': 'tunnels.html',
                                 'MOD-DNA': 'dna-request.html',
-                                'MOD-TRACE': 'missing.html'
+                                'MOD-TRACE': 'missing.html',
+                                'MOD-RECOVERY': 'community-recovery.html'
                             };
                             const moduleIdToTranslationKey = {
                                 'MOD-AGENCIES': 'navAgencies',
                                 'MOD-ASSIST': 'navAssistance',
+                                'MOD-RECOVERY': 'navCommunityRecovery',
                                 'MOD-TRACK': 'navTrack',
                                 'MOD-DNA': 'navDNA',
                                 'MOD-TRACE': 'navMissing',

@@ -19,6 +19,7 @@ VALUES
 ('MOD-PARTNERS', 'Partner Updates', 'Updates from relief agencies, police, hospitals, and consular services', ARRAY['ALL'], true, true, 'Partner updates', '/partner-updates', NULL, NULL),
 ('MOD-AGENCIES', 'Active Agencies', 'Directory of responding organisations and their roles', ARRAY['ALL'], true, true, 'Active agencies', '/agencies', 'organisations', NULL),
 ('MOD-TRACK', 'Case Tracker', 'Public case status lookup by reference code', ARRAY['ALL'], true, true, 'Track a case', '/track', NULL, ARRAY['MOD-TRACE']),
+('MOD-RECOVERY', 'Community Recovery & Reconstruction', 'Local community recovery status, reconstruction projects, and legal restitution', ARRAY['ALL'], true, true, 'Community recovery', '/community-recovery', 'recovery', NULL),
 
 -- ── Flood / Glacier / Cloud Burst specific ───────────────
 ('MOD-TUNNEL', 'Tunnel & Underground Rescue', 'Track rescue operations at flooded tunnels, mines, and underground sites', ARRAY['FLOOD','GLACIER_BURST'], false, true, 'Rescue operations', '/rescue-sites', 'rescue', NULL),
