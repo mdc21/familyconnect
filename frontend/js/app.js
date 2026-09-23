@@ -48,7 +48,7 @@ const FC_STRINGS = {
         navTunnel: 'Tunnel rescue',
         navDNA: 'DNA identification',
         navAssistance: 'Assistance centres',
-        navCommunityRecovery: 'Community recovery',
+        navCommunityRecovery: 'Community Recovery',
         navWater: 'Safe water',
         navShelter: 'Shelters',
         navInfo: 'Verified information',
