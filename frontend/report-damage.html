@@ -159,12 +159,33 @@
     </div>
 </main>
 
+<script src="/js/app.js?v=20260924"></script>
+<script src="/js/api.js?v=20260906"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    const isAssam = (typeof DISASTER_EVENT_ID !== 'undefined' && DISASTER_EVENT_ID.includes('IN')) ||
+                    (new URLSearchParams(window.location.search).get('event') || '').includes('IN') ||
+                    (localStorage.getItem('fc_current_event_id') || '').includes('IN');
+    
+    const districtSelect = document.getElementById('district');
+    if (!isAssam && districtSelect) {
+        // Nepal earthquake / glacial flood districts
+        districtSelect.innerHTML = `
+            <option value="">-- Select Nepal District --</option>
+            <option value="Rasuwa" selected>Rasuwa (Dhunche / Syaphrubesi / Rasuwagadhi)</option>
+            <option value="Sindhupalchok">Sindhupalchok (Melamchi / Kodari)</option>
+            <option value="Dolakha">Dolakha (Charikot)</option>
+            <option value="Gorkha">Gorkha (Manaslu Basin)</option>
+            <option value="Kathmandu">Kathmandu Valley</option>
+            <option value="Dhading">Dhading</option>
+            <option value="Nuwakot">Nuwakot</option>
+        `;
+    }
+
     const form = document.getElementById('damage-report-form');
     if (!form) return;
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const statusBox = document.getElementById('damage-submit-status');
         const submitBtn = document.getElementById('damage-submit-btn');
@@ -177,22 +198,59 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Submitting damage assessment…';
 
-        const refNum = 'DMG-AS-' + Math.floor(100000 + Math.random() * 900000);
         const district = document.getElementById('district').value;
+        const locationDetails = document.getElementById('locationDetails').value.trim();
         const category = document.getElementById('damageCategory').value;
+        const description = document.getElementById('damageDescription').value.trim();
+        const immediateEvac = document.getElementById('immediateEvac').checked;
 
-        setTimeout(() => {
+        // Map damage category to M5 asset type & hazard
+        let assetType = 'ROAD_SEGMENT';
+        if (category === 'RESIDENTIAL' || category === 'PUBLIC_INSTITUTION') assetType = 'BUILDING_CIVIC';
+        else if (category === 'EMBANKMENT' || category === 'ROAD_BRIDGE') assetType = 'BRIDGE';
+        else if (category === 'AGRICULTURE') assetType = 'CULVERT_DRAIN';
+
+        const eventId = getActiveEventId();
+
+        try {
+            // 1. Submit to Module M5 Infrastructure Status API
+            const infraRes = await api.submitInfrastructureReport({
+                eventId,
+                assetType,
+                assetName: `${category.replace(/_/g, ' ')} at ${locationDetails}`,
+                district,
+                localityName: locationDetails,
+                operationalStatus: immediateEvac ? 'BLOCKED_LANDSLIDE' : 'PASSABLE_FOUR_WHEEL_DRIVE_ONLY',
+                passability: immediateEvac ? 'IMPASSABLE' : 'FOUR_WHEEL_DRIVE_ONLY',
+                hazardType: isAssam ? 'MONSOON_FLOODING' : 'LANDSLIDE_DEBRIS_FLOW',
+                sourceAgency: 'COMMUNITY_FIELD_OBSERVER',
+                reliabilityTier: 'TIER_3_COMMUNITY_FIELD',
+                notes: `Reported by ${document.getElementById('reporterName').value} (${document.getElementById('reporterPhone').value}): ${description}`
+            });
+
             submitBtn.disabled = false;
             submitBtn.textContent = 'Submit Official Damage Report';
             statusBox.style.display = 'block';
             statusBox.innerHTML = `
-                <div class="notice notice-info" style="background:#ecfdf5; border-left:4px solid #166534; color:#065f46; padding:1rem;">
-                    <h4 style="margin:0 0 0.25rem 0;">✓ Damage Assessment Logged: <code>${refNum}</code></h4>
-                    <p style="margin:0; font-size:0.875rem;">Your report for <strong>${district}</strong> (${category}) has been recorded and queued for the ASDMA field engineering team and Revenue Circle Officer. Keep your reference number for ex-gratia compensation tracking.</p>
+                <div class="notice notice-info" style="background:#ecfdf5; border-left:4px solid #166534; color:#065f46; padding:1.2rem; border-radius:4px;">
+                    <h4 style="margin:0 0 0.25rem 0;">✓ Damage Assessment Logged: <code>${infraRes.infrastructure?.infraReference || infraRes.infraReference || 'LOGGED'}</code></h4>
+                    <p style="margin:0.25rem 0; font-size:0.9rem;">Your infrastructure report for <strong>${district}</strong> (${category}) has been recorded in the coordination ledger. NDRRMA/ASDMA field engineers and local authorities have been notified.</p>
+                    <div style="margin-top:0.75rem;">
+                        <a href="community-recovery.html" class="btn btn-outline-primary" style="font-size:0.85rem; padding:0.35rem 0.75rem;">View Community Recovery Dashboard →</a>
+                    </div>
                 </div>
             `;
             form.reset();
-        }, 600);
+        } catch (err) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Official Damage Report';
+            statusBox.style.display = 'block';
+            statusBox.innerHTML = `
+                <div class="notice notice-error" style="background:#fef2f2; border-left:4px solid #dc2626; color:#991b1b; padding:1rem; border-radius:4px;">
+                    <p style="margin:0;">${err.message || 'Failed to submit damage report. Please check your connection and try again.'}</p>
+                </div>
+            `;
+        }
     });
 });
 </script>
@@ -201,7 +259,5 @@ document.addEventListener('DOMContentLoaded', () => {
         <p class="footer-notice-bold">This is a public service humanitarian site.</p>
     </div>
 </footer>
-<script src="/js/app.js?v=20260924"></script>
-<script src="/js/api.js?v=20260906"></script>
 </body>
 </html>

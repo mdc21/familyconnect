@@ -8,9 +8,10 @@ const router = express.Router();
 const recoveryOpsService = require('./service');
 const { requireActor } = require('../../middleware/actor');
 const { requireAssuranceLevel } = require('../../middleware/assurance');
+const { writeLimiter } = require('../../middleware/rateLimit');
 
 // 1. POST /api/v1/ops/observe-gaps — Run automated recovery gap observation cycle
-router.post('/ops/observe-gaps', requireActor('AUTHORITY', 'CASE_WORKER', 'ADMIN', 'PARTNER'), async (req, res, next) => {
+router.post('/ops/observe-gaps', writeLimiter, requireActor('AUTHORITY', 'CASE_WORKER', 'ADMIN', 'PARTNER'), async (req, res, next) => {
     try {
         const { eventId } = req.body || {};
         const results = await recoveryOpsService.observeRecoveryGaps({
@@ -49,7 +50,7 @@ router.get('/ops/cost-metrics', async (req, res, next) => {
 });
 
 // 4. POST /api/v1/ops/release-approval — Gate G8 formal production release signoff
-router.post('/ops/release-approval', requireActor('AUTHORITY', 'ADMIN'), requireAssuranceLevel('IAL-2'), async (req, res, next) => {
+router.post('/ops/release-approval', writeLimiter, requireActor('AUTHORITY', 'ADMIN'), requireAssuranceLevel('IAL-2'), async (req, res, next) => {
     try {
         const {
             releaseVersion,

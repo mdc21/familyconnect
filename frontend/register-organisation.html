@@ -97,6 +97,35 @@
             <input id="country" name="country" required value="Nepal" placeholder="e.g. Nepal, India, China, International">
         </div>
 
+        <div class="field-block">
+            <label for="swcRegNumber">SWC / NGO Registration Number <span class="optional-tag">(Mandatory for INGOs/NGOs under Nepal SWC Act)</span></label>
+            <input id="swcRegNumber" name="swcRegNumber" placeholder="e.g. SWC-49821 / DAO-Kathmandu-1029">
+        </div>
+
+        <div class="field-block">
+            <label>Response &amp; Recovery Sector Capabilities</label>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                <label style="font-weight: normal; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" name="capabilities" value="TEMPORARY_SHELTER"> Shelter &amp; Reconstruction
+                </label>
+                <label style="font-weight: normal; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" name="capabilities" value="DRINKING_WATER" checked> Water &amp; Sanitation (WASH)
+                </label>
+                <label style="font-weight: normal; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" name="capabilities" value="HEALTHCARE"> Medical &amp; Healthcare
+                </label>
+                <label style="font-weight: normal; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" name="capabilities" value="LOGISTICS_TRANSPORT"> Logistics &amp; Heavy Transport
+                </label>
+                <label style="font-weight: normal; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" name="capabilities" value="INFRASTRUCTURE_REPAIR"> Civil Works &amp; Bailey Bridges
+                </label>
+                <label style="font-weight: normal; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" name="capabilities" value="SEARCH_AND_RESCUE"> Search &amp; Rescue (SAR)
+                </label>
+            </div>
+        </div>
+
         <h2 style="font-size: 1.15rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; margin-top: 1.5rem; margin-bottom: 1rem;">Responsible official contact</h2>
 
         <div class="field-block">
@@ -116,12 +145,14 @@
 
         <div class="field-block">
             <label for="roleDescription">Role Description &amp; Scope <span class="optional-tag">(optional)</span></label>
-            <textarea id="roleDescription" name="roleDescription" rows="3" placeholder="Briefly describe your agency's response scope (e.g. medical triage at TUTH hospital, Langtang trekker manifest tracking)."></textarea>
+            <textarea id="roleDescription" name="roleDescription" rows="3" placeholder="Briefly describe your agency's response scope (e.g. medical triage at TUTH hospital, Langtang trekker manifest tracking, Dhunche water gravity pipe reconstruction)."></textarea>
         </div>
 
         <div class="safe-panel safe-panel--info" style="margin-top: 1rem; margin-bottom: 1.5rem;">
             <p>By registering, you accept that submissions are attributed to your organisation by name, that every action is recorded in an immutable audit trail, and that FamilyConnect never confirms identity or death on your behalf.</p>
         </div>
+
+        <div id="org-register-status" style="display:none; margin-bottom: 1rem;"></div>
 
         <button type="submit" class="btn btn-primary" id="register-submit-btn">Submit Organisation Registration</button>
     </form>
@@ -160,8 +191,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.getElementById('org-register-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const main = document.getElementById('main');
-    clearNotices(main);
+    const statusBox = document.getElementById('org-register-status');
+    statusBox.style.display = 'none';
 
     const form = e.target;
     const organisationName = form.organisationName.value.trim();
@@ -169,9 +200,14 @@ document.getElementById('org-register-form').addEventListener('submit', async (e
     const country = form.country.value.trim();
     const contactName = form.contactName.value.trim();
     const contactEmail = form.contactEmail.value.trim();
+    const swcRegNumber = form.swcRegNumber ? form.swcRegNumber.value.trim() : '';
+
+    const selectedCaps = Array.from(form.querySelectorAll('input[name="capabilities"]:checked')).map(cb => cb.value);
 
     if (!organisationName || !orgType || !contactName || !contactEmail) {
-        showNotice(main, 'Please fill in all required fields marked with an asterisk (*).', 'error');
+        statusBox.style.display = 'block';
+        statusBox.className = 'notice notice-error';
+        statusBox.textContent = 'Please fill in all required fields marked with an asterisk (*).';
         return;
     }
 
@@ -180,20 +216,43 @@ document.getElementById('org-register-form').addEventListener('submit', async (e
     btn.textContent = 'Submitting registration…';
 
     try {
-        const res = await api.registerOrganisation({
-            organisationName,
-            orgType,
-            country,
-            contactName,
-            contactEmail,
-            contactPhone: form.contactPhone.value.trim() || undefined,
-            roleDescription: form.roleDescription.value.trim() || undefined
-        });
+        let res;
+        try {
+            // Attempt direct Module M7 registration
+            res = await apiRequest('POST', '/organisations', {
+                body: {
+                    name: organisationName,
+                    organisationType: orgType,
+                    country: country || 'Nepal',
+                    capabilities: selectedCaps.length ? selectedCaps : ['DISASTER_RELIEF'],
+                    geographicScope: { country: country || 'Nepal', swcRegNumber: swcRegNumber || undefined }
+                }
+            });
+        } catch (m7Err) {
+            // Fallback to legacy registration endpoint
+            res = await api.registerOrganisation({
+                organisationName,
+                orgType,
+                country,
+                contactName,
+                contactEmail,
+                contactPhone: form.contactPhone.value.trim() || undefined,
+                roleDescription: form.roleDescription.value.trim() || undefined
+            });
+        }
 
         form.reset();
-        showNotice(main, res.message || 'Registration request received successfully!', 'success');
+        statusBox.style.display = 'block';
+        statusBox.className = 'notice notice-info';
+        statusBox.innerHTML = `
+            <strong>✓ Registration Application Logged</strong><br>
+            ${res.message || 'Your organisation registration request has been received.'}
+            <br><small>A platform coordinator will verify credentials against statutory records before activation.</small>
+        `;
     } catch (err) {
-        showNotice(main, err.message || 'Failed to submit registration.', 'error');
+        statusBox.style.display = 'block';
+        statusBox.className = 'notice notice-error';
+        statusBox.textContent = err.message || 'Failed to submit registration.';
     } finally {
         btn.disabled = false;
         btn.textContent = 'Submit Organisation Registration';

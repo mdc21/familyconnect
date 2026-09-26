@@ -177,7 +177,8 @@ class EvaluationService {
         interventionSummary,
         resultSummary,
         applicabilityConditions = {},
-        confidence = 0.85
+        confidence = 0.85,
+        isSeed = false
     }) {
         if (!hazardType || !situationSummary || !interventionSummary || !resultSummary) {
             const err = new Error('hazardType, situationSummary, interventionSummary, and resultSummary are required.');
@@ -193,8 +194,8 @@ class EvaluationService {
             const res = await client.query(
                 `INSERT INTO precedent (
                     source_outcome_id, hazard_type, region_type, situation_summary,
-                    intervention_summary, result_summary, applicability_conditions, confidence
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                    intervention_summary, result_summary, applicability_conditions, confidence, is_seed
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 RETURNING *`,
                 [
                     sourceOutcomeId || null,
@@ -204,7 +205,8 @@ class EvaluationService {
                     interventionSummary,
                     resultSummary,
                     JSON.stringify(applicabilityConditions),
-                    confidence
+                    confidence,
+                    Boolean(isSeed)
                 ]
             );
 
@@ -220,10 +222,15 @@ class EvaluationService {
 
     /**
      * Query applicable precedents by checking strict applicability conditions (BR-010-005)
+     * Filters out seed/test fixtures by default to protect production institutional memory.
      */
-    async queryPrecedents({ hazardType, regionType }) {
+    async queryPrecedents({ hazardType, regionType, includeSeed = false }) {
         let query = 'SELECT * FROM precedent WHERE 1=1';
         const params = [];
+
+        if (!includeSeed) {
+            query += ' AND is_seed = FALSE';
+        }
 
         if (hazardType) {
             params.push(hazardType.toUpperCase());

@@ -163,10 +163,13 @@ CREATE TABLE IF NOT EXISTS precedent (
     result_summary          TEXT NOT NULL,
     applicability_conditions JSONB NOT NULL DEFAULT '{}'::jsonb,
     confidence              NUMERIC DEFAULT 0.8,
+    is_seed                 BOOLEAN NOT NULL DEFAULT FALSE,
     created_at              TIMESTAMPTZ DEFAULT now()
 );
 
+ALTER TABLE precedent ADD COLUMN IF NOT EXISTS is_seed BOOLEAN NOT NULL DEFAULT FALSE;
 CREATE INDEX IF NOT EXISTS idx_precedent_hazard ON precedent(hazard_type);
+CREATE INDEX IF NOT EXISTS idx_precedent_seed ON precedent(is_seed);
 
 -- ─── Seed Standard Agent Identities (SPEC-009 §5) ────────────
 INSERT INTO agent_identity (agent_id, agent_role, scoped_permissions, max_proposal_rate)

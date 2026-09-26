@@ -149,22 +149,27 @@ class AgentGovernanceService {
         // BR-009-011: Near-duplicate consolidation
         // Check if there is an existing pending proposal for the same capability with identical or overlapping trigger
         const dupRes = await pool.query(
-            `SELECT proposal_id, problem_statement FROM ai_proposal 
+            `SELECT proposal_id, problem_statement, evidence_refs FROM ai_proposal 
              WHERE affected_capability = $1 AND decision = 'PENDING' 
              LIMIT 1`,
             [affectedCapability]
         );
 
+        const safeEvidenceRefs = (Array.isArray(evidenceRefs) ? evidenceRefs : []).slice(0, 50);
+
         if (dupRes.rows.length > 0) {
-            // Consolidate into existing proposal evidence rather than creating spam
+            // Consolidate into existing proposal evidence rather than creating spam (capped at 50 references)
             const existingId = dupRes.rows[0].proposal_id;
+            const existingRefs = Array.isArray(dupRes.rows[0].evidence_refs) ? dupRes.rows[0].evidence_refs : [];
+            const mergedRefs = [...existingRefs, ...safeEvidenceRefs].slice(0, 50);
+
             await pool.query(
                 `UPDATE ai_proposal 
-                 SET evidence_refs = evidence_refs || $1::jsonb,
+                 SET evidence_refs = $1::jsonb,
                      uncertainty = LEAST(uncertainty, $2),
                      updated_at = now()
                  WHERE proposal_id = $3`,
-                [JSON.stringify(evidenceRefs), uncertainty, existingId]
+                [JSON.stringify(mergedRefs), uncertainty, existingId]
             );
 
             return {
@@ -188,7 +193,7 @@ class AgentGovernanceService {
                 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, now() + ($16 || ' hours')::interval)
                 RETURNING *`,
                 [
-                    agentId, trigger, problemStatement, JSON.stringify(evidenceRefs),
+                    agentId, trigger, problemStatement, JSON.stringify(safeEvidenceRefs),
                     affectedCapability, proposedChange, JSON.stringify(alternatives),
                     expectedOutcome, uncertainty, impactClass, JSON.stringify(riskAssessment),
                     JSON.stringify(dependencies), JSON.stringify(testPlan), rollbackPlan,

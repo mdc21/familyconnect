@@ -25,11 +25,33 @@ services:
       - ./src/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./src/db/migration-orchestrator.sql:/docker-entrypoint-initdb.d/02-orchestrator.sql:ro
       - ./src/db/seed-modules.sql:/docker-entrypoint-initdb.d/03-modules.sql:ro
-      - ./src/db/seed.sql:/docker-entrypoint-initdb.d/04-seed-general.sql:ro
-      - ./src/db/seed_assam.sql:/docker-entrypoint-initdb.d/05-seed-assam.sql:ro
-      - ./test/integration/seed.sql:/docker-entrypoint-initdb.d/06-seed-tests.sql:ro
+      - ./src/db/migration-spec008-phase2.sql:/docker-entrypoint-initdb.d/04-phase2.sql:ro
+      - ./src/db/migration-spec008-phase3.sql:/docker-entrypoint-initdb.d/05-phase3.sql:ro
+      - ./src/db/migration-spec008-phase3-services.sql:/docker-entrypoint-initdb.d/06-phase3-services.sql:ro
+      - ./src/db/migration-spec008-phase4.sql:/docker-entrypoint-initdb.d/07-phase4.sql:ro
+      - ./src/db/migration-spec008-phase5.sql:/docker-entrypoint-initdb.d/08-phase5.sql:ro
+      - ./src/db/migration-spec008-009-010.sql:/docker-entrypoint-initdb.d/09-ai-governance-learning.sql:ro
+      - ./src/db/seed_community_profiles.sql:/docker-entrypoint-initdb.d/10-community-profiles.sql:ro
+      - ./src/db/seed.sql:/docker-entrypoint-initdb.d/11-seed-general.sql:ro
+      - ./src/db/seed_assam.sql:/docker-entrypoint-initdb.d/12-seed-assam.sql:ro
+      - ./test/integration/seed.sql:/docker-entrypoint-initdb.d/13-seed-tests.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U familyconnect -d familyconnect"]
       interval: 2s
       timeout: 5s
       retries: 15
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://familyconnect:familyconnect@postgres:5432/familyconnect
+      NODE_ENV: production
+      PORT: 3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+

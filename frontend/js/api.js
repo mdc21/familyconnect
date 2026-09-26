@@ -185,6 +185,15 @@ const api = {
     verifyOrganisation: (orgId) => apiRequest('POST', `/organisations/${encodeURIComponent(orgId)}/verify`, { headers: authHeader() }),
     getAllOrganisations: (params) => apiRequest('GET', `/organisations${params ? '?' + new URLSearchParams(params).toString() : ''}`, { headers: authHeader() }),
     getDocumentationTemplates: () => apiRequest('GET', '/families/documentation/templates'),
+    // SPEC-008 Phase 4 & Phase 5 (M4, M5, M9, M12)
+    submitInfrastructureReport: (body) => apiRequest('POST', '/infrastructure/status', { body }),
+    getInfrastructureStatus: (params) => apiRequest('GET', `/infrastructure/status${params ? '?' + new URLSearchParams(params).toString() : ''}`),
+    getEssentialServices: (params) => apiRequest('GET', `/essential-services${params ? '?' + new URLSearchParams(params).toString() : ''}`),
+    getFundingTransparency: (eventId) => apiRequest('GET', `/funding/transparency-summary${eventId ? '?eventId=' + encodeURIComponent(eventId) : ''}`),
+    getFundingPledges: (params) => apiRequest('GET', `/funding/pledges${params ? '?' + new URLSearchParams(params).toString() : ''}`, { headers: authHeader() }),
+    submitFundingPledge: (body) => apiRequest('POST', '/funding/pledges', { body }),
+    getRecoveryOpsSummary: (eventId) => apiRequest('GET', `/ops/gaps-summary${eventId ? '?eventId=' + encodeURIComponent(eventId) : ''}`),
+    getRecoveryOpsCost: () => apiRequest('GET', '/ops/cost-metrics'),
     // SPEC-009 & SPEC-010 AI Governance & Fleet Management
     getAiProposals: (params) => apiRequest('GET', `/ai/proposals${params ? '?' + new URLSearchParams(params).toString() : ''}`, { headers: authHeader() }),
     getAiProposal: (id) => apiRequest('GET', `/ai/proposals/${encodeURIComponent(id)}`, { headers: authHeader() }),

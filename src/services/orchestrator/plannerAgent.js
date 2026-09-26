@@ -16,13 +16,30 @@ const { getModulesForEventType, resolveDependencies, getTerminology, getLanguage
  * @returns {Object} Module manifest with activated/deactivated modules and config
  */
 
+function getDeterministicFallbackModules(event, optionalModules) {
+    if (!optionalModules || !optionalModules.length) return [];
+    
+    const isHighSeverity = ['CRITICAL', 'HIGH'].includes(String(event.severity || '').toUpperCase());
+    
+    // Priority filter: exclude heavy DNA forensics unless critical/high severity
+    const selected = optionalModules.filter(m => {
+        if (m.module_id === 'MOD-DNA' && !isHighSeverity) {
+            return false;
+        }
+        const types = m.applicable_types || [];
+        return types.includes('ALL') || types.includes(event.event_type);
+    });
+
+    return selected.map(m => m.module_id);
+}
+
 async function getLLMRecommendedModules(event, optionalModules) {
     if (!optionalModules.length) return [];
     
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-        console.warn("No GEMINI_API_KEY found, returning all optional modules by default.");
-        return optionalModules.map(m => m.module_id);
+        console.warn("No GEMINI_API_KEY found, using deterministic priority fallback.");
+        return getDeterministicFallbackModules(event, optionalModules);
     }
     
     const prompt = `
@@ -56,7 +73,7 @@ Return a JSON array containing ONLY the string IDs of the recommended modules.
         console.warn('LLM module selection failed:', err.message);
     }
     
-    return optionalModules.map(m => m.module_id); // fallback to all
+    return getDeterministicFallbackModules(event, optionalModules);
 }
 
 async function planEvent(detectionId) {
@@ -162,12 +179,22 @@ async function planEvent(detectionId) {
             precedentsConsulted: applicablePrecedents
         };
         
+        // Insert or update disaster_event so all relational foreign keys succeed
+        await client.query(`
+            INSERT INTO disaster_event (
+                event_id, event_type, name, country, region, coordinates, status
+            ) VALUES ($1, $2, $3, $4, $5, $6, 'ACTIVE')
+            ON CONFLICT (event_id) DO NOTHING
+        `, [
+            eventId, event.event_type, event.title, event.country, event.region, JSON.stringify(event.coordinates)
+        ]);
+
         // Update detected event status and save manifest
         await client.query(
             `UPDATE detected_event
-             SET status = 'PLANNED', module_manifest = $1, planned_at = now()
-             WHERE detection_id = $2`,
-            [JSON.stringify(manifest), detectionId]
+             SET status = 'PLANNED', module_manifest = $1, event_id = $2, planned_at = now()
+             WHERE detection_id = $3`,
+            [JSON.stringify(manifest), eventId, detectionId]
         );
         
         // Audit
