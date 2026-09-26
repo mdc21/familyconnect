@@ -235,6 +235,90 @@ const FC_STRINGS = {
         btnReportMissing: 'Report someone missing',
         dnaPrivacyTitle: 'Your privacy',
         dnaPrivacyDesc: 'FamilyConnect never holds genetic data. We record only your contact details, your relationship, and the laboratory\'s own reference numbers. A DNA result is never shown to you as a match here — the responsible authority confirms identity and contacts you directly.',
+        recoveryBadge: 'SPEC-008 Module M3',
+        recoveryTitle: 'Community Recovery & Status',
+        recoverySubtitle: 'Aggregated locality profiles, verified essential service status, and community-level reconstruction indicators.',
+        selectLocalityLabel: 'Select Affected Locality / Community',
+        loadingLocalities: 'Loading disaster localities…',
+        adminScopeLabel: 'Administrative scope:',
+        sparseLocality: 'Sparse Locality',
+        noCommunities: 'No disaster communities registered',
+        errorLoadingCommunities: 'Error loading communities',
+        privacyActiveTitle: 'Privacy Safeguard Active (BR-008-013)',
+        privacyActiveDesc: 'Locality population is below the minimum aggregation threshold (25). Granular counts are suppressed to prevent re-identification of affected individuals in this community.',
+        badgeSuppressed: '⚠️ Disclosure Suppressed (<25 pop)',
+        badgeProtected: '🛡️ Anonymity Protected (pop ≥ 25)',
+        textSuppressed: 'SUPPRESSED',
+        metricTotalNeeds: 'Total Reported Needs',
+        metricTotalSub: 'Public & agency filings',
+        metricVerifiedNeeds: 'Verified Needs',
+        metricVerifiedSub: 'Authority validated',
+        metricUnmetNeeds: 'Active / Unmet Needs',
+        metricUnmetSub: 'Assigned or in-progress',
+        servicesHeading: 'Essential Service Restoration',
+        servicesSub: 'Status as reported by municipal authorities and sector coordination leads.',
+        btnSubmitLocalNeed: 'Submit Local Need',
+        selectCommunityPrompt: 'Select a community to view service statuses.',
+        noServices: 'No verified service status updates on file for this locality.',
+        updatingSummary: 'Updating recovery summary…',
+        lblVerified: 'Verified',
+        resourceBannerTitle: '🤝 Offer Recovery Resources or Technical Assistance',
+        resourceBannerDesc: 'Are you an NGO, contractor, or volunteer team with heavy machinery, clean water equipment, or relief supplies? Register an offer for automated coordination.',
+        btnRegisterOffer: '+ Register Resource Offer',
+        modalOfferTitle: 'Offer Reconstruction & Recovery Resources',
+        modalOfferDesc: 'Offers will be matched with verified community recovery needs by our coordination team (A03-NEEDS agent with human approval gate).',
+        lblProviderName: 'Provider / Organisation Name *',
+        phProviderName: 'e.g. Himalayan Relief Foundation / Nepal Heavy Equipment Assn',
+        lblCategory: 'Resource Category *',
+        lblDistrict: 'Operational District *',
+        phDistrict: 'e.g. Rasuwa / Sindhupalchok',
+        lblQuantity: 'Quantity / Volume',
+        phQuantity: 'e.g. 5',
+        lblUnits: 'Units / Specification',
+        phUnits: 'e.g. mobile trucks / 10,000 L/day',
+        lblContactPerson: 'Contact Person & Phone/Email *',
+        phContactPerson: 'e.g. Pasang Tamang, Coordinator (+977 9841234567)',
+        btnCancel: 'Cancel',
+        btnSubmitOffer: 'Submit Resource Offer',
+        btnSubmittingOffer: 'Submitting offer…',
+        msgOfferSuccess: 'Resource Offer Registered!',
+        msgOfferPending: 'Our AI needs agent (A03-NEEDS) is screening this offer against pending community needs.',
+        catWater: '💧 Water Purification Unit',
+        catMachinery: '🚜 Heavy Machinery / Excavators',
+        catShelter: '⛺ Shelter Materials & CGI Sheets',
+        catSupplies: '📦 Relief Supplies / Ration Kits',
+        catTransport: '🚛 Logistics & Transport Convoys',
+        catVolunteers: '👷 Volunteer Recovery Crew',
+        catProfessional: '🩺 Engineering / Medical Specialists',
+        projectsHeading: 'Community Reconstruction Projects',
+        badgePublicTransparency: 'FR-008-013 Public Transparency',
+        projectsSub: 'Active civil works, bridge repairs, and shelter rehabilitation with verified milestone evidence. Sensitive financial budgets are strictly masked for public view.',
+        loadingProjects: 'Loading community recovery projects…',
+        noProjects: 'No active public reconstruction projects on record for this locality yet.',
+        lblKeyMilestones: 'Key Milestones',
+        lblLead: 'Lead',
+        lblGovDesk: 'Government Coordination Desk',
+        lblVerifiedEvidence: 'Verified Evidence Record',
+        lblFieldPending: 'Field verification pending',
+        legalHeading: 'Vital Events & Identity Restoration (Nepali Statutory Guidance)',
+        badgeLegalFacilitator: 'FR-008-010 Legal Facilitator',
+        legalSub: 'Authoritative procedural checklists under Nepali law for death registration, citizenship duplicate issuance, and disaster victim relief certification.',
+        loadingTemplates: 'Loading statutory templates…',
+        lblCompetentAuthority: 'Competent Authority',
+        lblStatutoryTimeline: 'Standard Statutory Timeline',
+        lblMandatoryDocs: 'Mandatory Document Checklist',
+        lblProceduralSteps: 'Procedural Steps',
+        statusMandatory: 'Mandatory',
+        statusConditional: 'Conditional',
+        statusOperational: 'Operational',
+        statusPartial: 'Partial',
+        statusRestorationInProgress: 'Restoration in Progress',
+        statusRestricted: 'Restricted',
+        statusDisrupted: 'Disrupted',
+        statusClosed: 'Closed',
+        statusPlanned: 'Planned',
+        statusInProgress: 'In Progress',
+        statusCompleted: 'Completed',
     },
     np: {
         brand: 'फ्यामिलीकनेक्ट',
@@ -419,6 +503,90 @@ const FC_STRINGS = {
         btnReportMissing: 'कोही हराएको रिपोर्ट गर्नुहोस्',
         dnaPrivacyTitle: 'तपाईंको गोपनीयता',
         dnaPrivacyDesc: 'FamilyConnect ले कहिल्यै आनुवंशिक डेटा राख्दैन। हामी केवल तपाईंको सम्पर्क विवरणहरू, तपाईंको सम्बन्ध, र प्रयोगशालाको आफ्नै सन्दर्भ नम्बरहरू रेकर्ड गर्छौं। DNA परिणाम तपाईंलाई यहाँ कहिल्यै मेलको रूपमा देखाइँदैन — जिम्मेवार अधिकारीले पहिचान पुष्टि गर्दछ र तपाईंलाई सीधा सम्पर्क गर्दछ।',
+        recoveryBadge: 'SPEC-008 मोड्युल M3',
+        recoveryTitle: 'सामुदायिक पुनर्लाभ तथा स्थिति',
+        recoverySubtitle: 'एकीकृत स्थानीय विवरण, प्रमाणित अत्यावश्यक सेवा स्थिति, र समुदाय-स्तरका पुनर्निर्माण सूचकहरू।',
+        selectLocalityLabel: 'प्रभावित इलाका / समुदाय चयन गर्नुहोस्',
+        loadingLocalities: 'विपद् प्रभावित क्षेत्रहरू लोड हुँदैछ…',
+        adminScopeLabel: 'प्रशासनिक दायरा:',
+        sparseLocality: 'विरल वस्ती',
+        noCommunities: 'कुनै विपद् समुदाय दर्ता गरिएको छैन',
+        errorLoadingCommunities: 'समुदाय लोड गर्न समस्या भयो',
+        privacyActiveTitle: 'गोपनीयता सुरक्षा सक्रिय (BR-008-013)',
+        privacyActiveDesc: 'इलाकाको जनसंख्या न्यूनतम थ्रेसहोल्ड (२५) भन्दा कम छ। यस समुदायका प्रभावित व्यक्तिहरूको पुनः पहिचान रोक्न तथ्याङ्क लुकाइएको छ।',
+        badgeSuppressed: '⚠️ प्रकटीकरण स्थगित (<२५ जनसंख्या)',
+        badgeProtected: '🛡️ गोपनीयता सुरक्षित (जनसंख्या ≥ २५)',
+        textSuppressed: 'गोप्य राखिएको',
+        metricTotalNeeds: 'कुल रिपोर्ट गरिएका आवश्यकताहरू',
+        metricTotalSub: 'सार्वजनिक र संस्थागत दर्ताहरू',
+        metricVerifiedNeeds: 'प्रमाणित आवश्यकताहरू',
+        metricVerifiedSub: 'निकायद्वारा प्रमाणीकरण भएको',
+        metricUnmetNeeds: 'सक्रिय / अपूरित आवश्यकताहरू',
+        metricUnmetSub: 'तोकिएको वा प्रगतिमा रहेको',
+        servicesHeading: 'अत्यावश्यक सेवा पुनस्र्थापना',
+        servicesSub: 'नगरपालिका अधिकारी र क्षेत्र समन्वय प्रमुखहरूद्वारा रिपोर्ट गरिएको स्थिति।',
+        btnSubmitLocalNeed: 'स्थानीय आवश्यकता दर्ता गर्नुहोस्',
+        selectCommunityPrompt: 'सेवा स्थिति हेर्न समुदाय चयन गर्नुहोस्।',
+        noServices: 'यस इलाकाका लागि कुनै प्रमाणित सेवा स्थिति विवरण छैन।',
+        updatingSummary: 'पुनर्लाभ विवरण अद्यावधिक गरिँदैछ…',
+        lblVerified: 'प्रमाणित',
+        resourceBannerTitle: '🤝 पुनर्लाभ स्रोत वा प्राविधिक सहयोग प्रस्ताव गर्नुहोस्',
+        resourceBannerDesc: 'के तपाईं भारी उपकरण, शुद्ध पानी मेसिन, वा राहत सामग्री भएको गैरसरकारी संस्था, ठेकेदार वा स्वयंसेवक टोली हुनुहुन्छ? स्वचालित समन्वयका लागि प्रस्ताव दर्ता गर्नुहोस्।',
+        btnRegisterOffer: '+ स्रोत सहयोग प्रस्ताव दर्ता गर्नुहोस्',
+        modalOfferTitle: 'पुनर्निर्माण र पुनर्लाभ स्रोतहरू प्रस्ताव गर्नुहोस्',
+        modalOfferDesc: 'प्रस्तावहरू हाम्रो समन्वय टोली (मानव अनुमोदन गेटसहित A03-NEEDS एजेन्ट) द्वारा प्रमाणित समुदायका आवश्यकताहरूसँग मिलाइनेछ।',
+        lblProviderName: 'प्रदायक / संस्थाको नाम *',
+        phProviderName: 'जस्तै: हिमालयन रिलिफ फाउन्डेसन / नेपाल हेभी इक्विपमेन्ट संघ',
+        lblCategory: 'स्रोत वर्ग *',
+        lblDistrict: 'कार्य क्षेत्र / जिल्ला *',
+        phDistrict: 'जस्तै: रसुवा / सिन्धुपाल्चोक',
+        lblQuantity: 'परिमाण / क्षमता',
+        phQuantity: 'जस्तै: ५',
+        lblUnits: 'इकाई / विवरण',
+        phUnits: 'जस्तै: मोबाइल ट्रक / १०,००० लिटर प्रति दिन',
+        lblContactPerson: 'सम्पर्क व्यक्ति र फोन/इमेल *',
+        phContactPerson: 'जस्तै: पासाङ तामाङ, संयोजक (+९७७ ९८४१२३४५६७)',
+        btnCancel: 'रद्द गर्नुहोस्',
+        btnSubmitOffer: 'स्रोत प्रस्ताव पेश गर्नुहोस्',
+        btnSubmittingOffer: 'प्रस्ताव पेश हुँदैछ…',
+        msgOfferSuccess: 'स्रोत सहयोग प्रस्ताव दर्ता भयो!',
+        msgOfferPending: 'हाम्रो AI एजेन्ट (A03-NEEDS) ले यस प्रस्तावलाई समुदायका बाँकी आवश्यकताहरूसँग मिलान गर्दैछ।',
+        catWater: '💧 पानी शुद्धिकरण इकाई',
+        catMachinery: '🚜 भारी मेसिनरी / डोजर',
+        catShelter: '⛺ आश्रय सामग्री र जस्तापाता',
+        catSupplies: '📦 राहत सामग्री / खाद्यान्न किट',
+        catTransport: '🚛 ढुवानी र यातायात साधन',
+        catVolunteers: '👷 स्वयंसेवक पुनर्लाभ टोली',
+        catProfessional: '🩺 इन्जिनियरिङ / स्वास्थ्य विशेषज्ञ',
+        projectsHeading: 'सामुदायिक पुनर्निर्माण आयोजनाहरू',
+        badgePublicTransparency: 'FR-008-013 सार्वजनिक पारदर्शिता',
+        projectsSub: 'प्रमाणित माइलस्टोन प्रमाणसहितका सक्रिय सिभिल निर्माण, पुल मर्मत र आश्रय पुनर्निर्माण। सार्वजनिक दृश्यका लागि संवेदनशील आर्थिक बजेट गोप्य राखिएको छ।',
+        loadingProjects: 'सामुदायिक पुनर्निर्माण आयोजनाहरू लोड हुँदैछ…',
+        noProjects: 'यस इलाकाका लागि अहिलेसम्म कुनै सक्रिय सार्वजनिक पुनर्निर्माण आयोजना दर्ता छैन।',
+        lblKeyMilestones: 'मुख्य माइलस्टोनहरू',
+        lblLead: 'नेतृत्व',
+        lblGovDesk: 'सरकारी समन्वय डेस्क',
+        lblVerifiedEvidence: 'प्रमाणित प्रमाण रेकर्ड',
+        lblFieldPending: 'स्थलगत प्रमाणीकरण बाँकी',
+        legalHeading: 'व्यक्तिगत घटना दर्ता तथा पहिचान पुनस्र्थापना (नेपाली कानुनी मार्गदर्शन)',
+        badgeLegalFacilitator: 'FR-008-010 कानुनी सहजकर्ता',
+        legalSub: 'मृत्यु दर्ता, नागरिकता प्रतिलिपि जारी, र विपद् पीडित राहत प्रमाणीकरणका लागि नेपाली कानुन बमोजिम आधिकारिक कार्यविधि।',
+        loadingTemplates: 'कानुनी ढाँचाहरू लोड हुँदैछ…',
+        lblCompetentAuthority: 'सम्बन्धित अधिकारी / निकाय',
+        lblStatutoryTimeline: 'मानक कानुनी समयसीमा',
+        lblMandatoryDocs: 'अनिवार्य कागजात सूची',
+        lblProceduralSteps: 'प्रक्रियागत चरणहरू',
+        statusMandatory: 'अनिवार्य',
+        statusConditional: 'आवश्यकता अनुसार',
+        statusOperational: 'सञ्चालनमा',
+        statusPartial: 'आंशिक सञ्चालन',
+        statusRestorationInProgress: 'मर्मत प्रगतिमा',
+        statusRestricted: 'प्रतिबन्धित',
+        statusDisrupted: 'अवरुद्ध',
+        statusClosed: 'बन्द',
+        statusPlanned: 'योजनाबद्ध',
+        statusInProgress: 'प्रगतिमा',
+        statusCompleted: 'सम्पन्न',
     },
     hi: {
         brand: 'फैमिलीकनेक्ट',
@@ -603,6 +771,90 @@ const FC_STRINGS = {
         btnReportMissing: 'किसी के लापता होने की रिपोर्ट करें',
         dnaPrivacyTitle: 'आपकी गोपनीयता',
         dnaPrivacyDesc: 'FamilyConnect कभी भी आनुवंशिक डेटा नहीं रखता है। हम केवल आपके संपर्क विवरण, आपके रिश्ते, और प्रयोगशाला के स्वयं के संदर्भ संख्या रिकॉर्ड करते हैं। डीएनए परिणाम आपको यहां कभी भी मैच के रूप में नहीं दिखाया जाता है — जिम्मेदार प्राधिकारी पहचान की पुष्टि करता है और आपसे सीधे संपर्क करता है।',
+        recoveryBadge: 'विशिष्ट-008 मॉड्यूल M3',
+        recoveryTitle: 'सामुदायिक पुनर्लाभ और स्थिति',
+        recoverySubtitle: 'एकीकृत स्थानीय प्रोफाइल, सत्यापित आवश्यक सेवा स्थिति, और समुदाय-स्तरीय पुनर्निर्माण संकेतक।',
+        selectLocalityLabel: 'प्रभावित क्षेत्र / समुदाय चुनें',
+        loadingLocalities: 'आपदा प्रभावित क्षेत्र लोड हो रहे हैं…',
+        adminScopeLabel: 'प्रशासनिक दायरा:',
+        sparseLocality: 'कम आबादी वाला इलाका',
+        noCommunities: 'कोई आपदा समुदाय पंजीकृत नहीं है',
+        errorLoadingCommunities: 'समुदाय लोड करने में त्रुटि',
+        privacyActiveTitle: 'गोपनीयता सुरक्षा सक्रिय (BR-008-013)',
+        privacyActiveDesc: 'इलाके की आबादी न्यूनतम एकत्रीकरण सीमा (25) से कम है। प्रभावित व्यक्तियों की पुन: पहचान रोकने के लिए आंकड़े छिपाए गए हैं।',
+        badgeSuppressed: '⚠️ प्रकटीकरण स्थगित (<25 आबादी)',
+        badgeProtected: '🛡️ गोपनीयता सुरक्षित (आबादी ≥ 25)',
+        textSuppressed: 'गोपनीय',
+        metricTotalNeeds: 'कुल रिपोर्ट की गई आवश्यकताएं',
+        metricTotalSub: 'सार्वजनिक एवं एजेंसी पंजीकरण',
+        metricVerifiedNeeds: 'सत्यापित आवश्यकताएं',
+        metricVerifiedSub: 'प्राधिकरण द्वारा मान्य',
+        metricUnmetNeeds: 'सक्रिय / अधूरी आवश्यकताएं',
+        metricUnmetSub: 'आवंटित या प्रगति में',
+        servicesHeading: 'आवश्यक सेवा बहाली',
+        servicesSub: 'नगरपालिका अधिकारियों और क्षेत्र समन्वय प्रमुखों द्वारा रिपोर्ट की गई स्थिति।',
+        btnSubmitLocalNeed: 'स्थानीय आवश्यकता दर्ज करें',
+        selectCommunityPrompt: 'सेवा स्थिति देखने के लिए कोई समुदाय चुनें।',
+        noServices: 'इस इलाके के लिए कोई सत्यापित सेवा स्थिति अपडेट उपलब्ध नहीं है।',
+        updatingSummary: 'पुनर्लाभ सारांश अपडेट हो रहा है…',
+        lblVerified: 'सत्यापित',
+        resourceBannerTitle: '🤝 पुनर्लाभ संसाधन या तकनीकी सहायता की पेशकश करें',
+        resourceBannerDesc: 'क्या आप भारी मशीनरी, स्वच्छ जल उपकरण, या राहत सामग्री वाली एनजीओ, ठेकेदार या स्वयंसेवक टीम हैं? स्वचालित समन्वय के लिए एक प्रस्ताव पंजीकृत करें।',
+        btnRegisterOffer: '+ संसाधन सहायता प्रस्ताव दर्ज करें',
+        modalOfferTitle: 'पुनर्निर्माण और पुनर्लाभ संसाधन प्रस्तावित करें',
+        modalOfferDesc: 'प्रस्तावों को हमारी समन्वय टीम (मानव अनुमोदन गेट के साथ A03-NEEDS एजेंट) द्वारा सत्यापित समुदाय की आवश्यकताओं से मिलाया जाएगा।',
+        lblProviderName: 'प्रदाता / संगठन का नाम *',
+        phProviderName: 'उदा. हिमालयन रिलीफ फाउंडेशन / नेपाल हेवी इक्विपमेंट एसोसिएशन',
+        lblCategory: 'संसाधन श्रेणी *',
+        lblDistrict: 'परिचालन जिला *',
+        phDistrict: 'उदा. रसुवा / सिंधुपाल्चोक',
+        lblQuantity: 'मात्रा / क्षमता',
+        phQuantity: 'उदा. 5',
+        lblUnits: 'इकाइयाँ / विवरण',
+        phUnits: 'उदा. मोबाइल ट्रक / 10,000 लीटर/दिन',
+        lblContactPerson: 'संपर्क व्यक्ति एवं फोन/ईमेल *',
+        phContactPerson: 'उदा. पासांग तमांग, समन्वयक (+977 9841234567)',
+        btnCancel: 'रद्द करें',
+        btnSubmitOffer: 'संसाधन प्रस्ताव जमा करें',
+        btnSubmittingOffer: 'प्रस्ताव जमा हो रहा है…',
+        msgOfferSuccess: 'संसाधन प्रस्ताव पंजीकृत!',
+        msgOfferPending: 'हमारा AI एजेंट (A03-NEEDS) इस प्रस्ताव को समुदाय की लंबित आवश्यकताओं से मिला रहा है।',
+        catWater: '💧 जल शोधन इकाई',
+        catMachinery: '🚜 भारी मशीनरी / उत्खनक',
+        catShelter: '⛺ आश्रय सामग्री और टीन की चादरें',
+        catSupplies: '📦 राहत सामग्री / राशन किट',
+        catTransport: '🚛 रसद एवं परिवहन काफिले',
+        catVolunteers: '👷 स्वयंसेवक पुनर्लाभ दल',
+        catProfessional: '🩺 इंजीनियरिंग / चिकित्सा विशेषज्ञ',
+        projectsHeading: 'सामुदायिक पुनर्निर्माण परियोजनाएं',
+        badgePublicTransparency: 'FR-008-013 सार्वजनिक पारदर्शिता',
+        projectsSub: 'सत्यापित मील के पत्थर के साक्ष्य के साथ सक्रिय निर्माण कार्य, पुल मरम्मत, और आश्रय पुनर्वास। सार्वजनिक दृश्य के लिए वित्तीय बजट छिपाए गए हैं।',
+        loadingProjects: 'सामुदायिक पुनर्निर्माण परियोजनाएं लोड हो रही हैं…',
+        noProjects: 'इस इलाके के लिए अभी तक कोई सक्रिय सार्वजनिक पुनर्निर्माण परियोजना पंजीकृत नहीं है।',
+        lblKeyMilestones: 'प्रमुख मील के पत्थर',
+        lblLead: 'नेतृत्व',
+        lblGovDesk: 'सरकारी समन्वय डेस्क',
+        lblVerifiedEvidence: 'सत्यापित साक्ष्य रिकॉर्ड',
+        lblFieldPending: 'क्षेत्र सत्यापन लंबित',
+        legalHeading: 'व्यक्तिगत घटनाएं एवं पहचान बहाली (नेपाली वैधानिक मार्गदर्शन)',
+        badgeLegalFacilitator: 'FR-008-010 कानूनी सुविधा प्रदाता',
+        legalSub: 'मृत्यु पंजीकरण, नागरिकता प्रतिलिपि जारी करने और आपदा पीड़ित राहत प्रमाणन के लिए नेपाली कानून के तहत आधिकारिक प्रक्रियात्मक चेकलिस्ट।',
+        loadingTemplates: 'वैधानिक टेम्पलेट लोड हो रहे हैं…',
+        lblCompetentAuthority: 'सक्षम प्राधिकारी',
+        lblStatutoryTimeline: 'मानक वैधानिक समयसीमा',
+        lblMandatoryDocs: 'अनिवार्य दस्तावेज़ चेकलिस्ट',
+        lblProceduralSteps: 'प्रक्रियात्मक चरण',
+        statusMandatory: 'अनिवार्य',
+        statusConditional: 'शर्तों के अधीन',
+        statusOperational: 'परिचालन में',
+        statusPartial: 'आंशिक',
+        statusRestorationInProgress: 'बहाली प्रगति में',
+        statusRestricted: 'प्रतिबंधित',
+        statusDisrupted: 'बाधित',
+        statusClosed: 'बंद',
+        statusPlanned: 'नियोजित',
+        statusInProgress: 'प्रगति में',
+        statusCompleted: 'पूर्ण',
     },
     as: {
         brand: 'ফেমিলি-কনেক্ট',
@@ -815,15 +1067,44 @@ function updateLanguageDropdown() {
 }
 
 function getLang() {
-    return localStorage.getItem('fc_lang') || 'en';
+    let lang = localStorage.getItem('fc_lang') || 'en';
+    if (lang === 'ne') lang = 'np';
+    return lang;
 }
 function setLang(lang) {
+    if (lang === 'ne') lang = 'np';
     localStorage.setItem('fc_lang', lang);
 }
 function t(key) {
     const lang = getLang();
     return (FC_STRINGS[lang] || FC_STRINGS.en)[key] || FC_STRINGS.en[key] || key;
 }
+
+async function loadExternalLocales() {
+    const lang = getLang();
+    const tryCodes = [lang, lang === 'np' ? 'ne' : (lang === 'ne' ? 'np' : null)].filter(Boolean);
+    for (const code of tryCodes) {
+        try {
+            const res = await fetch(`/locales/${code}.json`);
+            if (res.ok) {
+                const data = await res.json();
+                FC_STRINGS[lang] = Object.assign({}, FC_STRINGS[lang] || {}, data);
+                applyStaticI18n();
+                window.dispatchEvent(new CustomEvent('fcLanguageChanged', { detail: { lang } }));
+                break;
+            }
+        } catch (_) {
+            // Offline / low-bandwidth fallback to bundled FC_STRINGS
+        }
+    }
+}
+
+// Expose on window for use by page scripts
+window.FC_STRINGS = FC_STRINGS;
+window.getLang = getLang;
+window.setLang = setLang;
+window.t = t;
+window.loadExternalLocales = loadExternalLocales;
 
 function renderChrome() {
     // Inject Google Fonts if not already present (sub-pages skip the <link> in <head>)
@@ -1011,6 +1292,7 @@ function renderChrome() {
     });
     
     applyStaticI18n();
+    loadExternalLocales();
 }
 
 function applyStaticI18n() {
@@ -1032,6 +1314,26 @@ function applyStaticI18n() {
             }
         }
     });
+
+    // 1b. Scan elements with data-i18n-placeholder="key"
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        const translated = t(key);
+        if (translated) {
+            el.placeholder = translated;
+        }
+    });
+
+    // 1c. Scan elements with data-i18n-aria="key"
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+        const key = el.getAttribute('data-i18n-aria');
+        const translated = t(key);
+        if (translated) {
+            el.setAttribute('aria-label', translated);
+        }
+    });
+
+    window.dispatchEvent(new CustomEvent('fcLanguageChanged', { detail: { lang } }));
 
     // 2. Localize triage action cards on home page
     const safeCard = document.querySelector('.card-action.success');

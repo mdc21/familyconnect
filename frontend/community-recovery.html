@@ -278,6 +278,40 @@
     padding: 1.75rem;
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
+
+/* Mobile & Low-Bandwidth Optimizations for Field Responders */
+@media (max-width: 640px) {
+    .recovery-header-card {
+        padding: 1rem;
+    }
+    .community-select {
+        min-width: 100%;
+        width: 100%;
+    }
+    .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    .service-cards, .project-cards {
+        grid-template-columns: 1fr;
+    }
+    .modal-content {
+        padding: 1.25rem 1rem;
+        margin: 0.5rem;
+    }
+    .guidance-tab-row {
+        flex-direction: column;
+    }
+    .guidance-tab-btn {
+        width: 100%;
+        text-align: left;
+    }
+}
+@media (prefers-reduced-data: reduce) {
+    .service-card, .project-card {
+        box-shadow: none;
+    }
+}
 </style>
 </head>
 <body>
@@ -331,19 +365,19 @@
 
 <main class="container">
     <div style="margin-top: 1.5rem; margin-bottom: 1rem;">
-        <span class="badge" style="background:#e0f2fe;color:#0369a1;padding:0.25rem 0.5rem;border-radius:4px;font-size:0.75rem;font-weight:700;">SPEC-008 Module M3</span>
-        <h1 style="margin: 0.35rem 0 0.25rem 0;">Community Recovery & Status</h1>
-        <p class="lede" style="margin-top:0;color:var(--text-muted);">
+        <span class="badge" style="background:#e0f2fe;color:#0369a1;padding:0.25rem 0.5rem;border-radius:4px;font-size:0.75rem;font-weight:700;" data-i18n="recoveryBadge">SPEC-008 Module M3</span>
+        <h1 style="margin: 0.35rem 0 0.25rem 0;" data-i18n="recoveryTitle">Community Recovery &amp; Status</h1>
+        <p class="lede" style="margin-top:0;color:var(--text-muted);" data-i18n="recoverySubtitle">
             Aggregated locality profiles, verified essential service status, and community-level reconstruction indicators.
         </p>
     </div>
 
     <!-- Community Selector Header Card -->
     <section class="recovery-header-card" aria-label="Locality Selection">
-        <label for="community-select" style="font-size:0.85rem;font-weight:700;color:var(--text-main);text-transform:uppercase;letter-spacing:0.05em;">Select Affected Locality / Community</label>
+        <label for="community-select" style="font-size:0.85rem;font-weight:700;color:var(--text-main);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="selectLocalityLabel">Select Affected Locality / Community</label>
         <div class="community-picker-row">
             <select id="community-select" class="community-select" aria-label="Select community locality">
-                <option value="">Loading disaster localities…</option>
+                <option value="" data-i18n="loadingLocalities">Loading disaster localities…</option>
             </select>
             <span id="threshold-badge-container"></span>
         </div>
@@ -354,8 +388,8 @@
     <div id="privacy-warning" class="privacy-banner" style="display:none;" role="alert">
         <div style="font-size:1.3rem;">🛡️</div>
         <div>
-            <strong style="display:block;margin-bottom:0.2rem;">Privacy Safeguard Active (BR-008-013)</strong>
-            <span id="privacy-warning-text">
+            <strong style="display:block;margin-bottom:0.2rem;" data-i18n="privacyActiveTitle">Privacy Safeguard Active (BR-008-013)</strong>
+            <span id="privacy-warning-text" data-i18n="privacyActiveDesc">
                 Locality population is below the minimum aggregation threshold (25). Granular counts are suppressed to prevent re-identification of affected individuals in this community.
             </span>
         </div>
@@ -366,19 +400,19 @@
         <h2 class="sr-only">Need Aggregate Metrics</h2>
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-label">Total Reported Needs</div>
+                <div class="metric-label" data-i18n="metricTotalNeeds">Total Reported Needs</div>
                 <div id="metric-total" class="metric-number">—</div>
-                <div style="font-size:0.75rem;color:var(--text-muted)">Public & agency filings</div>
+                <div style="font-size:0.75rem;color:var(--text-muted)" data-i18n="metricTotalSub">Public &amp; agency filings</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Verified Needs</div>
+                <div class="metric-label" data-i18n="metricVerifiedNeeds">Verified Needs</div>
                 <div id="metric-verified" class="metric-number" style="color:#059669">—</div>
-                <div style="font-size:0.75rem;color:var(--text-muted)">Authority validated</div>
+                <div style="font-size:0.75rem;color:var(--text-muted)" data-i18n="metricVerifiedSub">Authority validated</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Active / Unmet Needs</div>
+                <div class="metric-label" data-i18n="metricUnmetNeeds">Active / Unmet Needs</div>
                 <div id="metric-unmet" class="metric-number" style="color:#d97706">—</div>
-                <div style="font-size:0.75rem;color:var(--text-muted)">Assigned or in-progress</div>
+                <div style="font-size:0.75rem;color:var(--text-muted)" data-i18n="metricUnmetSub">Assigned or in-progress</div>
             </div>
         </div>
     </section>
@@ -387,29 +421,29 @@
     <section class="services-section" aria-label="Essential Services Restoration Status">
         <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:0.5rem">
             <div>
-                <h2 style="margin:0;font-size:1.3rem;">Essential Service Restoration</h2>
-                <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--text-muted);">
+                <h2 style="margin:0;font-size:1.3rem;" data-i18n="servicesHeading">Essential Service Restoration</h2>
+                <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--text-muted);" data-i18n="servicesSub">
                     Status as reported by municipal authorities and sector coordination leads.
                 </p>
             </div>
-            <a href="assistance.html" class="btn btn-sm btn-primary" style="text-decoration:none;padding:0.4rem 0.8rem;border-radius:4px;font-size:0.85rem;">
+            <a href="assistance.html" class="btn btn-sm btn-primary" style="text-decoration:none;padding:0.4rem 0.8rem;border-radius:4px;font-size:0.85rem;" data-i18n="btnSubmitLocalNeed">
                 Submit Local Need
             </a>
         </div>
         <div id="services-grid" class="service-cards">
-            <p style="color:var(--text-muted);font-style:italic;">Select a community to view service statuses.</p>
+            <p style="color:var(--text-muted);font-style:italic;" data-i18n="selectCommunityPrompt">Select a community to view service statuses.</p>
         </div>
     </section>
 
     <!-- Resource Offering Banner (Module M6) -->
     <section style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:1.25rem 1.5rem;margin-top:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
         <div>
-            <h3 style="margin:0;color:#166534;font-size:1.15rem;">🤝 Offer Recovery Resources or Technical Assistance</h3>
-            <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:#15803d;">
+            <h3 style="margin:0;color:#166534;font-size:1.15rem;" data-i18n="resourceBannerTitle">🤝 Offer Recovery Resources or Technical Assistance</h3>
+            <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:#15803d;" data-i18n="resourceBannerDesc">
                 Are you an NGO, contractor, or volunteer team with heavy machinery, clean water equipment, or relief supplies? Register an offer for automated coordination.
             </p>
         </div>
-        <button type="button" class="btn-primary" onclick="openResourceOfferModal()" style="background:#16a34a;border-color:#16a34a;padding:0.55rem 1.1rem;font-size:0.875rem;cursor:pointer;border-radius:6px;">
+        <button type="button" class="btn-primary" onclick="openResourceOfferModal()" style="background:#16a34a;border-color:#16a34a;padding:0.55rem 1.1rem;font-size:0.875rem;cursor:pointer;border-radius:6px;" data-i18n="btnRegisterOffer">
             + Register Resource Offer
         </button>
     </section>
@@ -419,33 +453,33 @@
         <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:0.5rem">
             <div>
                 <div style="display:flex;align-items:center;gap:0.5rem">
-                    <h2 style="margin:0;font-size:1.3rem;">Community Reconstruction Projects</h2>
-                    <span class="badge" style="background:#f1f5f9;font-size:0.75rem">FR-008-013 Public Transparency</span>
+                    <h2 style="margin:0;font-size:1.3rem;" data-i18n="projectsHeading">Community Reconstruction Projects</h2>
+                    <span class="badge" style="background:#f1f5f9;font-size:0.75rem" data-i18n="badgePublicTransparency">FR-008-013 Public Transparency</span>
                 </div>
-                <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--text-muted);">
+                <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--text-muted);" data-i18n="projectsSub">
                     Active civil works, bridge repairs, and shelter rehabilitation with verified milestone evidence. Sensitive financial budgets are strictly masked for public view.
                 </p>
             </div>
         </div>
         <div id="projects-grid" class="project-cards">
-            <p style="color:var(--text-muted);font-style:italic;">Loading community recovery projects…</p>
+            <p style="color:var(--text-muted);font-style:italic;" data-i18n="loadingProjects">Loading community recovery projects…</p>
         </div>
     </section>
 
     <!-- Statutory Legal & Civil Documentation Guidance Section (Module M10) -->
-    <section style="margin-top:2.5rem;margin-bottom:3rem;" aria-label="Legal & Vital Documentation Guidance">
+    <section style="margin-top:2.5rem;margin-bottom:3rem;" aria-label="Legal &amp; Vital Documentation Guidance">
         <div>
             <div style="display:flex;align-items:center;gap:0.5rem">
-                <h2 style="margin:0;font-size:1.3rem;">Vital Events &amp; Identity Restoration (Nepali Statutory Guidance)</h2>
-                <span class="badge" style="background:#fef3c7;color:#92400e;font-size:0.75rem">FR-008-010 Legal Facilitator</span>
+                <h2 style="margin:0;font-size:1.3rem;" data-i18n="legalHeading">Vital Events &amp; Identity Restoration (Nepali Statutory Guidance)</h2>
+                <span class="badge" style="background:#fef3c7;color:#92400e;font-size:0.75rem" data-i18n="badgeLegalFacilitator">FR-008-010 Legal Facilitator</span>
             </div>
-            <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--text-muted);">
+            <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--text-muted);" data-i18n="legalSub">
                 Authoritative procedural checklists under Nepali law for death registration, citizenship duplicate issuance, and disaster victim relief certification.
             </p>
         </div>
         <div class="guidance-container">
             <div class="guidance-tab-row" id="guidance-tabs"></div>
-            <div id="guidance-content">Loading statutory templates…</div>
+            <div id="guidance-content" data-i18n="loadingTemplates">Loading statutory templates…</div>
         </div>
     </section>
 </main>
@@ -454,53 +488,53 @@
 <div id="resource-offer-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-offer-title">
     <div class="modal-content">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;border-bottom:1px solid #e2e8f0;padding-bottom:0.5rem;">
-            <h3 id="modal-offer-title" style="margin:0;font-size:1.15rem;color:var(--text-main);">Offer Reconstruction &amp; Recovery Resources</h3>
+            <h3 id="modal-offer-title" style="margin:0;font-size:1.15rem;color:var(--text-main);" data-i18n="modalOfferTitle">Offer Reconstruction &amp; Recovery Resources</h3>
             <button type="button" onclick="closeResourceOfferModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#64748b;" aria-label="Close modal">&times;</button>
         </div>
-        <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0;">
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0;" data-i18n="modalOfferDesc">
             Offers will be matched with verified community recovery needs by our coordination team (A03-NEEDS agent with human approval gate).
         </p>
         <form id="resource-offer-form" onsubmit="submitResourceOffer(event)">
             <div style="margin-bottom:0.75rem">
-                <label for="offer-provider-name" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Provider / Organisation Name *</label>
-                <input type="text" id="offer-provider-name" required placeholder="e.g. Himalayan Relief Foundation / Nepal Heavy Equipment Assn" style="width:100%;padding:0.45rem 0.6rem;font-size:0.9rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
+                <label for="offer-provider-name" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem" data-i18n="lblProviderName">Provider / Organisation Name *</label>
+                <input type="text" id="offer-provider-name" required data-i18n-placeholder="phProviderName" placeholder="e.g. Himalayan Relief Foundation / Nepal Heavy Equipment Assn" style="width:100%;padding:0.45rem 0.6rem;font-size:0.9rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">
                 <div>
-                    <label for="offer-resource-type" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Resource Category *</label>
+                    <label for="offer-resource-type" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem" data-i18n="lblCategory">Resource Category *</label>
                     <select id="offer-resource-type" required style="width:100%;padding:0.45rem 0.6rem;font-size:0.9rem;border:1px solid #cbd5e1;border-radius:4px;background:white;box-sizing:border-box;">
-                        <option value="WATER_PURIFICATION">💧 Water Purification Unit</option>
-                        <option value="MACHINERY">🚜 Heavy Machinery / Excavators</option>
-                        <option value="SHELTER_MATERIALS">⛺ Shelter Materials &amp; CGI Sheets</option>
-                        <option value="SUPPLIES">📦 Relief Supplies / Ration Kits</option>
-                        <option value="TRANSPORT">🚛 Logistics &amp; Transport Convoys</option>
-                        <option value="VOLUNTEERS">👷 Volunteer Recovery Crew</option>
-                        <option value="PROFESSIONAL_SKILLS">🩺 Engineering / Medical Specialists</option>
+                        <option value="WATER_PURIFICATION" data-i18n="catWater">💧 Water Purification Unit</option>
+                        <option value="MACHINERY" data-i18n="catMachinery">🚜 Heavy Machinery / Excavators</option>
+                        <option value="SHELTER_MATERIALS" data-i18n="catShelter">⛺ Shelter Materials &amp; CGI Sheets</option>
+                        <option value="SUPPLIES" data-i18n="catSupplies">📦 Relief Supplies / Ration Kits</option>
+                        <option value="TRANSPORT" data-i18n="catTransport">🚛 Logistics &amp; Transport Convoys</option>
+                        <option value="VOLUNTEERS" data-i18n="catVolunteers">👷 Volunteer Recovery Crew</option>
+                        <option value="PROFESSIONAL_SKILLS" data-i18n="catProfessional">🩺 Engineering / Medical Specialists</option>
                     </select>
                 </div>
                 <div>
-                    <label for="offer-district" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Operational District *</label>
-                    <input type="text" id="offer-district" required placeholder="e.g. Rasuwa / Sindhupalchok" style="width:100%;padding:0.45rem 0.6rem;font-size:0.9rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
+                    <label for="offer-district" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem" data-i18n="lblDistrict">Operational District *</label>
+                    <input type="text" id="offer-district" required data-i18n-placeholder="phDistrict" placeholder="e.g. Rasuwa / Sindhupalchok" style="width:100%;padding:0.45rem 0.6rem;font-size:0.9rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
                 </div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">
                 <div>
-                    <label for="offer-quantity" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Quantity / Volume</label>
-                    <input type="number" id="offer-quantity" min="1" placeholder="e.g. 5" style="width:100%;padding:0.45rem 0.6rem;font-size:0.9rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
+                    <label for="offer-quantity" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem" data-i18n="lblQuantity">Quantity / Volume</label>
+                    <input type="number" id="offer-quantity" min="1" data-i18n-placeholder="phQuantity" placeholder="e.g. 5" style="width:100%;padding:0.45rem 0.6rem;font-size:0.9rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
                 </div>
                 <div>
-                    <label for="offer-unit" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Units / Specification</label>
-                    <input type="text" id="offer-unit" placeholder="e.g. mobile trucks / 10,000 L/day" style="width:100%;padding:0.45rem 0.6rem;font-size:0.9rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
+                    <label for="offer-unit" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem" data-i18n="lblUnits">Units / Specification</label>
+                    <input type="text" id="offer-unit" data-i18n-placeholder="phUnits" placeholder="e.g. mobile trucks / 10,000 L/day" style="width:100%;padding:0.45rem 0.6rem;font-size:0.9rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
                 </div>
             </div>
             <div style="margin-bottom:0.75rem">
-                <label for="offer-contact" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">Contact Person &amp; Phone/Email *</label>
-                <input type="text" id="offer-contact" required placeholder="e.g. Pasang Tamang, Coordinator (+977 9841234567)" style="width:100%;padding:0.45rem 0.6rem;font-size:0.9rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
+                <label for="offer-contact" style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.25rem" data-i18n="lblContactPerson">Contact Person &amp; Phone/Email *</label>
+                <input type="text" id="offer-contact" required data-i18n-placeholder="phContactPerson" placeholder="e.g. Pasang Tamang, Coordinator (+977 9841234567)" style="width:100%;padding:0.45rem 0.6rem;font-size:0.9rem;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;">
             </div>
             <div id="offer-result-msg" style="margin-bottom:0.75rem"></div>
             <div style="display:flex;justify-content:flex-end;gap:0.5rem">
-                <button type="button" class="btn-outline" onclick="closeResourceOfferModal()" style="padding:0.45rem 0.85rem;font-size:0.85rem;">Cancel</button>
-                <button type="submit" id="btn-submit-offer" class="btn-primary" style="padding:0.45rem 1.1rem;font-size:0.85rem;">Submit Resource Offer</button>
+                <button type="button" class="btn-outline" onclick="closeResourceOfferModal()" style="padding:0.45rem 0.85rem;font-size:0.85rem;" data-i18n="btnCancel">Cancel</button>
+                <button type="submit" id="btn-submit-offer" class="btn-primary" style="padding:0.45rem 1.1rem;font-size:0.85rem;" data-i18n="btnSubmitOffer">Submit Resource Offer</button>
             </div>
         </form>
     </div>
@@ -527,21 +561,31 @@ function escapeHtml(str) {
 }
 
 function formatServiceType(type) {
+    const lang = typeof getLang === 'function' ? getLang() : 'en';
+    const isNp = lang === 'np' || lang === 'ne';
     const map = {
-        DRINKING_WATER: '💧 Drinking Water',
-        ELECTRICITY: '⚡ Power & Grid',
-        TELECOMMUNICATIONS: '📡 Telecom & Internet',
-        HEALTHCARE: '🏥 Health & Medical',
-        ROAD_ACCESS: '🛣️ Road & Bridge Access'
+        DRINKING_WATER: isNp ? '💧 पिउने पानी' : '💧 Drinking Water',
+        ELECTRICITY: isNp ? '⚡ विद्युत तथा ग्रिड' : '⚡ Power & Grid',
+        TELECOMMUNICATIONS: isNp ? '📡 दूरसञ्चार तथा इन्टरनेट' : '📡 Telecom & Internet',
+        HEALTHCARE: isNp ? '🏥 स्वास्थ्य तथा चिकित्सा' : '🏥 Health & Medical',
+        ROAD_ACCESS: isNp ? '🛣️ सडक तथा पुल पहुँच' : '🛣️ Road & Bridge Access'
     };
     return map[type] || type.replace(/_/g, ' ');
 }
 
+function formatStatusLabel(status) {
+    if (!status) return '—';
+    const key = 'status' + status.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+    return typeof t === 'function' ? t(key) : status.replace(/_/g, ' ');
+}
+
 function formatDate(isoStr) {
-    if (!isoStr) return 'Recently verified';
+    if (!isoStr) return typeof t === 'function' ? t('lblVerified') : 'Recently verified';
     try {
         const d = new Date(isoStr);
-        return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const lang = typeof getLang === 'function' ? getLang() : 'en';
+        const locale = (lang === 'np' || lang === 'ne') ? 'ne-NP' : 'en-US';
+        return d.toLocaleDateString(locale) + ' ' + d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
     } catch {
         return isoStr;
     }
@@ -561,7 +605,7 @@ async function loadCommunitySummary(communityId) {
     totalEl.textContent = '…';
     verifiedEl.textContent = '…';
     unmetEl.textContent = '…';
-    servicesGrid.innerHTML = '<p style="color:var(--text-muted);font-style:italic">Updating recovery summary…</p>';
+    servicesGrid.innerHTML = `<p style="color:var(--text-muted);font-style:italic">${typeof t === 'function' ? t('updatingSummary') : 'Updating recovery summary…'}</p>`;
 
     try {
         const data = await api.getCommunityRecoverySummary(communityId);
@@ -571,7 +615,8 @@ async function loadCommunitySummary(communityId) {
             const crumbs = Object.entries(data.adminHierarchy)
                 .map(([k, v]) => `<span class="hierarchy-tag">${escapeHtml(v)}</span>`)
                 .join('<span style="color:#cbd5e1">/</span>');
-            hierarchyEl.innerHTML = `<span>Administrative scope:</span> ${crumbs}`;
+            const adminScope = typeof t === 'function' ? t('adminScopeLabel') : 'Administrative scope:';
+            hierarchyEl.innerHTML = `<span>${adminScope}</span> ${crumbs}`;
         } else {
             hierarchyEl.innerHTML = '';
         }
@@ -579,17 +624,18 @@ async function loadCommunitySummary(communityId) {
         // BR-008-013 privacy threshold enforcement handling
         if (!data.thresholdMet) {
             privacyEl.style.display = 'flex';
-            privacyTextEl.textContent = data.disclosureWarning || 'Locality population is below threshold (25). Counts suppressed.';
-            badgeContainer.innerHTML = `<span class="privacy-badge" style="background:#fef2f2;color:#991b1b;border-color:#fecaca">⚠️ Disclosure Suppressed (&lt;25 pop)</span>`;
-            totalEl.textContent = 'SUPPRESSED';
-            verifiedEl.textContent = 'SUPPRESSED';
-            unmetEl.textContent = 'SUPPRESSED';
+            privacyTextEl.textContent = data.disclosureWarning || (typeof t === 'function' ? t('privacyActiveDesc') : 'Locality population is below threshold (25). Counts suppressed.');
+            badgeContainer.innerHTML = `<span class="privacy-badge" style="background:#fef2f2;color:#991b1b;border-color:#fecaca">${typeof t === 'function' ? t('badgeSuppressed') : '⚠️ Disclosure Suppressed (<25 pop)'}</span>`;
+            const supText = typeof t === 'function' ? t('textSuppressed') : 'SUPPRESSED';
+            totalEl.textContent = supText;
+            verifiedEl.textContent = supText;
+            unmetEl.textContent = supText;
             totalEl.style.fontSize = '1.3rem';
             verifiedEl.style.fontSize = '1.3rem';
             unmetEl.style.fontSize = '1.3rem';
         } else {
             privacyEl.style.display = 'none';
-            badgeContainer.innerHTML = `<span class="privacy-badge">🛡️ Anonymity Protected (pop &ge; 25)</span>`;
+            badgeContainer.innerHTML = `<span class="privacy-badge">${typeof t === 'function' ? t('badgeProtected') : '🛡️ Anonymity Protected (pop ≥ 25)'}</span>`;
             totalEl.style.fontSize = '2.2rem';
             verifiedEl.style.fontSize = '2.2rem';
             unmetEl.style.fontSize = '2.2rem';
@@ -602,7 +648,8 @@ async function loadCommunitySummary(communityId) {
         if (data.serviceStates && data.serviceStates.length > 0) {
             servicesGrid.innerHTML = data.serviceStates.map(svc => {
                 const statusClass = `status-${svc.status || 'PARTIAL'}`;
-                const statusLabel = (svc.status || 'UNKNOWN').replace(/_/g, ' ');
+                const statusLabel = formatStatusLabel(svc.status || 'UNKNOWN');
+                const verifiedLbl = typeof t === 'function' ? t('lblVerified') : 'Verified';
                 return `
                     <article class="service-card" aria-label="${escapeHtml(svc.service_type)} status">
                         <div>
@@ -613,13 +660,13 @@ async function loadCommunitySummary(communityId) {
                             <p class="service-details">${escapeHtml(svc.details || 'No additional status details reported.')}</p>
                         </div>
                         <div class="service-footer">
-                            Verified: ${formatDate(svc.last_verified)}
+                            ${verifiedLbl}: ${formatDate(svc.last_verified)}
                         </div>
                     </article>
                 `;
             }).join('');
         } else {
-            servicesGrid.innerHTML = '<p style="color:var(--text-muted);">No verified service status updates on file for this locality.</p>';
+            servicesGrid.innerHTML = `<p style="color:var(--text-muted);">${typeof t === 'function' ? t('noServices') : 'No verified service status updates on file for this locality.'}</p>`;
         }
 
     } catch (err) {
@@ -644,12 +691,13 @@ async function initCommunityView() {
         }
 
         if (allCommunities.length === 0) {
-            select.innerHTML = '<option value="">No disaster communities registered</option>';
+            select.innerHTML = `<option value="">${typeof t === 'function' ? t('noCommunities') : 'No disaster communities registered'}</option>`;
             return;
         }
 
+        const sparseText = typeof t === 'function' ? t('sparseLocality') : 'Sparse Locality';
         select.innerHTML = allCommunities.map(c => 
-            `<option value="${escapeHtml(c.communityId)}">${escapeHtml(c.name)} (${c.thresholdMet ? 'Pop ' + c.populationEstimate : 'Sparse Locality'})</option>`
+            `<option value="${escapeHtml(c.communityId)}">${escapeHtml(c.name)} (${c.thresholdMet ? 'Pop ' + c.populationEstimate : sparseText})</option>`
         ).join('');
 
         let selectedId = urlCommunity;
@@ -671,7 +719,7 @@ async function initCommunityView() {
         loadLegalGuidance();
     } catch (err) {
         console.error('Failed to load communities:', err);
-        select.innerHTML = '<option value="">Error loading communities</option>';
+        select.innerHTML = `<option value="">${typeof t === 'function' ? t('errorLoadingCommunities') : 'Error loading communities'}</option>`;
     }
 }
 
@@ -679,18 +727,23 @@ async function initCommunityView() {
 async function loadProjects(communityId) {
     const grid = document.getElementById('projects-grid');
     if (!grid) return;
-    grid.innerHTML = '<p style="color:var(--text-muted);font-style:italic">Loading recovery projects…</p>';
+    grid.innerHTML = `<p style="color:var(--text-muted);font-style:italic">${typeof t === 'function' ? t('loadingProjects') : 'Loading recovery projects…'}</p>`;
     try {
         const res = await api.getRecoveryProjects(communityId ? { community_id: communityId } : {});
         const projects = res.projects || [];
         if (!projects.length) {
-            grid.innerHTML = '<p style="color:var(--text-muted);font-style:italic">No active public reconstruction projects on record for this locality yet.</p>';
+            grid.innerHTML = `<p style="color:var(--text-muted);font-style:italic">${typeof t === 'function' ? t('noProjects') : 'No active public reconstruction projects on record for this locality yet.'}</p>`;
             return;
         }
 
         grid.innerHTML = projects.map(proj => {
             const milestones = Array.isArray(proj.milestones) ? proj.milestones : [];
             const evidence = Array.isArray(proj.evidence) ? proj.evidence : [];
+            const leadLbl = typeof t === 'function' ? t('lblLead') : 'Lead';
+            const govDesk = typeof t === 'function' ? t('lblGovDesk') : 'Government Coordination Desk';
+            const milestonesLbl = typeof t === 'function' ? t('lblKeyMilestones') : 'Key Milestones';
+            const evidenceLbl = typeof t === 'function' ? t('lblVerifiedEvidence') : 'Verified Evidence Record';
+            const fieldPendingLbl = typeof t === 'function' ? t('lblFieldPending') : 'Field verification pending';
 
             return `
                 <article class="project-card" aria-label="${escapeHtml(proj.title)}">
@@ -700,14 +753,14 @@ async function loadProjects(communityId) {
                                 <span class="project-ref">${escapeHtml(proj.projectReference || 'PROJECT')}</span>
                                 <h3 style="margin:0.25rem 0 0 0;font-size:1.05rem;color:var(--text-main);">${escapeHtml(proj.title)}</h3>
                             </div>
-                            <span class="status-tag status-${proj.status || 'PLANNED'}">${escapeHtml(proj.status || 'PLANNED')}</span>
+                            <span class="status-tag status-${proj.status || 'PLANNED'}">${escapeHtml(formatStatusLabel(proj.status || 'PLANNED'))}</span>
                         </div>
                         <p style="font-size:0.85rem;color:var(--text-muted);margin:0.4rem 0 0.75rem 0;line-height:1.4;">
                             ${escapeHtml(proj.objective || proj.scope || 'Civic reconstruction initiative.')}
                         </p>
                         ${milestones.length ? `
                             <div style="margin-bottom:0.75rem">
-                                <strong style="font-size:0.78rem;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.04em;">Key Milestones</strong>
+                                <strong style="font-size:0.78rem;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.04em;">${milestonesLbl}</strong>
                                 <div style="margin-top:0.25rem">
                                     ${milestones.map(m => `
                                         <div class="milestone-item">
@@ -719,13 +772,13 @@ async function loadProjects(communityId) {
                             </div>
                         ` : ''}
                     </div>
-                    <div style="border-top:1px solid #f1f5f9;padding-top:0.6rem;font-size:0.75rem;color:var(--text-muted);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.35rem">
-                        <span>Lead: <strong>${escapeHtml(proj.leadOrganisationName || 'Government Coordination Desk')}</strong></span>
+                    <div style="border-top:1px solid #f1f5f9;padding-top:0.6rem;font-size:0.75rem;color:var(--text-muted);display:flex;justify-content:space-between;align-items:center;flex-wrap:gap;gap:0.35rem">
+                        <span>${leadLbl}: <strong>${escapeHtml(proj.leadOrganisationName || govDesk)}</strong></span>
                         ${evidence.length ? `
                             <span class="evidence-badge">
-                                📜 ${evidence.length} Verified Evidence Record${evidence.length === 1 ? '' : 's'}
+                                📜 ${evidence.length} ${evidenceLbl}
                             </span>
-                        ` : '<span style="font-style:italic">Field verification pending</span>'}
+                        ` : `<span style="font-style:italic">${fieldPendingLbl}</span>`}
                     </div>
                 </article>
             `;
@@ -747,13 +800,13 @@ async function loadLegalGuidance() {
         const res = await api.getDocumentationTemplates();
         guidanceTemplates = res.templates || [];
         if (!guidanceTemplates.length) {
-            contentContainer.innerHTML = '<p style="color:var(--text-muted)">Statutory guidance templates unavailable.</p>';
+            contentContainer.innerHTML = `<p style="color:var(--text-muted)">${typeof t === 'function' ? t('loadingTemplates') : 'Statutory guidance templates unavailable.'}</p>`;
             return;
         }
 
-        tabsContainer.innerHTML = guidanceTemplates.map((t, idx) => `
+        tabsContainer.innerHTML = guidanceTemplates.map((tItem, idx) => `
             <button type="button" class="guidance-tab-btn ${idx === 0 ? 'active' : ''}" onclick="selectGuidanceTab(${idx})">
-                ${escapeHtml(t.title.split('(')[0].trim())}
+                ${escapeHtml(tItem.title.split('(')[0].trim())}
             </button>
         `).join('');
 
@@ -772,45 +825,52 @@ function selectGuidanceTab(idx) {
 
 function renderGuidanceTab(idx) {
     const c = document.getElementById('guidance-content');
-    const t = guidanceTemplates[idx];
-    if (!t) return;
+    const tItem = guidanceTemplates[idx];
+    if (!tItem) return;
+
+    const authLbl = typeof t === 'function' ? t('lblCompetentAuthority') : 'Competent Authority';
+    const timelineLbl = typeof t === 'function' ? t('lblStatutoryTimeline') : 'Standard Statutory Timeline';
+    const docsLbl = typeof t === 'function' ? t('lblMandatoryDocs') : 'Mandatory Document Checklist';
+    const stepsLbl = typeof t === 'function' ? t('lblProceduralSteps') : 'Procedural Steps';
+    const mandatoryLbl = typeof t === 'function' ? t('statusMandatory') : 'Mandatory';
+    const conditionalLbl = typeof t === 'function' ? t('statusConditional') : 'Conditional';
 
     c.innerHTML = `
         <div>
             <div class="statutory-alert">
-                <strong>🏛️ Statutory Basis:</strong> ${escapeHtml(t.statutoryBasis)}<br>
-                <small style="display:block;margin-top:0.25rem;">${escapeHtml(t.statutoryDisclaimer)}</small>
+                <strong>🏛️ Statutory Basis:</strong> ${escapeHtml(tItem.statutoryBasis)}<br>
+                <small style="display:block;margin-top:0.25rem;">${escapeHtml(tItem.statutoryDisclaimer)}</small>
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:1rem;margin-bottom:1.25rem;">
                 <div style="background:#f8fafc;padding:0.75rem;border-radius:6px;border:1px solid #e2e8f0;">
-                    <span style="font-size:0.75rem;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Competent Authority</span>
-                    <p style="margin:0.25rem 0 0 0;font-size:0.9rem;font-weight:600;">${escapeHtml(t.authorityName)}</p>
+                    <span style="font-size:0.75rem;text-transform:uppercase;color:var(--text-muted);font-weight:700;">${authLbl}</span>
+                    <p style="margin:0.25rem 0 0 0;font-size:0.9rem;font-weight:600;">${escapeHtml(tItem.authorityName)}</p>
                 </div>
                 <div style="background:#f8fafc;padding:0.75rem;border-radius:6px;border:1px solid #e2e8f0;">
-                    <span style="font-size:0.75rem;text-transform:uppercase;color:var(--text-muted);font-weight:700;">Standard Statutory Timeline</span>
-                    <p style="margin:0.25rem 0 0 0;font-size:0.9rem;font-weight:600;">${escapeHtml(t.standardTimeline)}</p>
+                    <span style="font-size:0.75rem;text-transform:uppercase;color:var(--text-muted);font-weight:700;">${timelineLbl}</span>
+                    <p style="margin:0.25rem 0 0 0;font-size:0.9rem;font-weight:600;">${escapeHtml(tItem.standardTimeline)}</p>
                 </div>
             </div>
-            ${t.disasterSpecialProcedure ? `
+            ${tItem.disasterSpecialProcedure ? `
                 <div style="background:#fffbeb;border-left:4px solid #d97706;padding:0.75rem 1rem;border-radius:4px;font-size:0.85rem;color:#92400e;margin-bottom:1.25rem;">
-                    <strong>⚠️ Special Disaster & Missing Persons Procedure:</strong><br>
-                    ${escapeHtml(t.disasterSpecialProcedure)}
+                    <strong>⚠️ Special Disaster &amp; Missing Persons Procedure:</strong><br>
+                    ${escapeHtml(tItem.disasterSpecialProcedure)}
                 </div>
             ` : ''}
-            <h4 style="margin:0 0 0.5rem 0;font-size:0.95rem;">Mandatory Document Checklist</h4>
-            ${(t.requiredDocuments || []).map(doc => `
+            <h4 style="margin:0 0 0.5rem 0;font-size:0.95rem;">${docsLbl}</h4>
+            ${(tItem.requiredDocuments || []).map(doc => `
                 <div class="checklist-item">
                     <div style="display:flex;justify-content:space-between;align-items:baseline">
                         <strong>${escapeHtml(doc.name)}</strong>
-                        <span class="status-tag ${doc.required ? 'status-RESTRICTED' : 'status-PARTIAL'}">${doc.required ? 'Mandatory' : 'Conditional'}</span>
+                        <span class="status-tag ${doc.required ? 'status-RESTRICTED' : 'status-PARTIAL'}">${doc.required ? mandatoryLbl : conditionalLbl}</span>
                     </div>
                     <p style="margin:0.25rem 0 0 0;color:var(--text-muted);font-size:0.8rem;">${escapeHtml(doc.description)}</p>
                 </div>
             `).join('')}
-            ${t.steps && t.steps.length ? `
-                <h4 style="margin:1.25rem 0 0.5rem 0;font-size:0.95rem;">Procedural Steps</h4>
+            ${tItem.steps && tItem.steps.length ? `
+                <h4 style="margin:1.25rem 0 0.5rem 0;font-size:0.95rem;">${stepsLbl}</h4>
                 <ol style="padding-left:1.25rem;margin:0;font-size:0.85rem;line-height:1.6;color:var(--text-main);">
-                    ${t.steps.map(s => `
+                    ${tItem.steps.map(s => `
                         <li style="margin-bottom:0.35rem">
                             <strong>${escapeHtml(s.title)}:</strong> ${escapeHtml(s.description)}
                         </li>
@@ -839,7 +899,7 @@ async function submitResourceOffer(e) {
     const btn = document.getElementById('btn-submit-offer');
     const msg = document.getElementById('offer-result-msg');
     btn.disabled = true;
-    btn.textContent = 'Submitting offer…';
+    btn.textContent = typeof t === 'function' ? t('btnSubmittingOffer') : 'Submitting offer…';
     msg.innerHTML = '';
 
     const providerName = document.getElementById('offer-provider-name').value.trim();
@@ -860,11 +920,14 @@ async function submitResourceOffer(e) {
 
         const offerId = res.offer?.offerId || res.offerId || 'SUBMITTED';
 
+        const successTitle = typeof t === 'function' ? t('msgOfferSuccess') : 'Resource Offer Registered!';
+        const successPending = typeof t === 'function' ? t('msgOfferPending') : 'Our AI needs agent (A03-NEEDS) is screening this offer against pending community needs.';
+
         msg.innerHTML = `
             <div style="background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;padding:0.75rem;border-radius:4px;font-size:0.85rem;">
-                ✅ <strong>Resource Offer Registered!</strong><br>
+                ✅ <strong>${successTitle}</strong><br>
                 Reference: <code style="background:#d1fae5;padding:0.1rem 0.3rem;border-radius:3px;">${escapeHtml(offerId)}</code><br>
-                Our AI needs agent (A03-NEEDS) is screening this offer against pending community needs.
+                ${successPending}
             </div>
         `;
         document.getElementById('resource-offer-form').reset();
@@ -875,9 +938,19 @@ async function submitResourceOffer(e) {
         msg.innerHTML = `<div class="notice notice-error">${escapeHtml(err.message)}</div>`;
     } finally {
         btn.disabled = false;
-        btn.textContent = 'Submit Resource Offer';
+        btn.textContent = typeof t === 'function' ? t('btnSubmitOffer') : 'Submit Resource Offer';
     }
 }
+
+// Re-render dynamic elements if language changes dynamically
+window.addEventListener('fcLanguageChanged', () => {
+    const select = document.getElementById('community-select');
+    const currentId = select ? select.value : (allCommunities[0] && allCommunities[0].communityId);
+    if (currentId) {
+        loadCommunitySummary(currentId);
+        loadProjects(currentId);
+    }
+});
 
 document.addEventListener('DOMContentLoaded', initCommunityView);
 </script>
