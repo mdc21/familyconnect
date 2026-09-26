@@ -7,23 +7,20 @@
                 <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
             </span>
         </a>
-        <div style="display:flex;align-items:center;gap:1rem">
+        <div class="site-header-controls">
             <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
-            <div style="display:flex;align-items:center;gap:0.35rem">
-                <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
-                <select id="event-switcher"
-                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main);max-width:240px;text-overflow:ellipsis;"
-                    aria-label="Active Event">
-                </select>
-            </div>
-            <div style="display:flex;align-items:center;gap:0.35rem">
-                <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
-                <select id="lang-switcher"
-                    style="padding:0.25rem 0.4rem;font-size:0.78rem;border:1px solid rgba(0,94,184,0.3);border-radius:4px;cursor:pointer;background:white;color:var(--text-main)"
-                    aria-label="Language / भाषा">
-                </select>
-            </div>
-            <a href="/console.html" class="btn-outline" style="padding:0.25rem 0.6rem;font-size:0.75rem;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:0.25rem;border:1px solid rgba(0,94,184,0.3);color:var(--primary);background:white;">
+            <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
+            <select id="event-switcher" class="header-select" aria-label="Active Event">
+                <option value="">Loading events…</option>
+            </select>
+            <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
+            <select id="lang-switcher" class="header-select" aria-label="Language / भाषा">
+                <option value="en">EN – English</option>
+                <option value="np">NP – नेपाली</option>
+                <option value="hi">HI – हिन्दी</option>
+                <option value="as">AS – অসমীয়া</option>
+            </select>
+            <a href="/console.html" class="header-sign-in">
                 🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
             </a>
         </div>

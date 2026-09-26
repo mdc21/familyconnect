@@ -27,12 +27,27 @@ if (typeof document !== 'undefined') {
 
 // ── PWA: Register Service Worker ─────────────────────────────────────────
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        const swPath = location.pathname.includes('/guides/') ? '../sw.js' : '/sw.js';
-        navigator.serviceWorker.register(swPath).catch(() => {
-            // Silently fail — offline support is a progressive enhancement
+    const isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
+    if (isLocalDev) {
+        // On localhost: unregister stale SWs and clear caches first, then re-register
+        // This prevents the offline fallback from appearing during development
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+            return Promise.all(registrations.map(r => r.unregister()));
+        }).then(() => caches.keys()).then((keys) => {
+            return Promise.all(keys.map(k => caches.delete(k)));
+        }).then(() => {
+            const swPath = location.pathname.includes('/guides/') ? '../sw.js' : '/sw.js';
+            return navigator.serviceWorker.register(swPath);
+        }).catch(() => { /* SW is a progressive enhancement */ });
+    } else {
+        window.addEventListener('load', () => {
+            const swPath = location.pathname.includes('/guides/') ? '../sw.js' : '/sw.js';
+            navigator.serviceWorker.register(swPath).catch(() => {
+                // Silently fail — offline support is a progressive enhancement
+            });
         });
-    });
+    }
 }
 
 // ── i18n — Language strings (EN / NP / HI) ──────────────────────────────
@@ -776,10 +791,10 @@ const FC_STRINGS = {
 };
 
 const ALL_LANGUAGES = {
-    en: { code: 'en', name: 'English (EN)' },
-    as: { code: 'as', name: 'অসমীয়া / Assamese (AS)' },
-    hi: { code: 'hi', name: 'हिन्दी / Hindi (HI)' },
-    np: { code: 'np', name: 'नेपाली / Nepali (NP)' }
+    en: { code: 'en', name: 'EN – English' },
+    as: { code: 'as', name: 'AS – অসমীয়া' },
+    hi: { code: 'hi', name: 'HI – हिन्दी' },
+    np: { code: 'np', name: 'NP – नेपाली' }
 };
 
 function updateLanguageDropdown() {
@@ -838,11 +853,10 @@ function renderChrome() {
     const currentEventId = eventFromUrl || localStorage.getItem('fc_current_event_id') || window.FC_EVENT_ID || 'EVENT-IN-FL-2026-1187';
     const eventParam = currentEventId ? `?event=${encodeURIComponent(currentEventId)}` : '';
 
-    // Synchronously generate initial language options with all supported languages
-    let langOptionsHtml = '';
-    Object.values(ALL_LANGUAGES).forEach(langInfo => {
-        langOptionsHtml += `<option value="${langInfo.code}" ${lang === langInfo.code ? 'selected' : ''}>${langInfo.name}</option>`;
-    });
+    // Pre-populate lang switcher synchronously so it is never blank while
+    // events are loading (the langOptionsHtml variable was previously built
+    // here but never injected — this replaces that dead code).
+    updateLanguageDropdown();
 
     // ── Site header ──────────────────────────────────────────────────────
     cleanupDuplicateHeaders();
@@ -856,27 +870,15 @@ function renderChrome() {
     if (typeof api !== 'undefined' && typeof api.getActiveEvents === 'function') {
         api.getActiveEvents().then(data => {
             if (data.events && data.events.length > 0) {
-                eventSwitcher.innerHTML = '';
-                let foundCurrent = false;
-                data.events.forEach(ev => {
-                    const option = document.createElement('option');
-                    option.value = ev.event_id;
-                    option.textContent = ev.name;
-                    if (ev.event_id === currentEventId) {
-                        option.selected = true;
-                        foundCurrent = true;
-                    }
-                    eventSwitcher.appendChild(option);
-                });
-                if (!foundCurrent) {
-                    eventSwitcher.innerHTML += `<option value="${currentEventId}" selected>${currentEventId}</option>`;
-                }
-
+                // Build all option HTML first, then assign atomically to avoid blank flash
+                const optsHtml = data.events.map(ev =>
+                    `<option value="${ev.event_id}"${ev.event_id === currentEventId ? ' selected' : ''}>${ev.name}</option>`
+                ).join('');
+                let foundCurrent = data.events.some(ev => ev.event_id === currentEventId);
+                eventSwitcher.innerHTML = optsHtml +
+                    (!foundCurrent ? `<option value="${currentEventId}" selected>${currentEventId}</option>` : '');
                 // Dynamic UI Updates based on selected event
                 const currentEventData = data.events.find(ev => ev.event_id === currentEventId) || data.events[0];
-                
-                // Ensure language options are updated
-                updateLanguageDropdown();
 
                 if (currentEventData) {
                     document.querySelectorAll('.fc-dynamic-event-name').forEach(el => el.textContent = currentEventData.name);

@@ -2,7 +2,7 @@
 // Provides offline fallback for families in low-connectivity disaster zones.
 // Cache strategy: network-first for API calls, cache-first for static assets.
 
-const CACHE_NAME = "familyconnect-v18";
+const CACHE_NAME = "familyconnect-v19";
 const OFFLINE_FALLBACK = '/offline.html';
 
 // Assets to pre-cache on install
@@ -63,6 +63,11 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
+
+    // DEV: bypass SW on localhost — always go to network so dev server shows live data
+    if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+        return; // let browser handle it normally
+    }
 
     // API: always try network, never cache
     if (url.pathname.startsWith('/api/')) {
