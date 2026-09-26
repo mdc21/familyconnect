@@ -24,6 +24,9 @@ async function cleanupSeedData() {
         await client.query('BEGIN');
 
         const tables = [
+            'service_outage_report',
+            'essential_service_status',
+            'data_sharing_agreement',
             'recovery_task',
             'recovery_project',
             'resource_offer',
