@@ -24,6 +24,10 @@ async function cleanupSeedData() {
         await client.query('BEGIN');
 
         const tables = [
+            'aid_delivery_evidence',
+            'aid_allocation',
+            'funding_pledge',
+            'infrastructure_status',
             'service_outage_report',
             'essential_service_status',
             'data_sharing_agreement',

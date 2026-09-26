@@ -39,6 +39,8 @@ const aiRoutes = require('./modules/ai/routes');
 const aiGovernanceRoutes = require('./modules/ai-governance/routes');  // SPEC-009 Agent Governance & Proposals
 const recoveryNeedsRoutes = require('./modules/recovery-needs/routes'); // SPEC-008 Community Recovery & Reconstruction
 const essentialServicesRoutes = require('./modules/essential-services/routes'); // SPEC-008 M4 Essential Services
+const infrastructureRoutes = require('./modules/infrastructure/routes'); // SPEC-008 M5 Critical Infrastructure
+const fundingRoutes = require('./modules/funding-registry/routes'); // SPEC-008 M9 Funding & Aid Registry
 const resourcesRoutes = require('./modules/resources/routes');              // SPEC-008 M6 Resource Exchange
 const recoveryProjectsRoutes = require('./modules/recovery-projects/routes'); // SPEC-008 M8 Recovery Projects
 const learningRoutes = require('./modules/learning/routes');          // SPEC-010 Humanitarian Learning & Precedents
@@ -147,6 +149,8 @@ app.use('/api/v1/ai', aiRoutes);                      // AI translation endpoint
 app.use('/api/v1/ai', aiGovernanceRoutes);            // SPEC-009 Agent governance, proposals & kill switch
 app.use('/api/v1', recoveryNeedsRoutes);               // SPEC-008 Recovery needs & community summary
 app.use('/api/v1', essentialServicesRoutes);            // SPEC-008 M4 Essential Services
+app.use('/api/v1', infrastructureRoutes);               // SPEC-008 M5 Critical Infrastructure
+app.use('/api/v1', fundingRoutes);                      // SPEC-008 M9 Funding & Aid Registry
 app.use('/api/v1/resources', resourcesRoutes);         // SPEC-008 M6 Resource Exchange & Match Proposals
 app.use('/api/v1/recovery-projects', recoveryProjectsRoutes); // SPEC-008 M8 Recovery Projects & Tasks
 app.use('/api/v1/learning', learningRoutes);          // SPEC-010 Humanitarian intelligence & precedents
