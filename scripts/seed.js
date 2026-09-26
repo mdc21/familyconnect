@@ -25,6 +25,7 @@ async function seed() {
             { path: '../src/db/migration-spec008-phase3.sql', skipIfExists: false },
             { path: '../src/db/migration-spec008-phase3-services.sql', skipIfExists: false },
             { path: '../src/db/migration-spec008-phase4.sql', skipIfExists: false },
+            { path: '../src/db/migration-spec008-phase5.sql', skipIfExists: false },
             { path: '../src/db/seed-modules.sql', skipIfExists: false },
             { path: '../src/db/seed.sql', skipIfExists: false },
             { path: '../src/db/seed_assam.sql', skipIfExists: false },

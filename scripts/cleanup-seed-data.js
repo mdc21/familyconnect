@@ -24,6 +24,7 @@ async function cleanupSeedData() {
         await client.query('BEGIN');
 
         const tables = [
+            'agent_cost_log',
             'aid_delivery_evidence',
             'aid_allocation',
             'funding_pledge',

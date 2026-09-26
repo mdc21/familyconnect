@@ -41,6 +41,7 @@ const recoveryNeedsRoutes = require('./modules/recovery-needs/routes'); // SPEC-
 const essentialServicesRoutes = require('./modules/essential-services/routes'); // SPEC-008 M4 Essential Services
 const infrastructureRoutes = require('./modules/infrastructure/routes'); // SPEC-008 M5 Critical Infrastructure
 const fundingRoutes = require('./modules/funding-registry/routes'); // SPEC-008 M9 Funding & Aid Registry
+const recoveryOpsRoutes = require('./modules/recovery-ops/routes'); // SPEC-008 M12 AI Operations & Gate G8
 const resourcesRoutes = require('./modules/resources/routes');              // SPEC-008 M6 Resource Exchange
 const recoveryProjectsRoutes = require('./modules/recovery-projects/routes'); // SPEC-008 M8 Recovery Projects
 const learningRoutes = require('./modules/learning/routes');          // SPEC-010 Humanitarian Learning & Precedents
@@ -151,6 +152,7 @@ app.use('/api/v1', recoveryNeedsRoutes);               // SPEC-008 Recovery need
 app.use('/api/v1', essentialServicesRoutes);            // SPEC-008 M4 Essential Services
 app.use('/api/v1', infrastructureRoutes);               // SPEC-008 M5 Critical Infrastructure
 app.use('/api/v1', fundingRoutes);                      // SPEC-008 M9 Funding & Aid Registry
+app.use('/api/v1', recoveryOpsRoutes);                 // SPEC-008 M12 AI Operations & Gate G8
 app.use('/api/v1/resources', resourcesRoutes);         // SPEC-008 M6 Resource Exchange & Match Proposals
 app.use('/api/v1/recovery-projects', recoveryProjectsRoutes); // SPEC-008 M8 Recovery Projects & Tasks
 app.use('/api/v1/learning', learningRoutes);          // SPEC-010 Humanitarian intelligence & precedents
