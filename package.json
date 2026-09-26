@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "node src/app.js",
-    "test": "node --test test/*.test.js",
+    "test": "node --test --test-concurrency=1 test/*.test.js",
     "test:integration": "node --test test/integration/*.test.js",
     "db:seed": "node scripts/seed.js",
     "db:clean-seeds": "node scripts/cleanup-seed-data.js"
