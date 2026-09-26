@@ -163,8 +163,18 @@ const COUNTRY_LANGUAGES = {
     PK: ['en'],
     CN: ['en', 'zh'],
     JP: ['en', 'ja'],
-    PH: ['en'],
-    ID: ['en'],
+    PH: ['en', 'tl'],
+    ID: ['id', 'en'],
+    // Pacific Island & Coastal Nations
+    FJ: ['en', 'fj', 'hif'], // Fiji: English, Fijian, Fiji Hindi
+    VU: ['en', 'bi', 'fr'],  // Vanuatu: English, Bislama, French
+    SB: ['en', 'pis'],       // Solomon Islands: English, Pijin
+    TO: ['en', 'to'],        // Tonga: English, Tongan
+    WS: ['en', 'sm'],        // Samoa: English, Samoan
+    PG: ['en', 'tpi', 'ho'], // Papua New Guinea: English, Tok Pisin, Hiri Motu
+    MG: ['mg', 'fr', 'en'],  // Madagascar: Malagasy, French, English
+    MZ: ['pt', 'en'],        // Mozambique: Portuguese, English
+    MU: ['en', 'fr', 'mfe'], // Mauritius: English, French, Mauritian Creole
     US: ['en', 'es'],
     MX: ['es', 'en'],
     BR: ['pt', 'en'],
