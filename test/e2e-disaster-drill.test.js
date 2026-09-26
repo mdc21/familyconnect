@@ -51,6 +51,44 @@ describe('FamilyConnect End-to-End Disaster Simulation Drill', () => {
     let createdInfraId;
     let createdServiceId;
 
+    after(async () => {
+        // Clean up temporary drill records from database to prevent duplicate events
+        const client = await pool.connect();
+        try {
+            await client.query("DELETE FROM event_review WHERE detection_id IN (SELECT detection_id FROM detected_event WHERE source_alert_id = 'GDACS-FL-SIM-DRILL-2026')");
+            await client.query("DELETE FROM generated_artifact WHERE detection_id IN (SELECT detection_id FROM detected_event WHERE source_alert_id = 'GDACS-FL-SIM-DRILL-2026')");
+            await client.query("DELETE FROM event_module_activation WHERE detection_id IN (SELECT detection_id FROM detected_event WHERE source_alert_id = 'GDACS-FL-SIM-DRILL-2026')");
+            await client.query("DELETE FROM detected_event WHERE source_alert_id = 'GDACS-FL-SIM-DRILL-2026'");
+            
+            const simEvents = await client.query("SELECT event_id FROM disaster_event WHERE name LIKE '%Simulated%' OR event_id LIKE 'EVENT-NP-FL-2026-%'");
+            const evIds = simEvents.rows.map(r => r.event_id);
+            if (evIds.length > 0) {
+                await client.query("DELETE FROM aid_delivery_evidence WHERE allocation_id IN (SELECT allocation_id FROM aid_allocation WHERE pledge_id IN (SELECT pledge_id FROM funding_pledge WHERE event_id = ANY($1)))", [evIds]);
+                await client.query("DELETE FROM aid_allocation WHERE pledge_id IN (SELECT pledge_id FROM funding_pledge WHERE event_id = ANY($1))", [evIds]);
+                await client.query("DELETE FROM funding_pledge WHERE event_id = ANY($1)", [evIds]);
+                await client.query("DELETE FROM recovery_task WHERE project_id IN (SELECT project_id FROM recovery_project WHERE event_id = ANY($1))", [evIds]);
+                await client.query("DELETE FROM recovery_project WHERE event_id = ANY($1)", [evIds]);
+                await client.query("DELETE FROM recovery_need WHERE event_id = ANY($1)", [evIds]);
+                await client.query("DELETE FROM disaster_event WHERE event_id = ANY($1)", [evIds]);
+            }
+
+            if (createdInfraId) {
+                await client.query("DELETE FROM infrastructure_status WHERE infra_id = $1", [createdInfraId]);
+            }
+            if (createdServiceId) {
+                await client.query("DELETE FROM service_outage_report WHERE service_id = $1", [createdServiceId]);
+                await client.query("DELETE FROM essential_service_status WHERE service_id = $1", [createdServiceId]);
+            }
+            if (registeredOrgId) {
+                await client.query("DELETE FROM organisation WHERE organisation_id = $1", [registeredOrgId]);
+            }
+        } catch (e) {
+            console.error('Test cleanup error:', e.message);
+        } finally {
+            client.release();
+        }
+    });
+
     // ── STEP 1 & 2: Sensing & Autonomous Planning ────────────────────────────
     it('Step 1 & 2: Detects new disaster event and executes A04-PLANNER module resolution', async () => {
         // Insert a simulated GDACS alert
