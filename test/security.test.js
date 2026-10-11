@@ -63,6 +63,26 @@ test('OWASP Top 10 Security Controls Verification', async (t) => {
         }
     });
 
+    await t.test('Orchestrator: /scan allows ADMIN with IAL-2 and returns scan results structure', async () => {
+        const server = app.listen(0);
+        try {
+            const res = await makeRequest(server, 'POST', '/api/v1/orchestrator/scan', {
+                headers: {
+                    'X-Debug-Actor-Class': 'ADMIN',
+                    'X-Debug-Actor-Id': 'admin-test',
+                    'X-Debug-IAL': 'IAL-2',
+                }
+            });
+            assert.strictEqual(res.status, 200);
+            assert.ok(typeof res.body.message === 'string');
+            assert.ok(typeof res.body.totalAlerts === 'number');
+            assert.ok(typeof res.body.newCount === 'number');
+            assert.ok(Array.isArray(res.body.events));
+        } finally {
+            server.close();
+        }
+    });
+
     await t.test('Orchestrator: /plan rejects unauthenticated caller with 404', async () => {
         const server = app.listen(0);
         try {

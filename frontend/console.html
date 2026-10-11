@@ -1458,15 +1458,18 @@ async function loadOrchestratorView() {
                 </tr>
             </thead>
             <tbody>
-            ${events.map(ev => `
+            ${events.map(ev => {
+                const alertLvl = String(ev.alert_level || '').toUpperCase();
+                const alertPill = (alertLvl === 'RED' || alertLvl === 'CRITICAL') ? 'CRITICAL' : (alertLvl === 'ORANGE' || alertLvl === 'HIGH') ? 'MEDIUM' : 'LOW';
+                return `
                 <tr>
                     <td>
                         <strong>${escapeHtml(ev.title)}</strong><br>
-                        <code>${escapeHtml(ev.event_code)}</code>
+                        <code>${escapeHtml(ev.event_code || ev.source_alert_id || 'PENDING')}</code>
                     </td>
                     <td><span class="status-pill pill-KIT_DISPATCHED">${escapeHtml(ev.event_type)}</span></td>
-                    <td>${escapeHtml(ev.location_name)}, ${escapeHtml(ev.country_name)} (${escapeHtml(ev.country_code)})</td>
-                    <td><span class="status-pill pill-${ev.alert_level === 'Red' ? 'CRITICAL' : ev.alert_level === 'Orange' ? 'MEDIUM' : 'LOW'}">${escapeHtml(ev.alert_level)} Alert</span></td>
+                    <td>${escapeHtml(ev.location_name || ev.region || '—')}, ${escapeHtml(ev.country_name || '')} (${escapeHtml(ev.country_code || '')})</td>
+                    <td><span class="status-pill pill-${alertPill}">${escapeHtml(ev.alert_level || 'UNKNOWN')} Alert</span></td>
                     <td><span class="status-pill pill-${ev.status === 'DEPLOYED' ? 'CONFIRMED' : ev.status === 'APPROVED' ? 'VERIFIED' : ev.status === 'REVIEW_REQUIRED' ? 'MEDIUM' : 'PENDING'}">${escapeHtml(ev.status)}</span></td>
                     <td style="white-space:nowrap">${formatDate(ev.detected_at)}</td>
                     <td style="display:flex;gap:0.3rem;flex-wrap:wrap">
@@ -1484,7 +1487,7 @@ async function loadOrchestratorView() {
                         ` : ''}
                     </td>
                 </tr>
-            `).join('')}
+            `}).join('')}
             </tbody>
         </table>`;
     } catch (err) {
@@ -1496,6 +1499,10 @@ async function triggerSentinelScan() {
     try {
         const res = await fetch('/api/v1/orchestrator/scan', { method: 'POST', headers: orchAuthHeaders() });
         const data = await res.json();
+        if (!res.ok) {
+            alert(`Scan failed (${res.status}): ${data.detail || data.title || 'Authorization failed. Please ensure you are logged in as an Admin or Authority with IAL-2.'}`);
+            return;
+        }
         alert(data.message || 'Scan completed.');
         loadOrchestratorView();
     } catch (err) {
@@ -1511,6 +1518,10 @@ async function triggerPlan(detectedEventId) {
             body: JSON.stringify({ detectedEventId })
         });
         const data = await res.json();
+        if (!res.ok) {
+            alert(`Planning failed (${res.status}): ${data.detail || data.title || 'Check permissions'}`);
+            return;
+        }
         alert(`Planner Agent completed! Selected ${data.selectedModules.length} functional modules for ${data.event.title}.`);
         loadOrchestratorView();
     } catch (err) {
@@ -1528,6 +1539,11 @@ async function triggerBuild(detectedEventId) {
             body: JSON.stringify({ detectedEventId })
         });
         const data = await res.json();
+        if (!res.ok) {
+            alert(`Build failed (${res.status}): ${data.detail || data.title || 'Check permissions'}`);
+            loadOrchestratorView();
+            return;
+        }
         alert(`Builder Agent completed! Generated ${data.artifacts.length} portal artifacts. Status set to REVIEW_REQUIRED.`);
         loadOrchestratorView();
     } catch (err) {

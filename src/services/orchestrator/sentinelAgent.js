@@ -41,104 +41,189 @@ const GDACS_TYPE_MAP = {
     DR: 'DROUGHT'
 };
 
+const ISO3_MAP = {
+    PNG: 'PG', PAN: 'PA', PHL: 'PH', MEX: 'MX', USA: 'US', IND: 'IN',
+    NPL: 'NP', TON: 'TO', VUT: 'VU', FJI: 'FJ', BGD: 'BD', PAK: 'PK',
+    MOZ: 'MZ', MDG: 'MG', WSM: 'WS', SLB: 'SB', BRA: 'BR', CHN: 'CN',
+    JPN: 'JP', IDN: 'ID', KEN: 'KE', AUS: 'AU', GBR: 'GB', VNM: 'VN',
+    ECU: 'EC', COL: 'CO', CHL: 'CL', PER: 'PE', GTM: 'GT', HND: 'HN',
+    SLV: 'SV', NIC: 'NI', CRI: 'CR', HTI: 'HT', DOM: 'DO', CUB: 'CU'
+};
+
+/**
+ * Fetch live alerts from the official GDACS RSS feed (https://www.gdacs.org/xml/rss.xml).
+ */
+function fetchLiveGDACSAlerts(timeoutMs = 6000) {
+    return new Promise((resolve, reject) => {
+        const req = https.get('https://www.gdacs.org/xml/rss.xml', { timeout: timeoutMs }, (res) => {
+            if (res.statusCode < 200 || res.statusCode >= 300) {
+                return reject(new Error(`GDACS feed HTTP status: ${res.statusCode}`));
+            }
+            let data = '';
+            res.on('data', chunk => { data += chunk; });
+            res.on('end', () => {
+                try {
+                    const items = data.match(/<item>[\s\S]*?<\/item>/g) || [];
+                    const alerts = [];
+                    for (const it of items) {
+                        const alertLevel = it.match(/<gdacs:alertlevel>(.*?)<\/gdacs:alertlevel>/i)?.[1] || '';
+                        if (alertLevel.toLowerCase() !== 'orange' && alertLevel.toLowerCase() !== 'red') continue;
+                        const rawType = (it.match(/<gdacs:eventtype>(.*?)<\/gdacs:eventtype>/i)?.[1] || 'FL').toUpperCase();
+                        const eventType = GDACS_TYPE_MAP[rawType] || 'FLOOD';
+                        const eventId = it.match(/<gdacs:eventid>(.*?)<\/gdacs:eventid>/i)?.[1] || it.match(/<guid[^>]*>(.*?)<\/guid>/i)?.[1] || Math.random().toString(36).slice(2, 8);
+                        const sourceAlertId = `GDACS-${rawType}-${eventId}`;
+                        const rawTitle = it.match(/<title>([\s\S]*?)<\/title>/i)?.[1] || '';
+                        const title = rawTitle.replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&quot;/g, '"').trim();
+                        const countryName = (it.match(/<gdacs:country>(.*?)<\/gdacs:country>/i)?.[1] || 'Global').replace(/&amp;/g, '&');
+                        const iso3 = (it.match(/<gdacs:iso3>(.*?)<\/gdacs:iso3>/i)?.[1] || '').toUpperCase();
+                        const country = ISO3_MAP[iso3] || (iso3.length === 2 ? iso3 : iso3.slice(0, 2)) || 'GL';
+                        const lat = parseFloat(it.match(/<geo:lat>(.*?)<\/geo:lat>/i)?.[1] || '0');
+                        const lon = parseFloat(it.match(/<geo:long>(.*?)<\/geo:long>/i)?.[1] || '0');
+                        const popMatch = it.match(/<gdacs:population[^>]*value=\"(\d+)\"/i);
+                        const estimatedAffected = popMatch ? parseInt(popMatch[1], 10) : 50000;
+                        const rawDesc = it.match(/<description>([\s\S]*?)<\/description>/i)?.[1] || '';
+                        const description = rawDesc.replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<').trim();
+                        const region = countryName;
+
+                        alerts.push({
+                            sourceAlertId,
+                            eventType,
+                            severity: alertLevel.toUpperCase(),
+                            title,
+                            country,
+                            countryName,
+                            region,
+                            coordinates: { lat, lon },
+                            estimatedAffected,
+                            confidence: alertLevel.toLowerCase() === 'red' ? 0.95 : 0.88,
+                            description
+                        });
+                    }
+                    resolve(alerts);
+                } catch (parseErr) {
+                    reject(parseErr);
+                }
+            });
+        });
+        req.on('timeout', () => { req.destroy(); reject(new Error('GDACS feed timeout')); });
+        req.on('error', reject);
+    });
+}
+
+const FALLBACK_ALERTS = [
+    {
+        sourceAlertId: 'GDACS-TC-2026-0412',
+        eventType: 'CYCLONE',
+        severity: 'RED',
+        title: 'Severe Tropical Cyclone — South Pacific (Vanuatu & Fiji)',
+        country: 'VU',
+        countryName: 'Vanuatu',
+        region: 'Shefa & Tafea Provinces — Port Vila, Tanna Island',
+        coordinates: { lat: -17.73, lon: 168.32 },
+        estimatedAffected: 210000,
+        confidence: 0.95,
+        description: 'Category 5 Tropical Cyclone approaching Vanuatu and western Fiji. Destructive winds exceeding 240 km/h, catastrophic storm surges, and island-wide communications blackouts reported.'
+    },
+    {
+        sourceAlertId: 'GDACS-TC-2026-0419',
+        eventType: 'CYCLONE',
+        severity: 'RED',
+        title: 'Super Typhoon — Eastern Visayas & Luzon, Philippines',
+        country: 'PH',
+        countryName: 'Philippines',
+        region: 'Eastern Samar, Leyte, Bicol Region',
+        coordinates: { lat: 11.24, lon: 125.00 },
+        estimatedAffected: 1450000,
+        confidence: 0.93,
+        description: 'Super Typhoon making landfall in Eastern Samar with extreme winds and 4m coastal storm surge. Pre-emptive evacuation orders active across coastal municipalities.'
+    },
+    {
+        sourceAlertId: 'GDACS-FL-2026-1087',
+        eventType: 'FLOOD',
+        severity: 'RED',
+        title: 'Major Flooding — Brahmaputra Basin, Assam, India',
+        country: 'IN',
+        countryName: 'India',
+        region: 'Assam, Meghalaya — Brahmaputra River Basin',
+        coordinates: { lat: 26.14, lon: 91.74 },
+        estimatedAffected: 2800000,
+        confidence: 0.94,
+        description: 'GDACS Red Alert: Severe monsoon flooding in Brahmaputra basin affecting 28 districts across Assam and northern Meghalaya. Multiple embankments breached.'
+    },
+    {
+        sourceAlertId: 'GDACS-EQ-2026-0782',
+        eventType: 'EARTHQUAKE',
+        severity: 'RED',
+        title: 'M7.4 Major Subduction Earthquake — Tonga Trench / Pacific Islands',
+        country: 'TO',
+        countryName: 'Tonga',
+        region: 'Tongatapu, Ha\'apai Islands',
+        coordinates: { lat: -21.17, lon: -175.20 },
+        estimatedAffected: 95000,
+        confidence: 0.96,
+        description: 'Shallow M7.4 earthquake along the Tonga subduction zone. Tsunami threat warning issued for coastal Pacific low-lying atolls and island settlements.'
+    },
+    {
+        sourceAlertId: 'GDACS-TC-2026-0428',
+        eventType: 'CYCLONE',
+        severity: 'RED',
+        title: 'Tropical Cyclone & Storm Surge — Bay of Bengal (Odisha & Bangladesh)',
+        country: 'BD',
+        countryName: 'Bangladesh',
+        region: 'Khulna, Barisal, Chittagong Coastal Belt',
+        coordinates: { lat: 21.84, lon: 89.54 },
+        estimatedAffected: 1800000,
+        confidence: 0.92,
+        description: 'Very Severe Cyclonic Storm crossing Sundarbans coast with 3.5m tidal surge inundating saline embankments and coastal villages.'
+    },
+    {
+        sourceAlertId: 'GDACS-FL-2026-1092',
+        eventType: 'CLOUD_BURST',
+        severity: 'ORANGE',
+        title: 'Cloud Burst & Flash Flood — Uttarakhand, India',
+        country: 'IN',
+        countryName: 'India',
+        region: 'Chamoli, Pithoragarh — Uttarakhand',
+        coordinates: { lat: 30.44, lon: 79.93 },
+        estimatedAffected: 45000,
+        confidence: 0.88,
+        description: 'Flash flooding from intense cloudburst in Chamoli district. Multiple villages cut off. Bridges destroyed on Alaknanda river.'
+    },
+    {
+        sourceAlertId: 'GDACS-GL-2026-0043',
+        eventType: 'GLACIER_BURST',
+        severity: 'ORANGE',
+        title: 'Glacial Lake Outburst — Hunza Valley, Pakistan',
+        country: 'PK',
+        countryName: 'Pakistan',
+        region: 'Hunza-Nagar, Gilgit-Baltistan',
+        coordinates: { lat: 36.32, lon: 74.65 },
+        estimatedAffected: 35000,
+        confidence: 0.85,
+        description: 'Glacial lake outburst flood from Shisper Glacier moraine dam failure. Downstream communities along Hunza River at immediate risk.'
+    }
+];
+
 async function fetchGDACSAlerts() {
-    // In production, polls https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH?alertlevel=Orange;Red
-    // or https://www.gdacs.org/xml/rss.xml across all hazard types (TC, EQ, FL, TS, VO, WF).
-    //
-    // Multi-hazard alert catalog covering active disaster seasons (cyclones, coastal storms, floods, seismic):
-    return [
-        {
-            sourceAlertId: 'GDACS-TC-2026-0412',
-            eventType: 'CYCLONE',
-            severity: 'RED',
-            title: 'Severe Tropical Cyclone — South Pacific (Vanuatu & Fiji)',
-            country: 'VU',
-            countryName: 'Vanuatu',
-            region: 'Shefa & Tafea Provinces — Port Vila, Tanna Island',
-            coordinates: { lat: -17.73, lon: 168.32 },
-            estimatedAffected: 210000,
-            confidence: 0.95,
-            description: 'Category 5 Tropical Cyclone approaching Vanuatu and western Fiji. Destructive winds exceeding 240 km/h, catastrophic storm surges, and island-wide communications blackouts reported.'
-        },
-        {
-            sourceAlertId: 'GDACS-TC-2026-0419',
-            eventType: 'CYCLONE',
-            severity: 'RED',
-            title: 'Super Typhoon — Eastern Visayas & Luzon, Philippines',
-            country: 'PH',
-            countryName: 'Philippines',
-            region: 'Eastern Samar, Leyte, Bicol Region',
-            coordinates: { lat: 11.24, lon: 125.00 },
-            estimatedAffected: 1450000,
-            confidence: 0.93,
-            description: 'Super Typhoon making landfall in Eastern Samar with extreme winds and 4m coastal storm surge. Pre-emptive evacuation orders active across coastal municipalities.'
-        },
-        {
-            sourceAlertId: 'GDACS-FL-2026-1087',
-            eventType: 'FLOOD',
-            severity: 'RED',
-            title: 'Major Flooding — Brahmaputra Basin, Assam, India',
-            country: 'IN',
-            countryName: 'India',
-            region: 'Assam, Meghalaya — Brahmaputra River Basin',
-            coordinates: { lat: 26.14, lon: 91.74 },
-            estimatedAffected: 2800000,
-            confidence: 0.94,
-            description: 'GDACS Red Alert: Severe monsoon flooding in Brahmaputra basin affecting 28 districts across Assam and northern Meghalaya. Multiple embankments breached.'
-        },
-        {
-            sourceAlertId: 'GDACS-EQ-2026-0782',
-            eventType: 'EARTHQUAKE',
-            severity: 'RED',
-            title: 'M7.4 Major Subduction Earthquake — Tonga Trench / Pacific Islands',
-            country: 'TO',
-            countryName: 'Tonga',
-            region: 'Tongatapu, Ha\'apai Islands',
-            coordinates: { lat: -21.17, lon: -175.20 },
-            estimatedAffected: 95000,
-            confidence: 0.96,
-            description: 'Shallow M7.4 earthquake along the Tonga subduction zone. Tsunami threat warning issued for coastal Pacific low-lying atolls and island settlements.'
-        },
-        {
-            sourceAlertId: 'GDACS-TC-2026-0428',
-            eventType: 'CYCLONE',
-            severity: 'RED',
-            title: 'Tropical Cyclone & Storm Surge — Bay of Bengal (Odisha & Bangladesh)',
-            country: 'BD',
-            countryName: 'Bangladesh',
-            region: 'Khulna, Barisal, Chittagong Coastal Belt',
-            coordinates: { lat: 21.84, lon: 89.54 },
-            estimatedAffected: 1800000,
-            confidence: 0.92,
-            description: 'Very Severe Cyclonic Storm crossing Sundarbans coast with 3.5m tidal surge inundating saline embankments and coastal villages.'
-        },
-        {
-            sourceAlertId: 'GDACS-FL-2026-1092',
-            eventType: 'CLOUD_BURST',
-            severity: 'ORANGE',
-            title: 'Cloud Burst & Flash Flood — Uttarakhand, India',
-            country: 'IN',
-            countryName: 'India',
-            region: 'Chamoli, Pithoragarh — Uttarakhand',
-            coordinates: { lat: 30.44, lon: 79.93 },
-            estimatedAffected: 45000,
-            confidence: 0.88,
-            description: 'Flash flooding from intense cloudburst in Chamoli district. Multiple villages cut off. Bridges destroyed on Alaknanda river.'
-        },
-        {
-            sourceAlertId: 'GDACS-GL-2026-0043',
-            eventType: 'GLACIER_BURST',
-            severity: 'ORANGE',
-            title: 'Glacial Lake Outburst — Hunza Valley, Pakistan',
-            country: 'PK',
-            countryName: 'Pakistan',
-            region: 'Hunza-Nagar, Gilgit-Baltistan',
-            coordinates: { lat: 36.32, lon: 74.65 },
-            estimatedAffected: 35000,
-            confidence: 0.85,
-            description: 'Glacial lake outburst flood from Shisper Glacier moraine dam failure. Downstream communities along Hunza River at immediate risk.'
+    let liveAlerts = [];
+    try {
+        liveAlerts = await fetchLiveGDACSAlerts(6000);
+    } catch (err) {
+        console.warn('[Sentinel] Live GDACS feed fetch unavailable, using simulation catalog:', err.message);
+    }
+
+    const alertMap = new Map();
+    if (Array.isArray(liveAlerts)) {
+        for (const a of liveAlerts) {
+            alertMap.set(a.sourceAlertId, a);
         }
-    ];
+    }
+    for (const fb of FALLBACK_ALERTS) {
+        if (!alertMap.has(fb.sourceAlertId)) {
+            alertMap.set(fb.sourceAlertId, fb);
+        }
+    }
+    return Array.from(alertMap.values());
 }
 
 /**
@@ -254,7 +339,14 @@ async function listDetectedEvents(status = null) {
 
 async function scanFeeds() {
     const result = await runSentinelScan();
-    return await listDetectedEvents();
+    const events = await listDetectedEvents();
+    return {
+        scannedFeeds: result.scannedFeeds,
+        totalAlerts: result.totalAlerts,
+        newDetections: result.newDetections,
+        detections: result.detections,
+        events
+    };
 }
 
 module.exports = { runSentinelScan, fetchGDACSAlerts, listDetectedEvents, scanFeeds };

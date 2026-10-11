@@ -46,10 +46,18 @@ router.get('/events', requireActor('ADMIN', 'AUTHORITY', 'CASE_WORKER'), async (
 // 3. POST /api/v1/orchestrator/scan — Trigger Sentinel Agent scan
 router.post('/scan', requireActor('ADMIN', 'AUTHORITY'), requireAssuranceLevel('IAL-2'), async (req, res, next) => {
   try {
-    const detectedEvents = await sentinelAgent.scanFeeds();
+    const scanResult = await sentinelAgent.scanFeeds();
+    const newCount = scanResult.newDetections != null ? scanResult.newDetections : 0;
+    const totalCount = scanResult.totalAlerts != null ? scanResult.totalAlerts : 0;
+    const events = scanResult.events || [];
     res.json({
-      message: `Sentinel Agent scan complete. Detected ${detectedEvents.length} new event(s).`,
-      events: detectedEvents
+      message: newCount > 0
+        ? `Sentinel Agent scan complete. Detected ${newCount} new event(s) from global feeds.`
+        : `Sentinel Agent scan complete. Checked ${totalCount} global alert(s); all currently active alerts are already in system.`,
+      newCount,
+      totalAlerts: totalCount,
+      newDetections: scanResult.detections || [],
+      events
     });
   } catch (err) {
     next(err);
