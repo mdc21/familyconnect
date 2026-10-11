@@ -100,6 +100,9 @@ A simple web application or fixed automation cannot handle this problem because:
 | Tool / Service | Purpose |
 |:---|:---|
 | **GDACS API** (`gdacs.org/xml/rss.xml`) | Multi-hazard alert feed (TC, EQ, FL, TS, VO, WF) |
+| **ReliefWeb REST API** (`api.reliefweb.int/v1/reports`) | Official humanitarian situation reports & multi-source corroboration to eliminate false alarms |
+| **HDX HAPI** (`hapi.humdata.org/api/v1/`) | UN OCHA Common Operational Datasets (CODs), administrative boundaries (P-Codes), and baseline population |
+| **HXL Federation Exporter** (`/api/v1/federation/hxl/*`) | Exports community damage, needs, and recovery projects formatted with Humanitarian Exchange Language tags |
 | **USGS Earthquake API** | Real-time seismic event detection |
 | **Gemini LLM (gemini-3.6-flash)** | Context-sensitive optional module selection during event planning |
 | **Deterministic fallback selector** | Priority-ordered module selection when LLM is unavailable (503/no-key) |
@@ -129,8 +132,8 @@ OBSERVE → UNDERSTAND → EXPLORE → DECIDE → APPROVE → ACT → MEASURE �
 
 | Stage | What happens |
 |:---|:---|
-| **Observe** | (Response) Sentinel polls GDACS + USGS + JTWC for RED/ORANGE natural hazard alerts across all event types. (Recovery) Gap Detection Agent (M12) continuously queries unmet recovery needs vs. unallocated pledged funds across all active events |
-| **Understand** | Deduplicates alerts by `source_alert_id`; maps GDACS codes (TC→CYCLONE, EQ→EARTHQUAKE) to internal hazard types; assesses severity, country, affected population. For recovery phase: cross-maps need categories (TEMPORARY_SHELTER→HOUSING_RECONSTRUCTION) to funding sectors |
+| **Observe** | (Response) Sentinel polls GDACS + ReliefWeb + USGS + JTWC for alerts and official SitReps across all event types. (Recovery) Gap Detection Agent (M12) continuously queries unmet recovery needs vs. unallocated pledged funds across all active events |
+| **Understand** | Deduplicates alerts by `source_alert_id`; cross-corroborates sensor alerts against ReliefWeb SitReps to eliminate false positives; maps GDACS codes (TC→CYCLONE, EQ→EARTHQUAKE) to internal hazard types; ingests HDX P-Codes for administrative boundaries; assesses severity, country, affected population. For recovery phase: cross-maps need categories (TEMPORARY_SHELTER→HOUSING_RECONSTRUCTION) to funding sectors |
 | **Explore** | Planner queries Module Registry for applicable core + optional modules; consults institutional memory (`precedent` table) for prior event patterns. Recovery ops service scans `recovery_need` (status REPORTED/ASSESSED/VERIFIED) vs. `funding_pledge` (OFFICIAL_CONFIRMED, unallocated > 0) |
 | **Decide** | Gemini LLM recommends which optional modules to activate (deterministic fallback if unavailable). Gap Detection generates AI proposals (`ai_proposal` table) for fund-to-need matches and flags compound bottlenecks for L3 escalation |
 | **Approve** | (Portal launch) Human admin reviews staged portal preview and submits APPROVED/REJECTED/NEEDS_REVISION. (Reconstruction) AUTHORITY or ADMIN approves recovery projects (`PROPOSED→HUMAN_APPROVED`); IAL-2 authority verifies pledge statutory clearance; dual-signature Gate G8 ratifies production releases |

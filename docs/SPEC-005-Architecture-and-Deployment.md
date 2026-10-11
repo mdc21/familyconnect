@@ -258,4 +258,82 @@ The platform features an autonomous multi-agent disaster coordination system (`s
 - **Total Monthly Outlay**: Estimated at **$0.00 – $3.00/month**, eliminating enterprise infrastructure costs during the humanitarian pilot phase while remaining capable of autoscaling to 5+ replicas during disaster surges.
 - **Deployment Automation**: Single-command deployment script [`deploy/azure/deploy-aca.sh`](../deploy/azure/deploy-aca.sh) paired with GitHub Actions continuous delivery [`.github/workflows/deploy-azure-container-apps.yml`](../.github/workflows/deploy-azure-container-apps.yml).
 
+---
+
+# 11. External Humanitarian Ecosystem Integration & Data Standards
+
+To operate seamlessly alongside international humanitarian mechanisms (UN OCHA, IASC, Red Cross/Red Crescent, and national disaster agencies), FamilyConnect adheres to open data interchange standards, multi-source event corroboration, and bi-directional federation.
+
+```
+ [ External Humanitarian Architecture ]
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │                                                                        │
+ │  GDACS (gdacs.org)        ReliefWeb API             HDX HAPI           │
+ │  [ Hazard Geometry ]       [ Verified SitReps ]     [ P-Codes & 3W ]   │
+ │         │                        │                        │            │
+ └─────────┼────────────────────────┼────────────────────────┼────────────┘
+           ▼                        ▼                        ▼
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │  Sentinel Agent: Multi-Source Corroboration Engine                     │
+ │  - Deduplication across alert IDs                                      │
+ │  - False-Positive filtering (hazard sensor + humanitarian SitRep match)│
+ │  - Admin Feedback Loop: Reject / Minor / False / Archive after 4 weeks │
+ └───────────────────────────────────┬────────────────────────────────────┘
+                                     ▼
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │  FamilyConnect Core (Frontline Citizen & Community Portal)             │
+ │  - Missing person tracing (RFL) & safety declarations                  │
+ │  - Community damage assessment & local telemetry                       │
+ │  - Recovery project tracking & 3-tier delivery attestation             │
+ └───────────────────────────────────┬────────────────────────────────────┘
+                                     ▼
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │  Downstream Open Data Federation (HXL Tags)                            │
+ │  - Export formatted for UN OCHA HDX & IASC 3W/4W cluster matrices      │
+ │  - Schemas: #loc+pcode, #affected+f+children, #indicator+water         │
+ └────────────────────────────────────────────────────────────────────────┘
+```
+
+### 11.1 Upstream Ingestion Adapters
+
+1. **GDACS Multi-Hazard RSS/REST Adapter (`gdacs.org/xml/rss.xml`)**:
+   - Ingests rapid-onset alerts across Cyclones (`TC`), Earthquakes (`EQ`), Floods (`FL`), Tsunamis (`TS`), Volcanoes (`VO`), and Wildfires (`WF`).
+   - Extracts coordinates, alert severity (`RED`, `ORANGE`, `GREEN`), and estimated affected population.
+2. **ReliefWeb REST API Adapter (`api.reliefweb.int/v1/reports`)**:
+   - Ingests official Situation Reports, emergency appeals, and disaster bulletins from verified sources (UN OCHA, Red Cross, national disaster ministries).
+   - Validates that detected sensor alerts have tangible ground impact, mitigating automated portal generation for minor or non-disruptive events.
+3. **HDX HAPI Adapter (`hapi.humdata.org/api/v1/`)**:
+   - Standardizes administrative boundaries using UN Common Operational Datasets (CODs) and Place Codes (P-Codes) (`/api/v1/geography/admin1`, `/api/v1/geography/admin2`).
+   - Retrieves baseline demographic and vulnerability datasets (`/api/v1/population-social/baseline-population`) to seed planning models.
+
+### 11.2 Multi-Source Corroboration & False-Positive Guardrails
+
+To prevent the AI Orchestrator from generating public portals based on false alarms, sensor errors, or non-actionable alerts, the Sentinel Agent applies a multi-source corroboration pipeline:
+
+* **Corroboration Metric**:
+  $$\text{Confidence Score} = w_1 \cdot \text{GDACS\_Alert} + w_2 \cdot \text{ReliefWeb\_SitReps} + w_3 \cdot \text{Gov\_Agency\_Bulletin}$$
+  Where single-source sensor alerts require human administrator step-up review before any module staging can occur.
+* **Human-in-the-Loop Administrator Feedback**:
+  - Administrators review detected events in the orchestrator console with one-click actions:
+    - `APPROVE & PLAN`: Confirmed disaster, trigger module planner.
+    - `FLAG AS FALSE ALARM`: Mark as sensor artifact or unconfirmed report.
+    - `FLAG AS MINOR / OUT OF SCOPE`: Real event but below threshold for dedicated portal deployment.
+  - Feedback is recorded in `institutional_memory` (`precedent` and `outcome_record` tables) to fine-tune future LLM module recommendations.
+* **Automated Archiving Lifecycle**:
+  - Detected events that have had no administrative or field response activity within **4 weeks (28 days)** of detection are automatically transitioned to `ARCHIVED` status and removed from active portal display lists.
+
+### 11.3 Downstream Interoperability: Humanitarian Exchange Language (HXL)
+
+FamilyConnect prevents proprietary vendor lock-in and facilitates bi-directional coordination with the 11 IASC humanitarian clusters by adopting the **Humanitarian Exchange Language (HXL v1.1)** standard across all public and agency data exports:
+
+| Data Domain | FamilyConnect Entity | Standard HXL Tagging Schema | Cluster Destination |
+| :--- | :--- | :--- | :--- |
+| **Administrative Geometry** | Disaster Location | `#loc +pcode +adm1`, `#loc +pcode +adm2`, `#geo +lat`, `#geo +lon` | UN OCHA HDX / GIS Cluster |
+| **Community Damage** | `damage_assessment` | `#damage +infrastructure`, `#damage +embankment`, `#damage +housing +destroyed` | Early Recovery & Shelter Clusters |
+| **Essential Needs** | `recovery_need` | `#affected +f +children`, `#indicator +water +litres_day`, `#status +unmet` | WASH, Nutrition, Health Clusters |
+| **3W Activity Tracking** | `recovery_project` | `#org +lead`, `#sector +wash`, `#status +in_progress`, `#beneficiary +target` | IASC 3W/4W Operational Presence |
+| **Non-Custodial Aid Delivery** | `aid_delivery_evidence` | `#value +pledge`, `#value +disbursed`, `#status +attested +verified` | FTS / Multi-Partner Trust Funds |
+
+Federation data is exposed via token-governed export endpoints (`GET /api/v1/federation/hxl/needs.csv` and `GET /api/v1/federation/hxl/projects.csv`), allowing cluster coordinators and UN OCHA data officers to query live field ground truth directly.
+
 

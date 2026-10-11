@@ -716,6 +716,37 @@ FamilyConnect must establish formal agreements before production operation with 
 - forensic authorities.
 The platform must not claim official authority it does not possess.
 
+# 30.1 International Humanitarian Ecosystem Alignment & Non-Overlap Guarantee
+
+FamilyConnect is purposefully architected to operate alongside international humanitarian mechanisms established by the United Nations Office for the Coordination of Humanitarian Affairs (UN OCHA) and the Inter-Agency Standing Committee (IASC). The platform strictly enforces a **Non-Overlap Invariant**: FamilyConnect does **not** duplicate, replace, or compete with global UN agencies, inter-agency coordination mechanisms, or existing international disaster databases. Instead, it functions as their **frontline, citizen-facing, last-mile operational execution interface**.
+
+### 30.1.1 International Humanitarian System Comparative Matrix
+
+| System / Platform | Governance / Mandate | Primary Function & Target Audience | Operational Level | Relationship with FamilyConnect |
+| :--- | :--- | :--- | :--- | :--- |
+| **GDACS** (*gdacs.org*) | UN OCHA & European Commission | Early warning multi-hazard alerts (cyclones, earthquakes, floods, tsunamis) for international responders and disaster managers. | Global / Regional (Macro Hazard Sensors) | **Upstream Detection Feed**: FamilyConnect's Sentinel Agent polls GDACS to detect new emergency events within minutes of occurrence. |
+| **ReliefWeb** (*reliefweb.int*) | UN OCHA Specialized Digital Service | 24/7 global humanitarian information portal publishing official Situation Reports (SitReps), maps, and assessments from >4,000 verified humanitarian sources. | Global / National (Institutional & Policy) | **Upstream Ground-Truth Corroboration**: Ingested by FamilyConnect to verify event reality, prevent false-positive automated portal creation, and debunk rumors. |
+| **HDX & HDX HAPI** (*data.humdata.org*, *hapi.humdata.org*) | UN OCHA Centre for Humanitarian Data | Standardized humanitarian data repository and REST API providing Common Operational Datasets (CODs), P-Codes (place codes), baseline population data, and 3W (Who-is-doing-What-Where). | Inter-Agency Data Standardization | **Upstream Geospatial & Downstream Data Interoperability**: FamilyConnect ingests P-Codes for administrative boundaries and exports localized damage/needs using Humanitarian Exchange Language (HXL) tags. |
+| **Humanitarian Action & FTS** (*humanitarianaction.info*, *fts.unocha.org*) | UN OCHA Financial Tracking Service | Tracks global strategic humanitarian appeals (HNRPs/HRPs), multi-billion-dollar donor contributions, and macro financial allocations by sector/cluster. | Global Strategic Financial Governance | **Macro-to-Micro Alignment**: FamilyConnect aligns its recovery project sectors (Shelter, WASH, Health, Education) with FTS cluster categories without managing or holding monetary funds. |
+| **IASC** (*interagencystandingcommittee.org*) | Inter-Agency Standing Committee (UN + Red Cross + NGO Consortia) | Highest-level humanitarian coordination forum; establishes cluster system guidelines (11 global clusters), leadership protocols, and Accountability to Affected Populations (AAP). | Global Humanitarian Policy & Normative Standards | **Operational Compliance**: FamilyConnect adheres to IASC AAP guidelines and SPHERE standards, serving as the local digital instrument for cluster coordination at the community level. |
+| **FamilyConnect** | National Disaster Authorities (NDMAs) & Local Responders | **Frontline Citizen & Community Coordination Portal**: Direct public family reconnection (RFL), civilian safety declarations, missing person tracing, hyper-local telemetry, community damage assessment, and triangulated reconstruction delivery attestation. | Grassroots / Household / Local Community (The Last Mile) | **The Frontline Operational Layer**: Operates where global UN tools stop by engaging affected individuals directly in local languages (Nepali, Assamese, Bengali, Hindi, etc.) via web, SMS, USSD, and paper forms. |
+
+### 30.1.2 The Five Non-Overlap Invariants
+
+1. **Macro Strategic vs. Micro Frontline Separation**:
+   - UN OCHA platforms focus on macro-level inter-agency coordination, government-to-government diplomacy, and high-level donor appeals.
+   - FamilyConnect focuses exclusively on direct citizen interactions: a mother looking for her child, an evacuee confirming they are alive, a village reporting a broken embankment, or a family requesting a buccal DNA reference kit.
+2. **Citizen Self-Service & Restoring Family Links (RFL)**:
+   - Global UN platforms are designed for humanitarian professionals and cluster leads; they do not provide public, self-service portals for missing person reports or personal safety check-ins.
+   - FamilyConnect implements family case management, proxy nominations, and safeguarding escalation directly for affected civilians in strict compliance with data minimization.
+3. **Hyper-Local Contextualization & Multilingual Delivery**:
+   - UN tools predominantly operate in international languages (English, French, Spanish, Arabic) at national scales.
+   - FamilyConnect operates in indigenous and vernacular languages (e.g., Assamese, Nepali, Bengali, Tibetan) and incorporates local engineering telemetry (e.g., Central Water Commission river danger levels, hydropower tunnel rescue air shafts).
+4. **Open Data Interoperability (No Proprietary Silo)**:
+   - FamilyConnect does not trap data. All community needs, infrastructure outages, and recovery projects are tagged using open Humanitarian Exchange Language (HXL) standards (e.g., `#affected+f+children`, `#indicator+water`, `#loc+pcode`) so they can be federated back into HDX and the UN cluster 3W/4W databases.
+5. **Zero Fund Custodianship Invariant (BR-008-025)**:
+   - Unlike international pooled funds (CERF, CBPFs), FamilyConnect never collects, holds, or disburses monetary funds. It records statutory pledges and enforces three-tier field delivery attestation (Beneficiary + Field Worker + Authority) while financial transfers remain non-custodial and direct.
+
 # 31. MVP Release Strategy
 
 ## Stage 1 — Internal Prototype
@@ -773,7 +804,12 @@ It is **not**:
 - a forensic identification system;
 - a government missing-person registry;
 - an autonomous rescue system;
-- an authority for determining death.
+- an authority for determining death;
+- a replacement for UN OCHA or IASC inter-agency humanitarian leadership;
+- an international disaster early-warning sensor network replacing GDACS;
+- a macro-level humanitarian financial appeal or pooled-fund platform (e.g. CERF, CBPFs, FTS);
+- a global humanitarian situation report archive replacing ReliefWeb;
+- an international open data clearinghouse replacing HDX or HDX HAPI.
 # 34. Next Specification
 
 **SPEC-002 — Domain Model & Data Specification v0.2**
