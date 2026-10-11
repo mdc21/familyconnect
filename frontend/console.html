@@ -608,8 +608,9 @@
                 <h2 style="margin:0">🤖 Agentic AI Event Orchestrator</h2>
                 <small style="color:var(--text-muted)">Autonomous global feed detection, deterministic template composition &amp; human-in-the-loop portal review</small>
             </div>
-            <div style="display:flex;gap:0.5rem">
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
                 <button class="btn-outline" onclick="triggerSentinelScan()" style="font-size:0.875rem">⚡ Scan GDACS Feeds Now</button>
+                <button class="btn-outline" onclick="triggerArchiveStale()" style="font-size:0.875rem" title="Auto-archive events older than 4 weeks with no action taken">📦 Archive Stale (4+ Wks)</button>
                 <button class="btn-primary" onclick="loadOrchestratorView()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
             </div>
         </div>
@@ -617,7 +618,7 @@
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-val" id="orch-metric-detected">0</div>
-                <div class="metric-lbl">Detected Events</div>
+                <div class="metric-lbl">Active Events</div>
             </div>
             <div class="metric-card">
                 <div class="metric-val" id="orch-metric-review" style="color:#92400e">0</div>
@@ -628,17 +629,61 @@
                 <div class="metric-lbl">Deployed Portals</div>
             </div>
             <div class="metric-card">
-                <div class="metric-val" id="orch-metric-modules">21</div>
-                <div class="metric-lbl">Module Registry</div>
+                <div class="metric-val" id="orch-metric-archived" style="color:#64748b">0</div>
+                <div class="metric-lbl">Archived / Dismissed</div>
             </div>
         </div>
 
-        <h3>Detected Global Disasters &amp; Autonomous Portal Generation</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:1.5rem 0 0.75rem;flex-wrap:wrap;gap:0.5rem">
+            <h3 style="margin:0">Detected Global Disasters &amp; Autonomous Portal Generation</h3>
+            <div style="display:flex;gap:0.35rem;align-items:center;font-size:0.82rem">
+                <span style="color:var(--text-muted);margin-right:0.25rem">View:</span>
+                <button class="btn-outline" id="orch-filter-active" onclick="setOrchFilter('ACTIVE')" style="padding:0.25rem 0.55rem;font-size:0.8rem;background:var(--primary);color:#fff">Active Queue</button>
+                <button class="btn-outline" id="orch-filter-archived" onclick="setOrchFilter('ARCHIVED')" style="padding:0.25rem 0.55rem;font-size:0.8rem">Archived (4+ Wks)</button>
+                <button class="btn-outline" id="orch-filter-dismissed" onclick="setOrchFilter('DISMISSED')" style="padding:0.25rem 0.55rem;font-size:0.8rem">Dismissed (Feedback)</button>
+                <button class="btn-outline" id="orch-filter-all" onclick="setOrchFilter('ALL')" style="padding:0.25rem 0.55rem;font-size:0.8rem">All Events</button>
+            </div>
+        </div>
         <div id="orchestrator-events-container"><p style="color:var(--text-muted)">Loading orchestrator events…</p></div>
     </div>
 
 </div>
 </main>
+
+<!-- Event Admin Feedback & Dismissal Modal -->
+<div class="modal-overlay" id="orch-feedback-modal" hidden role="dialog" aria-modal="true">
+    <div class="modal-box" style="max-width:560px;width:95%">
+        <div class="modal-header">
+            <h3 style="margin:0" id="orch-feedback-title">👎 Admin Feedback to AI Sentinel Agent</h3>
+            <button class="modal-close" onclick="closeFeedbackModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:0.875rem;color:var(--text-muted);margin-top:0">
+                Provide human feedback to the autonomous Sentinel Agent. This removes false alarms, minor incidents, or out-of-scope alerts from the active portal generation queue and logs learning feedback for agent governance.
+            </p>
+            <input type="hidden" id="orch-feedback-event-id" value="">
+            <div style="margin-bottom:0.85rem">
+                <label style="display:block;font-weight:600;font-size:0.85rem;margin-bottom:0.3rem">Feedback Reason *</label>
+                <select id="orch-feedback-reason" class="form-input" style="width:100%;padding:0.45rem">
+                    <option value="FAKE_NEWS">🚨 False Positive / Fake News / Unconfirmed Rumor</option>
+                    <option value="MINOR_EVENT">📉 Minor Event — Below portal activation &amp; population impact threshold</option>
+                    <option value="OUT_OF_SCOPE">🌐 Out of Scope — Not rapid-response disaster (e.g. slow drought, distant tremor)</option>
+                    <option value="SIMULATION_DATA">🧪 Simulation Test Data — Synthetic / drill training record</option>
+                    <option value="DUPLICATE">🔁 Duplicate Alert — Redundant with existing active operation</option>
+                    <option value="OTHER">📝 Other Reason</option>
+                </select>
+            </div>
+            <div style="margin-bottom:0.85rem">
+                <label style="display:block;font-weight:600;font-size:0.85rem;margin-bottom:0.3rem">Verification Notes / Admin Rationale (Optional)</label>
+                <textarea id="orch-feedback-notes" class="form-input" rows="3" style="width:100%;font-size:0.85rem" placeholder="e.g. Local meteorological bulletin confirms system dissipated at sea without landfall; no crisis response required."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer" style="display:flex;justify-content:flex-end;gap:0.5rem">
+            <button class="btn-outline" onclick="closeFeedbackModal()">Cancel</button>
+            <button class="btn-primary" style="background:#b91c1c" onclick="submitEventFeedback()">Submit Feedback &amp; Dismiss Event</button>
+        </div>
+    </div>
+</div>
 
 <!-- Event Portal Review & Staging Preview Modal -->
 <div class="modal-overlay" id="orch-modal" hidden role="dialog" aria-modal="true">
@@ -1419,6 +1464,8 @@ async function loadAdmin() {
 }
 
 // ── 11. AGENTIC AI EVENT ORCHESTRATOR VIEW ──────────
+let orchCurrentFilter = 'ACTIVE';
+
 function orchAuthHeaders(extra = {}) {
     const token = localStorage.getItem('fc_auth_token');
     return {
@@ -1427,21 +1474,47 @@ function orchAuthHeaders(extra = {}) {
     };
 }
 
+function setOrchFilter(filterName) {
+    orchCurrentFilter = filterName;
+    ['active', 'archived', 'dismissed', 'all'].forEach(f => {
+        const btn = document.getElementById(`orch-filter-${f}`);
+        if (!btn) return;
+        if (f.toUpperCase() === filterName.toUpperCase()) {
+            btn.style.background = 'var(--primary)';
+            btn.style.color = '#fff';
+        } else {
+            btn.style.background = 'transparent';
+            btn.style.color = 'inherit';
+        }
+    });
+    loadOrchestratorView();
+}
+
 async function loadOrchestratorView() {
     const container = document.getElementById('orchestrator-events-container');
     container.innerHTML = '<p style="color:var(--text-muted)">Loading detected events…</p>';
     try {
-        const res = await fetch('/api/v1/orchestrator/events', { headers: orchAuthHeaders() });
+        // Fetch all events for metrics and filter according to current view
+        const res = await fetch(`/api/v1/orchestrator/events?filter=${encodeURIComponent(orchCurrentFilter)}`, { headers: orchAuthHeaders() });
         const data = await res.json();
         const events = data.events || [];
 
-        // Update metrics
-        document.getElementById('orch-metric-detected').textContent = events.length;
-        document.getElementById('orch-metric-review').textContent = events.filter(e => e.status === 'REVIEW_REQUIRED' || e.status === 'BUILT').length;
-        document.getElementById('orch-metric-deployed').textContent = events.filter(e => e.status === 'DEPLOYED').length;
+        // Also fetch global metrics
+        try {
+            const allRes = await fetch('/api/v1/orchestrator/events?filter=ALL', { headers: orchAuthHeaders() });
+            const allData = await allRes.json();
+            const allEvents = allData.events || [];
+            document.getElementById('orch-metric-detected').textContent = allEvents.filter(e => !['ARCHIVED', 'DISMISSED'].includes(e.status)).length;
+            document.getElementById('orch-metric-review').textContent = allEvents.filter(e => e.status === 'REVIEW_REQUIRED' || e.status === 'BUILT').length;
+            document.getElementById('orch-metric-deployed').textContent = allEvents.filter(e => e.status === 'DEPLOYED').length;
+            const archivedCountEl = document.getElementById('orch-metric-archived');
+            if (archivedCountEl) {
+                archivedCountEl.textContent = allEvents.filter(e => ['ARCHIVED', 'DISMISSED'].includes(e.status)).length;
+            }
+        } catch (_) {}
 
         if (!events.length) {
-            container.innerHTML = '<p class="notice notice-info">No disaster events detected yet. Click <strong>Scan GDACS Feeds Now</strong> to scan global feeds.</p>';
+            container.innerHTML = `<p class="notice notice-info">No disaster events in <strong>${escapeHtml(orchCurrentFilter)}</strong> view. Click <strong>⚡ Scan GDACS Feeds Now</strong> to check global feeds.</p>`;
             return;
         }
 
@@ -1461,29 +1534,57 @@ async function loadOrchestratorView() {
             ${events.map(ev => {
                 const alertLvl = String(ev.alert_level || '').toUpperCase();
                 const alertPill = (alertLvl === 'RED' || alertLvl === 'CRITICAL') ? 'CRITICAL' : (alertLvl === 'ORANGE' || alertLvl === 'HIGH') ? 'MEDIUM' : 'LOW';
+                const safeTitle = (ev.title || '').replace(/'/g, "\\'");
                 return `
                 <tr>
                     <td>
                         <strong>${escapeHtml(ev.title)}</strong><br>
                         <code>${escapeHtml(ev.event_code || ev.source_alert_id || 'PENDING')}</code>
+                        ${ev.source_url ? `
+                            <div style="margin-top:0.35rem">
+                                <a href="${escapeHtml(ev.source_url)}" target="_blank" rel="noopener noreferrer" style="color:var(--primary);font-size:0.75rem;font-weight:600;text-decoration:underline;display:inline-flex;align-items:center;gap:0.25rem">🌐 GDACS Bulletin ↗</a>
+                                <span style="color:#64748b;font-size:0.7rem">• ${escapeHtml(ev.source_credibility || 'UN/EC')}</span>
+                            </div>
+                        ` : ''}
+                        <div style="margin-top:0.15rem">
+                            <a href="https://reliefweb.int/updates?search=${encodeURIComponent(ev.title)}" target="_blank" rel="noopener noreferrer" style="color:#0284c7;font-size:0.72rem;text-decoration:underline">📰 Corroborate on ReliefWeb ↗</a>
+                        </div>
+                        ${ev.is_simulation ? `
+                            <span class="status-pill pill-LOW" style="font-size:0.65rem;margin-top:0.25rem;display:inline-block">🧪 Simulation Fallback</span>
+                        ` : ''}
+                        ${ev.status === 'DISMISSED' ? `
+                            <div style="font-size:0.72rem;color:#b91c1c;margin-top:0.25rem;background:#fee2e2;padding:0.2rem 0.4rem;border-radius:4px">
+                                <strong>Dismissed:</strong> ${escapeHtml(ev.dismiss_reason || 'OTHER')} ${ev.feedback_notes ? `— <em>${escapeHtml(ev.feedback_notes)}</em>` : ''}
+                            </div>
+                        ` : ''}
+                        ${ev.status === 'ARCHIVED' ? `
+                            <div style="font-size:0.72rem;color:#64748b;margin-top:0.25rem;background:#f1f5f9;padding:0.2rem 0.4rem;border-radius:4px">
+                                <strong>Archived:</strong> ${escapeHtml(ev.archive_reason || 'Inactive > 4 weeks')} (${formatDate(ev.archived_at || ev.detected_at)})
+                            </div>
+                        ` : ''}
                     </td>
                     <td><span class="status-pill pill-KIT_DISPATCHED">${escapeHtml(ev.event_type)}</span></td>
                     <td>${escapeHtml(ev.location_name || ev.region || '—')}, ${escapeHtml(ev.country_name || '')} (${escapeHtml(ev.country_code || '')})</td>
                     <td><span class="status-pill pill-${alertPill}">${escapeHtml(ev.alert_level || 'UNKNOWN')} Alert</span></td>
-                    <td><span class="status-pill pill-${ev.status === 'DEPLOYED' ? 'CONFIRMED' : ev.status === 'APPROVED' ? 'VERIFIED' : ev.status === 'REVIEW_REQUIRED' ? 'MEDIUM' : 'PENDING'}">${escapeHtml(ev.status)}</span></td>
+                    <td><span class="status-pill pill-${ev.status === 'DEPLOYED' ? 'CONFIRMED' : ev.status === 'APPROVED' ? 'VERIFIED' : ev.status === 'REVIEW_REQUIRED' ? 'MEDIUM' : ev.status === 'DISMISSED' ? 'LOW' : ev.status === 'ARCHIVED' ? 'LOW' : 'PENDING'}">${escapeHtml(ev.status)}</span></td>
                     <td style="white-space:nowrap">${formatDate(ev.detected_at)}</td>
                     <td style="display:flex;gap:0.3rem;flex-wrap:wrap">
                         ${ev.status === 'DETECTED' ? `
                             <button class="btn-primary" style="font-size:0.75rem;padding:0.25rem 0.5rem" onclick="triggerPlan('${ev.id}')">1. Plan Modules</button>
+                            <button class="btn-outline" style="font-size:0.75rem;padding:0.25rem 0.5rem;color:#b91c1c;border-color:#fca5a5" onclick="openFeedbackModal('${ev.id}', '${safeTitle}')">👎 Feedback / Dismiss</button>
                         ` : ''}
                         ${ev.status === 'PLANNED' ? `
                             <button class="btn-primary" style="font-size:0.75rem;padding:0.25rem 0.5rem" onclick="triggerBuild('${ev.id}')">2. Generate Portal</button>
+                            <button class="btn-outline" style="font-size:0.75rem;padding:0.25rem 0.5rem;color:#b91c1c;border-color:#fca5a5" onclick="openFeedbackModal('${ev.id}', '${safeTitle}')">👎 Dismiss</button>
                         ` : ''}
                         ${['BUILT', 'REVIEW_REQUIRED', 'APPROVED', 'DEPLOYED'].includes(ev.status) ? `
                             <button class="btn-outline" style="font-size:0.75rem;padding:0.25rem 0.5rem" onclick="openOrchPreview('${ev.id}')">👁️ Review &amp; Staging Preview</button>
                         ` : ''}
                         ${ev.status === 'APPROVED' ? `
                             <button class="btn-primary" style="font-size:0.75rem;padding:0.25rem 0.5rem;background:#166534" onclick="deployOrchEvent('${ev.id}')">🚀 Deploy Production</button>
+                        ` : ''}
+                        ${['DISMISSED', 'ARCHIVED'].includes(ev.status) ? `
+                            <span style="font-size:0.75rem;color:var(--text-muted);font-style:italic">Inactive</span>
                         ` : ''}
                     </td>
                 </tr>
@@ -1492,6 +1593,67 @@ async function loadOrchestratorView() {
         </table>`;
     } catch (err) {
         container.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+    }
+}
+
+function openFeedbackModal(eventId, title) {
+    document.getElementById('orch-feedback-event-id').value = eventId;
+    document.getElementById('orch-feedback-title').textContent = `👎 Feedback for: ${title}`;
+    document.getElementById('orch-feedback-notes').value = '';
+    document.getElementById('orch-feedback-reason').selectedIndex = 0;
+    document.getElementById('orch-feedback-modal').hidden = false;
+}
+
+function closeFeedbackModal() {
+    document.getElementById('orch-feedback-modal').hidden = true;
+}
+
+async function submitEventFeedback() {
+    const eventId = document.getElementById('orch-feedback-event-id').value;
+    const reason = document.getElementById('orch-feedback-reason').value;
+    const notes = document.getElementById('orch-feedback-notes').value.trim();
+
+    if (!eventId || !reason) {
+        alert('Event ID and feedback reason are required.');
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/v1/orchestrator/events/${eventId}/feedback`, {
+            method: 'POST',
+            headers: orchAuthHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ reason, notes })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            alert(`Feedback failed (${res.status}): ${data.detail || data.title || 'Authorization failed'}`);
+            return;
+        }
+        alert(data.message || 'Feedback recorded. Event has been dismissed from the active queue.');
+        closeFeedbackModal();
+        loadOrchestratorView();
+    } catch (err) {
+        alert('Feedback submission error: ' + err.message);
+    }
+}
+
+async function triggerArchiveStale() {
+    if (!confirm('Auto-archive events older than 4 weeks with no action taken?')) return;
+    try {
+        const res = await fetch('/api/v1/orchestrator/archive-stale', {
+            method: 'POST',
+            headers: orchAuthHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ maxAgeDays: 28 })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            alert(`Archival failed (${res.status}): ${data.detail || data.title || 'Check permissions'}`);
+            return;
+        }
+        alert(data.message || 'Stale events successfully archived.');
+        loadOrchestratorView();
+    } catch (err) {
+        alert('Archival failed: ' + err.message);
     }
 }
 

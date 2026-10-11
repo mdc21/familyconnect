@@ -36,7 +36,8 @@ router.get('/modules', async (req, res, next) => {
 // 2. GET /api/v1/orchestrator/events — List detected events
 router.get('/events', requireActor('ADMIN', 'AUTHORITY', 'CASE_WORKER'), async (req, res, next) => {
   try {
-    const events = await sentinelAgent.listDetectedEvents(req.query.status);
+    const filter = req.query.status || req.query.filter || 'ACTIVE';
+    const events = await sentinelAgent.listDetectedEvents(filter);
     res.json({ events });
   } catch (err) {
     next(err);
@@ -130,6 +131,44 @@ router.post('/deploy/:id', requireActor('ADMIN', 'AUTHORITY'), requireAssuranceL
     const activatedByUserId = req.actor?.actorId || 'admin-user';
     const result = await deployerAgent.deployEventToProduction(req.params.id, activatedByUserId);
     res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 9. POST /api/v1/orchestrator/events/:id/feedback — Human admin feedback to Sentinel AI Agent
+router.post('/events/:id/feedback', requireActor('ADMIN', 'AUTHORITY'), requireAssuranceLevel('IAL-2'), async (req, res, next) => {
+  try {
+    const { reason, notes } = req.body || {};
+    if (!reason) {
+      return next(new ProblemError('INVALID_SCHEMA', 'Feedback reason is required (e.g. FAKE_NEWS, MINOR_EVENT, OUT_OF_SCOPE, DUPLICATE, SIMULATION_DATA)', req.originalUrl));
+    }
+    const actorId = req.actor?.actorId || 'admin-user';
+    const dismissed = await sentinelAgent.dismissEventWithFeedback({
+      detectedEventId: req.params.id,
+      reason,
+      notes,
+      actorId
+    });
+    res.json({
+      message: `Feedback recorded: event dismissed from active planning queue as '${reason}'.`,
+      event: dismissed
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 10. POST /api/v1/orchestrator/archive-stale — Auto-archive events older than 4 weeks (28 days)
+router.post('/archive-stale', requireActor('ADMIN', 'AUTHORITY'), requireAssuranceLevel('IAL-2'), async (req, res, next) => {
+  try {
+    const maxAgeDays = parseInt(req.body?.maxAgeDays, 10) || 28;
+    const archived = await sentinelAgent.archiveStaleEvents(maxAgeDays);
+    res.json({
+      message: `Archived ${archived.length} stale event(s) with no action taken for ${maxAgeDays}+ days.`,
+      archivedCount: archived.length,
+      archived
+    });
   } catch (err) {
     next(err);
   }

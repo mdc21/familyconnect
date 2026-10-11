@@ -40,7 +40,16 @@ CREATE TABLE IF NOT EXISTS detected_event (
     planned_at       TIMESTAMPTZ,
     built_at         TIMESTAMPTZ,
     reviewed_at      TIMESTAMPTZ,
-    reviewed_by      TEXT
+    reviewed_by      TEXT,
+    source_url       TEXT,
+    source_credibility TEXT DEFAULT 'OFFICIAL_GOVERNMENT_UN',
+    is_simulation    BOOLEAN DEFAULT FALSE,
+    dismiss_reason   TEXT,
+    feedback_notes   TEXT,
+    dismissed_at     TIMESTAMPTZ,
+    dismissed_by     TEXT,
+    archived_at      TIMESTAMPTZ,
+    archive_reason   TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_detected_event_status ON detected_event(status);

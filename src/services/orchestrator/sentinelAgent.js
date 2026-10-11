@@ -84,6 +84,8 @@ function fetchLiveGDACSAlerts(timeoutMs = 6000) {
                         const rawDesc = it.match(/<description>([\s\S]*?)<\/description>/i)?.[1] || '';
                         const description = rawDesc.replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<').trim();
                         const region = countryName;
+                        const rawLink = it.match(/<link>([\s\S]*?)<\/link>/i)?.[1]?.replace(/&amp;/g, '&')?.trim();
+                        const sourceUrl = rawLink || `https://www.gdacs.org/report.aspx?eventtype=${rawType}&eventid=${eventId}`;
 
                         alerts.push({
                             sourceAlertId,
@@ -96,7 +98,10 @@ function fetchLiveGDACSAlerts(timeoutMs = 6000) {
                             coordinates: { lat, lon },
                             estimatedAffected,
                             confidence: alertLevel.toLowerCase() === 'red' ? 0.95 : 0.88,
-                            description
+                            description,
+                            sourceUrl,
+                            sourceCredibility: 'UN_OCHA_COPERNICUS_GDACS',
+                            isSimulation: false
                         });
                     }
                     resolve(alerts);
@@ -122,7 +127,10 @@ const FALLBACK_ALERTS = [
         coordinates: { lat: -17.73, lon: 168.32 },
         estimatedAffected: 210000,
         confidence: 0.95,
-        description: 'Category 5 Tropical Cyclone approaching Vanuatu and western Fiji. Destructive winds exceeding 240 km/h, catastrophic storm surges, and island-wide communications blackouts reported.'
+        description: 'Category 5 Tropical Cyclone approaching Vanuatu and western Fiji. Destructive winds exceeding 240 km/h, catastrophic storm surges, and island-wide communications blackouts reported.',
+        sourceUrl: 'https://www.gdacs.org/report.aspx?simulation=true',
+        sourceCredibility: 'SIMULATION_FALLBACK_CATALOG',
+        isSimulation: true
     },
     {
         sourceAlertId: 'GDACS-TC-2026-0419',
@@ -135,7 +143,10 @@ const FALLBACK_ALERTS = [
         coordinates: { lat: 11.24, lon: 125.00 },
         estimatedAffected: 1450000,
         confidence: 0.93,
-        description: 'Super Typhoon making landfall in Eastern Samar with extreme winds and 4m coastal storm surge. Pre-emptive evacuation orders active across coastal municipalities.'
+        description: 'Super Typhoon making landfall in Eastern Samar with extreme winds and 4m coastal storm surge. Pre-emptive evacuation orders active across coastal municipalities.',
+        sourceUrl: 'https://www.gdacs.org/report.aspx?simulation=true',
+        sourceCredibility: 'SIMULATION_FALLBACK_CATALOG',
+        isSimulation: true
     },
     {
         sourceAlertId: 'GDACS-FL-2026-1087',
@@ -148,7 +159,10 @@ const FALLBACK_ALERTS = [
         coordinates: { lat: 26.14, lon: 91.74 },
         estimatedAffected: 2800000,
         confidence: 0.94,
-        description: 'GDACS Red Alert: Severe monsoon flooding in Brahmaputra basin affecting 28 districts across Assam and northern Meghalaya. Multiple embankments breached.'
+        description: 'GDACS Red Alert: Severe monsoon flooding in Brahmaputra basin affecting 28 districts across Assam and northern Meghalaya. Multiple embankments breached.',
+        sourceUrl: 'https://www.gdacs.org/report.aspx?simulation=true',
+        sourceCredibility: 'SIMULATION_FALLBACK_CATALOG',
+        isSimulation: true
     },
     {
         sourceAlertId: 'GDACS-EQ-2026-0782',
@@ -161,7 +175,10 @@ const FALLBACK_ALERTS = [
         coordinates: { lat: -21.17, lon: -175.20 },
         estimatedAffected: 95000,
         confidence: 0.96,
-        description: 'Shallow M7.4 earthquake along the Tonga subduction zone. Tsunami threat warning issued for coastal Pacific low-lying atolls and island settlements.'
+        description: 'Shallow M7.4 earthquake along the Tonga subduction zone. Tsunami threat warning issued for coastal Pacific low-lying atolls and island settlements.',
+        sourceUrl: 'https://www.gdacs.org/report.aspx?simulation=true',
+        sourceCredibility: 'SIMULATION_FALLBACK_CATALOG',
+        isSimulation: true
     },
     {
         sourceAlertId: 'GDACS-TC-2026-0428',
@@ -174,7 +191,10 @@ const FALLBACK_ALERTS = [
         coordinates: { lat: 21.84, lon: 89.54 },
         estimatedAffected: 1800000,
         confidence: 0.92,
-        description: 'Very Severe Cyclonic Storm crossing Sundarbans coast with 3.5m tidal surge inundating saline embankments and coastal villages.'
+        description: 'Very Severe Cyclonic Storm crossing Sundarbans coast with 3.5m tidal surge inundating saline embankments and coastal villages.',
+        sourceUrl: 'https://www.gdacs.org/report.aspx?simulation=true',
+        sourceCredibility: 'SIMULATION_FALLBACK_CATALOG',
+        isSimulation: true
     },
     {
         sourceAlertId: 'GDACS-FL-2026-1092',
@@ -187,7 +207,10 @@ const FALLBACK_ALERTS = [
         coordinates: { lat: 30.44, lon: 79.93 },
         estimatedAffected: 45000,
         confidence: 0.88,
-        description: 'Flash flooding from intense cloudburst in Chamoli district. Multiple villages cut off. Bridges destroyed on Alaknanda river.'
+        description: 'Flash flooding from intense cloudburst in Chamoli district. Multiple villages cut off. Bridges destroyed on Alaknanda river.',
+        sourceUrl: 'https://www.gdacs.org/report.aspx?simulation=true',
+        sourceCredibility: 'SIMULATION_FALLBACK_CATALOG',
+        isSimulation: true
     },
     {
         sourceAlertId: 'GDACS-GL-2026-0043',
@@ -200,7 +223,10 @@ const FALLBACK_ALERTS = [
         coordinates: { lat: 36.32, lon: 74.65 },
         estimatedAffected: 35000,
         confidence: 0.85,
-        description: 'Glacial lake outburst flood from Shisper Glacier moraine dam failure. Downstream communities along Hunza River at immediate risk.'
+        description: 'Glacial lake outburst flood from Shisper Glacier moraine dam failure. Downstream communities along Hunza River at immediate risk.',
+        sourceUrl: 'https://www.gdacs.org/report.aspx?simulation=true',
+        sourceCredibility: 'SIMULATION_FALLBACK_CATALOG',
+        isSimulation: true
     }
 ];
 
@@ -212,18 +238,13 @@ async function fetchGDACSAlerts() {
         console.warn('[Sentinel] Live GDACS feed fetch unavailable, using simulation catalog:', err.message);
     }
 
-    const alertMap = new Map();
-    if (Array.isArray(liveAlerts)) {
-        for (const a of liveAlerts) {
-            alertMap.set(a.sourceAlertId, a);
-        }
+    // Only return live alerts if successfully retrieved, ensuring true events are not mixed with mock data
+    if (Array.isArray(liveAlerts) && liveAlerts.length > 0) {
+        return liveAlerts;
     }
-    for (const fb of FALLBACK_ALERTS) {
-        if (!alertMap.has(fb.sourceAlertId)) {
-            alertMap.set(fb.sourceAlertId, fb);
-        }
-    }
-    return Array.from(alertMap.values());
+
+    // Fallback simulation catalog is used only when feed is offline
+    return FALLBACK_ALERTS;
 }
 
 /**
@@ -238,6 +259,20 @@ async function isAlreadyDetected(sourceAlertId) {
 }
 
 /**
+ * Auto-archive events where no action has been taken for 4 weeks (28 days).
+ */
+async function archiveStaleEvents(maxAgeDays = 28) {
+    const res = await pool.query(
+        `UPDATE detected_event
+         SET status = 'ARCHIVED', archived_at = NOW(), archive_reason = 'EXPIRED_4_WEEKS_INACTIVE'
+         WHERE status = 'DETECTED' AND detected_at < NOW() - ($1 || ' days')::INTERVAL
+         RETURNING detection_id, source_alert_id, title, detected_at`,
+        [maxAgeDays]
+    );
+    return res.rows;
+}
+
+/**
  * Run a Sentinel scan cycle.
  * Fetches alerts from all configured feeds, deduplicates, and inserts new detections.
  * 
@@ -248,6 +283,13 @@ async function runSentinelScan() {
     
     try {
         await client.query('BEGIN');
+
+        // 1. Auto-archive stale events older than 4 weeks with no action taken
+        await client.query(`
+            UPDATE detected_event
+            SET status = 'ARCHIVED', archived_at = NOW(), archive_reason = 'EXPIRED_4_WEEKS_INACTIVE'
+            WHERE status = 'DETECTED' AND detected_at < NOW() - INTERVAL '28 days'
+        `);
         
         const allAlerts = await fetchGDACSAlerts();
         const newDetections = [];
@@ -263,9 +305,9 @@ async function runSentinelScan() {
             
             const result = await client.query(
                 `INSERT INTO detected_event
-                    (source_feed, source_alert_id, event_type, severity, title, country, country_name, region, coordinates, estimated_affected, confidence, status)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'DETECTED')
-                 RETURNING detection_id, event_type, severity, title, country`,
+                    (source_feed, source_alert_id, event_type, severity, title, country, country_name, region, coordinates, estimated_affected, confidence, status, source_url, source_credibility, is_simulation)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'DETECTED', $12, $13, $14)
+                 RETURNING detection_id, event_type, severity, title, country, source_url`,
                 [
                     'GDACS',
                     alert.sourceAlertId,
@@ -277,7 +319,10 @@ async function runSentinelScan() {
                     alert.region,
                     JSON.stringify(alert.coordinates),
                     alert.estimatedAffected,
-                    alert.confidence
+                    alert.confidence,
+                    alert.sourceUrl || null,
+                    alert.sourceCredibility || 'OFFICIAL_GOVERNMENT_UN',
+                    alert.isSimulation === true
                 ]
             );
             
@@ -287,7 +332,8 @@ async function runSentinelScan() {
                 eventType: alert.eventType,
                 severity,
                 country: alert.country,
-                countryName: alert.countryName
+                countryName: alert.countryName,
+                sourceUrl: alert.sourceUrl
             });
         }
         
@@ -321,20 +367,109 @@ async function runSentinelScan() {
     }
 }
 
-async function listDetectedEvents(status = null) {
+/**
+ * List detected events, automatically archiving any stale > 4-week events first.
+ * If filter is ACTIVE (or null), hides ARCHIVED and DISMISSED events.
+ */
+async function listDetectedEvents(filter = null) {
+    // 1. Auto-archive events with no action taken after 4 weeks (28 days)
+    await pool.query(`
+        UPDATE detected_event
+        SET status = 'ARCHIVED', archived_at = NOW(), archive_reason = 'EXPIRED_4_WEEKS_INACTIVE'
+        WHERE status = 'DETECTED' AND detected_at < NOW() - INTERVAL '28 days'
+    `);
+
+    // 2. Query events
     let query = `SELECT detection_id as id, detection_id, source_feed, source_alert_id, event_type, severity, 
                         severity as alert_level, title, country as country_code, country_name, 
                         region as location_name, region, status, event_id as event_code, 
-                        module_manifest, preview_url, detected_at 
+                        module_manifest, preview_url, detected_at,
+                        source_url, source_credibility, is_simulation,
+                        dismiss_reason, feedback_notes, dismissed_at, dismissed_by,
+                        archived_at, archive_reason
                  FROM detected_event`;
     const params = [];
-    if (status) {
+    if (!filter || filter === 'ACTIVE') {
+        // Active display list hides archived and dismissed events
+        query += ` WHERE status NOT IN ('ARCHIVED', 'DISMISSED')`;
+    } else if (filter === 'ALL') {
+        // No filter
+    } else if (filter === 'ARCHIVED') {
+        query += ` WHERE status = 'ARCHIVED'`;
+    } else if (filter === 'DISMISSED') {
+        query += ` WHERE status = 'DISMISSED'`;
+    } else {
         query += ` WHERE status = $1`;
-        params.push(status);
+        params.push(filter);
     }
     query += ` ORDER BY detected_at DESC`;
     const result = await pool.query(query, params);
     return result.rows;
+}
+
+/**
+ * Allow a human administrator to provide feedback on an event (e.g. FAKE_NEWS, MINOR_EVENT, OUT_OF_SCOPE)
+ * and dismiss it from the active planning queue.
+ */
+async function dismissEventWithFeedback({ detectedEventId, reason, notes = '', actorId = 'admin-user' }) {
+    if (!detectedEventId) {
+        const err = new Error('detectedEventId is required');
+        err.status = 400;
+        throw err;
+    }
+    const validReasons = ['FAKE_NEWS', 'MINOR_EVENT', 'OUT_OF_SCOPE', 'DUPLICATE', 'SIMULATION_DATA', 'OTHER'];
+    const chosenReason = validReasons.includes(reason) ? reason : 'OTHER';
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        const updateRes = await client.query(
+            `UPDATE detected_event
+             SET status = 'DISMISSED',
+                 dismiss_reason = $1,
+                 feedback_notes = $2,
+                 dismissed_by = $3,
+                 dismissed_at = NOW()
+             WHERE detection_id = $4
+             RETURNING *`,
+            [chosenReason, notes, actorId, detectedEventId]
+        );
+
+        if (updateRes.rows.length === 0) {
+            const err = new Error(`Detected event '${detectedEventId}' not found.`);
+            err.status = 404;
+            throw err;
+        }
+
+        const dismissedEvent = updateRes.rows[0];
+
+        // Audit the human feedback to AI Sentinel agent
+        await writeAuditEvent(client, {
+            actor: actorId,
+            action: 'SENTINEL_EVENT_FEEDBACK_DISMISSED',
+            entityType: 'DetectedEvent',
+            entityId: detectedEventId,
+            newState: {
+                previousStatus: 'DETECTED',
+                newStatus: 'DISMISSED',
+                dismissReason: chosenReason,
+                notes,
+                title: dismissedEvent.title,
+                sourceAlertId: dismissedEvent.source_alert_id,
+                isSimulation: dismissedEvent.is_simulation
+            },
+            outcome: 'SUCCESS'
+        });
+
+        await client.query('COMMIT');
+        return dismissedEvent;
+    } catch (err) {
+        await client.query('ROLLBACK').catch(() => {});
+        throw err;
+    } finally {
+        client.release();
+    }
 }
 
 async function scanFeeds() {
@@ -349,5 +484,12 @@ async function scanFeeds() {
     };
 }
 
-module.exports = { runSentinelScan, fetchGDACSAlerts, listDetectedEvents, scanFeeds };
+module.exports = {
+    runSentinelScan,
+    fetchGDACSAlerts,
+    listDetectedEvents,
+    scanFeeds,
+    dismissEventWithFeedback,
+    archiveStaleEvents
+};
 

@@ -83,6 +83,70 @@ test('OWASP Top 10 Security Controls Verification', async (t) => {
         }
     });
 
+    await t.test('Orchestrator: /events/:id/feedback rejects unauthenticated caller with 404', async () => {
+        const server = app.listen(0);
+        try {
+            const res = await makeRequest(server, 'POST', '/api/v1/orchestrator/events/00000000-0000-0000-0000-000000000000/feedback', {
+                body: { reason: 'FAKE_NEWS' }
+            });
+            assert.strictEqual(res.status, 404);
+        } finally {
+            server.close();
+        }
+    });
+
+    await t.test('Orchestrator: /events/:id/feedback records human feedback and dismisses event', async () => {
+        const server = app.listen(0);
+        try {
+            // First get an active event to test feedback
+            const listRes = await makeRequest(server, 'GET', '/api/v1/orchestrator/events?filter=ACTIVE', {
+                headers: {
+                    'X-Debug-Actor-Class': 'ADMIN',
+                    'X-Debug-Actor-Id': 'admin-test',
+                    'X-Debug-IAL': 'IAL-2',
+                }
+            });
+            assert.strictEqual(listRes.status, 200);
+            assert.ok(listRes.body.events.length > 0);
+            const target = listRes.body.events[0];
+
+            const fbRes = await makeRequest(server, 'POST', `/api/v1/orchestrator/events/${target.id}/feedback`, {
+                headers: {
+                    'X-Debug-Actor-Class': 'ADMIN',
+                    'X-Debug-Actor-Id': 'admin-test',
+                    'X-Debug-IAL': 'IAL-2',
+                },
+                body: {
+                    reason: 'MINOR_EVENT',
+                    notes: 'Below portal threshold — verified with regional agency.'
+                }
+            });
+            assert.strictEqual(fbRes.status, 200);
+            assert.strictEqual(fbRes.body.event.status, 'DISMISSED');
+            assert.strictEqual(fbRes.body.event.dismiss_reason, 'MINOR_EVENT');
+        } finally {
+            server.close();
+        }
+    });
+
+    await t.test('Orchestrator: /archive-stale archives 4-week inactive events', async () => {
+        const server = app.listen(0);
+        try {
+            const res = await makeRequest(server, 'POST', '/api/v1/orchestrator/archive-stale', {
+                headers: {
+                    'X-Debug-Actor-Class': 'ADMIN',
+                    'X-Debug-Actor-Id': 'admin-test',
+                    'X-Debug-IAL': 'IAL-2',
+                },
+                body: { maxAgeDays: 28 }
+            });
+            assert.strictEqual(res.status, 200);
+            assert.ok(typeof res.body.archivedCount === 'number');
+        } finally {
+            server.close();
+        }
+    });
+
     await t.test('Orchestrator: /plan rejects unauthenticated caller with 404', async () => {
         const server = app.listen(0);
         try {
