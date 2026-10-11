@@ -49,6 +49,9 @@ const gatewayRoutes = require('./modules/gateways/routes');    // Two-way SMS & 
 const tilesRoutes = require('./modules/tiles/routes');          // Geospatial basemap tile proxy & cache
 const analyticsRoutes = require('./modules/analytics/routes');  // Privacy-preserving visitor metrics
 const { visitorAnalytics } = require('./middleware/visitorAnalytics');
+const offlineSyncRoutes = require('./modules/offline-sync/routes');  // SPEC-011 Phase 1: offline approvals & Field Hub batch sync
+const scanRoutes = require('./modules/scan/routes');             // SPEC-011 §6, §10: Paper record digitisation & OCR
+const smsGatewayRoutes = require('./modules/sms-gateway/routes'); // SPEC-011 §7, §10: SMS/USSD low-tech access
 const { sloLatencyMiddleware, healthHandler } = require('./services/analytics/sloMonitor'); // SPEC-008 §11 G6 SLO monitoring
 
 const path = require('path');
@@ -159,6 +162,11 @@ app.use('/api/v1/learning', learningRoutes);          // SPEC-010 Humanitarian i
 app.use('/api/v1/gateways', gatewayRoutes);            // Two-way SMS & WhatsApp Gateway (Twilio / Meta)
 app.use('/api/v1/tiles', tilesRoutes);                // High-performance geospatial basemap tile cache
 app.use('/api/v1/analytics', analyticsRoutes);        // In-app privacy-preserving visitor analytics (SPEC-004)
+app.use('/api/v1/approvals', offlineSyncRoutes);      // SPEC-011 §10: offline portal/project approval decisions
+app.use('/api/v1/sync', offlineSyncRoutes);            // SPEC-011 §10: Field Hub bulk batch sync endpoint
+app.use('/api/v1/scan', scanRoutes);                  // SPEC-011 §6, §10: Paper record scan & OCR extraction
+app.use('/api/v1/sms', smsGatewayRoutes);             // SPEC-011 §7, §10: Inbound SMS gateway webhook
+app.use('/api/v1/ussd', smsGatewayRoutes);            // SPEC-011 §7, §10: USSD interactive sessions
 
 // Serve static assets under /console only if request is for CSS, JS, images, or fonts
 app.use('/console', (req, res, next) => {

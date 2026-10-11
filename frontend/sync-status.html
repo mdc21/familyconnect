@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Offline Queue Status — FamilyConnect</title>
+<meta name="description" content="View and manage items queued for sync while offline. Reports saved on your device will appear here and sync automatically when connectivity returns.">
+<link rel="stylesheet" href="css/styles.css?v=20260924">
+<style>
+/* ── Sync Status Page styles — SPEC-011 §4.3/§4.4 ──────────────────────── */
+.sync-hero {
+    background: linear-gradient(135deg, var(--primary, #0ea5e9) 0%, #0369a1 100%);
+    color: #fff;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+.sync-hero h1 { margin: 0 0 0.5rem; font-size: 1.5rem; }
+.sync-hero p  { margin: 0; opacity: 0.85; font-size: 0.95rem; }
+
+.sync-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+.stat-card {
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-subtle, #e5e7eb);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    flex: 1;
+    min-width: 140px;
+    text-align: center;
+}
+.stat-card .stat-num {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary, #0ea5e9);
+    line-height: 1;
+}
+.stat-card .stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted, #6b7280);
+    margin-top: 0.3rem;
+}
+
+.queue-section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.queue-section-title .badge-count {
+    background: var(--primary, #0ea5e9);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    padding: 0.15rem 0.55rem;
+}
+
+.queue-list { list-style: none; margin: 0; padding: 0; }
+.queue-item {
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-subtle, #e5e7eb);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem 1rem;
+    align-items: start;
+}
+.queue-item-type {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #6b7280);
+    margin-bottom: 0.2rem;
+}
+.queue-item-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.2rem;
+}
+.queue-item-ref {
+    font-size: 0.78rem;
+    font-family: monospace;
+    color: var(--text-muted, #6b7280);
+}
+.queue-item-age {
+    font-size: 0.75rem;
+    color: var(--text-muted, #6b7280);
+    margin-top: 0.2rem;
+}
+.queue-item-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+.status-queued   { background: #fef3c7; color: #92400e; }
+.status-syncing  { background: #dbeafe; color: #1e40af; }
+.status-done     { background: #d1fae5; color: #065f46; }
+.status-failed   { background: #fee2e2; color: #991b1b; }
+
+.approval-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    background: #f3e8ff;
+    color: #6b21a8;
+    margin-top: 0.3rem;
+}
+.decision-approved { background: #d1fae5; color: #065f46; }
+.decision-rejected { background: #fee2e2; color: #991b1b; }
+.decision-revision { background: #fef3c7; color: #92400e; }
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted, #6b7280);
+}
+.empty-state .empty-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+.empty-state p { font-size: 0.9rem; }
+
+.sync-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+.btn-retry {
+    background: var(--primary, #0ea5e9);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+.btn-retry:hover { opacity: 0.88; }
+.btn-retry:disabled { opacity: 0.5; cursor: default; }
+.btn-secondary {
+    background: var(--bg-card, #fff);
+    color: var(--text-body, #374151);
+    border: 1px solid var(--border-subtle, #e5e7eb);
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.btn-secondary:hover { background: #f9fafb; }
+
+.governance-note {
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    font-size: 0.82rem;
+    color: #92400e;
+    margin-top: 1.5rem;
+}
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="container site-header-inner">
+        <a href="index.html" class="site-brand">
+            <span class="site-brand-badge" aria-hidden="true">FC</span>
+            <span class="site-brand-text">
+                <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response &amp; Tracing</span>
+            </span>
+        </a>
+        <div class="site-header-controls">
+            <a href="console.html" class="header-sign-in">
+                🔒 <span data-i18n="navSignIn">Coordinator sign-in</span>
+            </a>
+        </div>
+    </div>
+    <nav class="site-nav-bar" aria-label="Main navigation">
+        <div class="container">
+            <ul class="site-nav-list">
+                <li><a href="index.html" data-i18n="navHome">Home</a></li>
+                <li><a href="safe.html" data-i18n="navSafe">I'm Safe</a></li>
+                <li><a href="missing.html" data-i18n="navMissing">Report Missing</a></li>
+                <li><a href="track.html" data-i18n="navTrack">Track Case</a></li>
+                <li><a href="assistance.html" data-i18n="navAssistance">Request Assistance</a></li>
+                <li><a href="information.html" data-i18n="navInfo">Information</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<div class="sync-hero">
+    <div class="container">
+        <h1>📤 Offline Queue Status</h1>
+        <p>Reports and decisions saved on this device while offline. They will sync automatically when internet connectivity returns.</p>
+    </div>
+</div>
+
+<main class="container" id="sync-main">
+
+    <!-- Stats bar -->
+    <div class="sync-stats" id="sync-stats-bar" aria-live="polite">
+        <div class="stat-card">
+            <div class="stat-num" id="stat-submissions">—</div>
+            <div class="stat-label">Queued Submissions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num" id="stat-approvals">—</div>
+            <div class="stat-label">Queued Approvals</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num" id="stat-status">
+                <span id="stat-online-icon">—</span>
+            </div>
+            <div class="stat-label" id="stat-status-label">Checking…</div>
+        </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="sync-actions">
+        <button id="btn-sync-now" class="btn-retry" onclick="trySyncNow()">🔄 Sync Now</button>
+        <button id="btn-refresh" class="btn-secondary" onclick="loadQueue()">↻ Refresh</button>
+        <a href="index.html" class="btn-secondary" style="text-decoration:none;display:inline-flex;align-items:center">← Back to Home</a>
+    </div>
+
+    <!-- Submissions queue -->
+    <div id="submissions-section">
+        <h2 class="queue-section-title">
+            📝 Queued Reports
+            <span class="badge-count" id="submissions-count">0</span>
+        </h2>
+        <ul class="queue-list" id="submissions-list" aria-label="Queued submissions"></ul>
+        <div class="empty-state" id="submissions-empty" style="display:none">
+            <div class="empty-icon">✅</div>
+            <p>No queued submissions. All reports have been synced.</p>
+        </div>
+    </div>
+
+    <!-- Approvals queue -->
+    <div id="approvals-section">
+        <h2 class="queue-section-title">
+            🔏 Queued Coordinator Decisions
+            <span class="badge-count" id="approvals-count">0</span>
+        </h2>
+        <ul class="queue-list" id="approvals-list" aria-label="Queued coordinator approval decisions"></ul>
+        <div class="empty-state" id="approvals-empty" style="display:none">
+            <div class="empty-icon">✅</div>
+            <p>No queued approval decisions.</p>
+        </div>
+        <div class="governance-note" id="approvals-governance" style="display:none">
+            ⚠️ <strong>Governance notice:</strong> Offline approval decisions will be validated against current portal/project status at sync time. If the status has changed, your decision will be returned for re-review rather than applied automatically.
+        </div>
+    </div>
+
+</main>
+
+<script src="js/offline-queue.js"></script>
+<script>
+// SPEC-011 §11 — sync-status.html: Offline queue viewer
+function formatAge(ms) {
+    const s = Math.floor(ms / 1000);
+    if (s < 60) return s + 's ago';
+    const m = Math.floor(s / 60);
+    if (m < 60) return m + 'm ago';
+    return Math.floor(m / 60) + 'h ago';
+}
+
+function decisionBadgeClass(decision) {
+    if (!decision) return '';
+    const d = String(decision).toUpperCase();
+    if (d === 'APPROVED')       return 'decision-approved';
+    if (d === 'REJECTED')       return 'decision-rejected';
+    if (d === 'NEEDS_REVISION') return 'decision-revision';
+    return '';
+}
+
+function decisionEmoji(decision) {
+    if (!decision) return '';
+    const d = String(decision).toUpperCase();
+    if (d === 'APPROVED')       return '✅';
+    if (d === 'REJECTED')       return '❌';
+    if (d === 'NEEDS_REVISION') return '🔁';
+    return '⏳';
+}
+
+async function loadQueue() {
+    const btnSync = document.getElementById('btn-sync-now');
+    if (btnSync) btnSync.disabled = !navigator.onLine;
+
+    // Update connectivity stat
+    const statIcon = document.getElementById('stat-online-icon');
+    const statLabel = document.getElementById('stat-status-label');
+    if (navigator.onLine) {
+        if (statIcon) statIcon.textContent = '🟢';
+        if (statLabel) statLabel.textContent = 'Online';
+    } else {
+        if (statIcon) statIcon.textContent = '🟠';
+        if (statLabel) statLabel.textContent = 'Offline';
+    }
+
+    // Load submissions
+    let submissions = [];
+    let approvals = [];
+    try { submissions = await window.FCOfflineQueue.getQueuedItems(); } catch (_) {}
+    try { approvals = await window.FCOfflineQueue.getQueuedApprovals(); } catch (_) {}
+
+    // Update stat counts
+    document.getElementById('stat-submissions').textContent = submissions.length;
+    document.getElementById('stat-approvals').textContent = approvals.length;
+    document.getElementById('submissions-count').textContent = submissions.length;
+    document.getElementById('approvals-count').textContent = approvals.length;
+
+    // Render submissions
+    const subList = document.getElementById('submissions-list');
+    const subEmpty = document.getElementById('submissions-empty');
+    if (submissions.length === 0) {
+        subList.innerHTML = '';
+        subEmpty.style.display = '';
+    } else {
+        subEmpty.style.display = 'none';
+        subList.innerHTML = submissions.map(item => {
+            const age = Date.now() - (item.queuedAt || 0);
+            return `<li class="queue-item">
+                <div>
+                    <div class="queue-item-type">Submission</div>
+                    <div class="queue-item-label">${escHtml(item.label || 'Report')}</div>
+                    <div class="queue-item-ref">Ref: ${escHtml(item.localRef || item.id)}</div>
+                    <div class="queue-item-age">Queued ${formatAge(age)}</div>
+                    <div class="queue-item-ref" style="margin-top:0.2rem;opacity:0.7">${escHtml(item.path || '')}</div>
+                </div>
+                <div>
+                    <span class="queue-item-status status-queued">⏳ QUEUED</span>
+                </div>
+            </li>`;
+        }).join('');
+    }
+
+    // Render approvals
+    const appList = document.getElementById('approvals-list');
+    const appEmpty = document.getElementById('approvals-empty');
+    const appGov = document.getElementById('approvals-governance');
+    if (approvals.length === 0) {
+        appList.innerHTML = '';
+        appEmpty.style.display = '';
+        if (appGov) appGov.style.display = 'none';
+    } else {
+        appEmpty.style.display = 'none';
+        if (appGov) appGov.style.display = '';
+        appList.innerHTML = approvals.map(appr => {
+            const age = Date.now() - (appr.decidedAt || appr.queuedAt || 0);
+            const dClass = decisionBadgeClass(appr.decision);
+            const dEmoji = decisionEmoji(appr.decision);
+            const ialText = appr.reviewerIAL ? `IAL-${appr.reviewerIAL}` : 'IAL unknown';
+            return `<li class="queue-item">
+                <div>
+                    <div class="queue-item-type">Coordinator Decision — ${escHtml(appr.type || 'APPROVAL')}</div>
+                    <div class="queue-item-label">${escHtml(appr.label || 'Approval Decision')}</div>
+                    <div style="margin-top:0.3rem">
+                        <span class="approval-badge ${dClass}">${dEmoji} ${escHtml(appr.decision || '—')}</span>
+                        <span class="approval-badge" style="margin-left:0.25rem">${escHtml(ialText)}</span>
+                    </div>
+                    <div class="queue-item-ref" style="margin-top:0.35rem">Ref: ${escHtml(appr.localRef || appr.id)}</div>
+                    ${appr.reviewerComment ? `<div class="queue-item-age" style="margin-top:0.2rem">Comment: "${escHtml(appr.reviewerComment)}"</div>` : ''}
+                    <div class="queue-item-age">Decided ${formatAge(age)}</div>
+                </div>
+                <div>
+                    <span class="queue-item-status status-queued">⏳ QUEUED</span>
+                </div>
+            </li>`;
+        }).join('');
+    }
+}
+
+function escHtml(str) {
+    return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+async function trySyncNow() {
+    const btn = document.getElementById('btn-sync-now');
+    if (!navigator.onLine) {
+        alert('Still offline — sync will happen automatically when connectivity returns.');
+        return;
+    }
+    if (btn) { btn.textContent = '🔄 Syncing…'; btn.disabled = true; }
+    try {
+        await window.FCOfflineQueue.syncQueue();
+    } finally {
+        if (btn) { btn.textContent = '🔄 Sync Now'; btn.disabled = false; }
+        await loadQueue();
+    }
+}
+
+window.addEventListener('online', loadQueue);
+window.addEventListener('offline', loadQueue);
+document.addEventListener('DOMContentLoaded', loadQueue);
+</script>
+</body>
+</html>

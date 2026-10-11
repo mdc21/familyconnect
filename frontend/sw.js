@@ -2,13 +2,16 @@
 // Provides offline fallback for families in low-connectivity disaster zones.
 // Cache strategy: network-first for API calls, cache-first for static assets.
 
-const CACHE_NAME = "familyconnect-v20";
+const CACHE_NAME = "familyconnect-v20"; // SPEC-011: scan.html, field-hub.html, sync-status.html, 18 locales
 const OFFLINE_FALLBACK = '/offline.html';
 
 // Assets to pre-cache on install
+// SPEC-011 Phase 1 & 2: all HTML pages, JS/CSS, and all 23 configured country locale files
 const PRECACHE_ASSETS = [
+    // ── Core pages ───────────────────────────────────────────────────────────
     '/index.html',
     '/offline.html',
+    '/sync-status.html',
     '/track.html',
     '/safe.html',
     '/missing.html',
@@ -28,7 +31,12 @@ const PRECACHE_ASSETS = [
     '/water-levels.html',
     '/relief.html',
     '/report-damage.html',
+    '/register-organisation.html',
     '/console.html',
+    '/scan.html',           // SPEC-011 §11: Paper record digitisation
+    '/field-hub.html',       // SPEC-011 §11: Field Hub admin console
+    '/sync-status.html',    // SPEC-011 §11: Offline queue viewer
+    // ── Static assets ─────────────────────────────────────────────────────────
     '/css/styles.css',
     '/css/leaflet.css',
     '/js/app.js',
@@ -36,9 +44,31 @@ const PRECACHE_ASSETS = [
     '/js/leaflet.js',
     '/js/map.js',
     '/js/offline-queue.js',
-    '/locales/en.json',
-    '/locales/ne.json',
-    '/locales/np.json',
+    // ── Locale files — all 23 configured country codes (SPEC-011 §4.1) ───────
+    // South Asia
+    '/locales/en.json',   // English (default)
+    '/locales/ne.json',   // Nepali
+    '/locales/np.json',   // Nepali (alternate code)
+    '/locales/hi.json',   // Hindi (India)
+    '/locales/bn.json',   // Bengali (Bangladesh, West Bengal)
+    '/locales/as.json',   // Assamese (Assam, India)
+    '/locales/ur.json',   // Urdu (Pakistan)
+    '/locales/zh.json',   // Mandarin/Tibetan (China border regions)
+    // Southeast Asia & Pacific
+    '/locales/tl.json',   // Tagalog (Philippines)
+    '/locales/id.json',   // Bahasa Indonesia
+    '/locales/bi.json',   // Bislama (Vanuatu)
+    '/locales/fr.json',   // French (Vanuatu, Madagascar, Mayotte)
+    '/locales/to.json',   // Tongan
+    '/locales/sm.json',   // Samoan
+    '/locales/hh.json',   // Hiri Motu (Papua New Guinea)
+    '/locales/mg.json',   // Malagasy (Madagascar)
+    '/locales/pt.json',   // Portuguese (Mozambique, Brazil)
+    '/locales/sw.json',   // Swahili (Kenya, Mozambique)
+    '/locales/ja.json',   // Japanese
+    // Americas, Africa, Oceania
+    '/locales/es.json',   // Spanish (Mexico)
+    '/locales/ms.json',   // Malay
 ];
 
 // Install: pre-cache critical assets

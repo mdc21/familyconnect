@@ -4,6 +4,7 @@ const { ProblemError } = require('../../middleware/problems');
 const { requireIdempotencyKey } = require('../../middleware/idempotency');
 const { requireActor } = require('../../middleware/actor');
 const { syncTourGroupManifestFromCase } = require('../../services/tourGroupSync');
+const { computePersonMatchScore } = require('../../services/matching/fuzzyMatcher');
 
 const router = express.Router();
 
@@ -335,6 +336,111 @@ router.post('/:caseId/escalations', requireActor('CASE_WORKER', 'AUTHORITY'), re
     }
 });
 
+/**
+ * POST /api/v1/cases/match — SPEC-011 §6.6, §10
+ * AI Fuzzy Match for paper records against open missing person cases.
+ * Cross-script transliteration aware. Flags POTENTIAL_MATCH if confidence >= 85%.
+ * Enforces BR-001: Never silent merge — always returns proposed matches for human review.
+ */
+router.post('/match', async (req, res, next) => {
+    try {
+        const { name, age, sex, location, recordType, scanRef } = req.body || {};
+        if (!name || typeof name !== 'string' || !name.trim()) {
+            throw new ProblemError('INVALID_SCHEMA', 'Field "name" is required for case matching.', req.originalUrl);
+        }
 
+        const candidateTarget = {
+            name: name.trim(),
+            age: age != null ? parseInt(age, 10) : null,
+            sex: sex ? String(sex).trim() : null,
+            location: location || ''
+        };
+
+        let cases = [];
+        try {
+            const queryRes = await pool.query(
+                `SELECT cr.case_id, cr.case_reference, cr.status, cr.event_id,
+                        p.first_name, p.last_name, p.approximate_age, p.gender,
+                        mr.last_known_location
+                 FROM case_record cr
+                 JOIN person p ON cr.primary_person_id = p.person_id
+                 LEFT JOIN missing_report mr ON mr.case_id = cr.case_id
+                 WHERE cr.case_type = 'MISSING_PERSON'
+                   AND cr.status NOT IN ('RESOLVED', 'CLOSED')
+                 LIMIT 100`
+            );
+            cases = queryRes.rows || [];
+        } catch (dbErr) {
+            console.warn('[Matching] Could not query cases from DB, using empty set:', dbErr.message);
+        }
+
+        const matches = [];
+        let hasPotentialMatch = false;
+        let topConfidence = 0;
+
+        for (const c of cases) {
+            const casePerson = {
+                name: `${c.first_name || ''} ${c.last_name || ''}`.trim(),
+                age: c.approximate_age,
+                sex: c.gender,
+                location: c.last_known_location
+            };
+
+            const score = computePersonMatchScore(candidateTarget, casePerson);
+            const isPotential = score.overall >= 0.85;
+
+            if (score.overall >= 0.4) {
+                matches.push({
+                    caseId: c.case_id,
+                    caseReference: c.case_reference,
+                    personName: casePerson.name,
+                    status: c.status,
+                    confidence: score.overall,
+                    isPotentialMatch: isPotential,
+                    scoreBreakdown: score.details
+                });
+            }
+
+            if (isPotential) {
+                hasPotentialMatch = true;
+                if (score.overall > topConfidence) topConfidence = score.overall;
+            }
+        }
+
+        matches.sort((a, b) => b.confidence - a.confidence);
+
+        // Audit log if high-confidence potential match detected (§6.6)
+        if (hasPotentialMatch && matches.length > 0) {
+            const best = matches[0];
+            try {
+                await writeAuditEvent(null, {
+                    actor: req.actor?.actorId || 'AI_MATCHING_AGENT',
+                    action: 'POTENTIAL_MATCH_DETECTED',
+                    entityType: 'Case',
+                    entityId: best.caseId,
+                    newState: {
+                        candidateName: candidateTarget.name,
+                        confidence: best.confidence,
+                        scanRef: scanRef || null,
+                        recordType: recordType || 'PAPER_SCAN',
+                        requiresHumanReview: true // BR-001 guardrail
+                    },
+                    outcome: 'SUCCESS'
+                });
+            } catch (_) {}
+        }
+
+        res.status(200).json({
+            query: candidateTarget,
+            recordType: recordType || 'PAPER_SCAN',
+            matches,
+            hasPotentialMatch,
+            topConfidence,
+            policy: 'BR-001: Human confirmation required before case merge or status change.'
+        });
+    } catch (err) {
+        next(err);
+    }
+});
 
 module.exports = router;

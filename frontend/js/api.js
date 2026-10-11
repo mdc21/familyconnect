@@ -55,29 +55,85 @@ async function apiRequest(method, path, { body, idempotent = false, headers = {}
             body: body ? JSON.stringify(body) : undefined,
         });
     } catch (networkErr) {
-        // Genuinely offline / server unreachable: auto-queue write submissions in IndexedDB
-        if (window.FCOfflineQueue && (method === 'POST' || method === 'PUT') && path.startsWith('/submissions')) {
-            try {
-                const queued = await window.FCOfflineQueue.enqueueSubmission({
-                    path,
-                    method,
-                    body,
-                    headers: reqHeaders,
-                    label: path.includes('safety') ? 'Safety Declaration' : 'Missing Person Report'
-                });
-                return {
-                    offline: true,
-                    receiptId: queued.localRef,
-                    caseReference: queued.localRef,
-                    trackingReference: queued.localRef,
-                    processingStatus: 'QUEUED_OFFLINE',
-                    status: 'QUEUED_OFFLINE',
-                    message: "Saved to your device. FamilyConnect will automatically sync this report once your internet connection is restored."
-                };
-            } catch (queueErr) {
-                console.warn("[Offline Queue] Error storing to IndexedDB:", queueErr);
+        // SPEC-011 Phase 1: offline queue for all write-path endpoints.
+        // Each route maps to a human-readable label and a safe offline response.
+        // Coordinator approval decisions additionally store IAL level + decidedAt timestamp
+        // for audit attribution even after the auth token has since expired.
+        const OFFLINE_QUEUE_ROUTES = {
+            // ── Family / public submissions ──────────────────────────────────────────
+            '/submissions/safety':            { label: 'Safety Declaration' },
+            '/submissions/missing':           { label: 'Missing Person Report' },
+            '/submissions/recovery-needs':    { label: 'Recovery Need' },
+            // ── Field caseworker write paths ─────────────────────────────────────────
+            '/infrastructure/status':         { label: 'Infrastructure Damage Report' },
+            '/tunnels/worker-report':         { label: 'Tunnel Worker Report' },
+            '/report-damage':                 { label: 'Damage Assessment' },
+            // ── Assistance & referrals ───────────────────────────────────────────────
+            '/assistance':                    { label: 'Assistance Request', pathContains: true },
+            // ── Rumours & information ────────────────────────────────────────────────
+            '/rumours':                       { label: 'Rumour Report', pathContains: true },
+            // ── Coordinator offline approval decisions (SPEC-011 §4.4) ───────────────
+            // These carry decidedAt (decision timestamp) and reviewerIAL for the audit trail.
+            // The server validates entity is still in STAGED/PROPOSED status on sync.
+            '/approvals/portals':             { label: 'Portal Approval Decision', isApproval: true, pathContains: true },
+            '/approvals/projects':            { label: 'Project Approval Decision', isApproval: true, pathContains: true },
+            '/recovery-needs':                { label: 'Recovery Need Verification', isApproval: true, pathContains: true, methodFilter: 'POST' },
+        };
+
+        const canQueue = window.FCOfflineQueue && (method === 'POST' || method === 'PUT' || method === 'PATCH');
+        if (canQueue) {
+            // Find a matching queue route (exact match first, then pathContains)
+            let routeConfig = null;
+            for (const [routePath, config] of Object.entries(OFFLINE_QUEUE_ROUTES)) {
+                if (config.methodFilter && config.methodFilter !== method) continue;
+                if (config.pathContains ? path.includes(routePath) : path.startsWith(routePath)) {
+                    routeConfig = config;
+                    break;
+                }
+            }
+
+            if (routeConfig) {
+                try {
+                    // For approval decisions, attach IAL level from session for audit trail
+                    let enrichedBody = body;
+                    if (routeConfig.isApproval) {
+                        const session = (() => { try { return JSON.parse(localStorage.getItem('fc_auth_session') || 'null'); } catch { return null; } })();
+                        enrichedBody = {
+                            ...body,
+                            _offlineMeta: {
+                                decidedAt: new Date().toISOString(),
+                                reviewerIAL: session ? session.ial : null,
+                                reviewerActorClass: session ? session.actorClass : null,
+                            }
+                        };
+                    }
+
+                    const queued = await window.FCOfflineQueue.enqueueSubmission({
+                        path,
+                        method,
+                        body: enrichedBody,
+                        headers: reqHeaders,
+                        label: routeConfig.label,
+                    });
+
+                    console.info(`[Offline Queue] Queued: ${routeConfig.label} → ${queued.localRef}`);
+
+                    return {
+                        offline: true,
+                        receiptId: queued.localRef,
+                        caseReference: queued.localRef,
+                        trackingReference: queued.localRef,
+                        processingStatus: 'QUEUED_OFFLINE',
+                        status: 'QUEUED_OFFLINE',
+                        message: `${routeConfig.label} saved to your device. FamilyConnect will automatically sync this when your connection is restored.`,
+                        localRef: queued.localRef,
+                    };
+                } catch (queueErr) {
+                    console.warn('[Offline Queue] Error storing to IndexedDB:', queueErr);
+                }
             }
         }
+
         const err = new Error("We can't reach FamilyConnect right now. Check your connection and try again — nothing has been lost.");
         err.offline = true;
         throw err;

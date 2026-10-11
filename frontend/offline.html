@@ -13,14 +13,14 @@
             <span class="site-brand-badge" aria-hidden="true">FC</span>
             <span class="site-brand-text">
                 <span class="site-brand-name" data-i18n="brand">FamilyConnect</span>
-                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response & Tracing</span>
+                <span class="site-brand-tagline" data-i18n="tagline">Disaster Response &amp; Tracing</span>
             </span>
         </a>
         <div class="site-header-controls">
             <a href="tel:+9779999999" class="site-header-hotline"><span data-i18n="hotline">Emergency Hotline</span>: <strong>+977 9999 999</strong></a>
             <label for="event-switcher" class="sr-only" data-i18n="eventLabel">Active Event</label>
             <select id="event-switcher" class="header-select" aria-label="Active Event">
-                <option value="">Loading events…</option>
+                <option value="">Loading events&hellip;</option>
             </select>
             <label for="lang-switcher" class="sr-only" data-i18n="langLabel">Language</label>
             <select id="lang-switcher" class="header-select" aria-label="Language / भाषा">
@@ -71,18 +71,238 @@
     <p style="color:var(--text-muted);font-size:0.875rem">Pages you've already visited may load from cache — try navigating back.</p>
 </main>
 <script>
+// SPEC-011 §4.2 — COUNTRY_HOTLINES lookup for all 23 configured country codes
+// ISO codes: NP, IN, BD, PK, PH, ID, FJ, VU, SB, TO, WS, PG, MG, MZ, MU, CN, JP, US, MX, BR, AU, GB, KE
+const COUNTRY_HOTLINES = {
+    NP: {
+        flag: '🇳🇵', name: 'Nepal',
+        lines: [
+            { label: 'Nepal Government EOC', number: '1150', href: 'tel:1150' },
+            { label: 'Nepal Police', number: '100', href: 'tel:100' },
+            { label: 'Nepal Red Cross', number: '+977-1-4228094', href: 'tel:+97714228094' },
+            { label: 'Nepal Ambulance', number: '102', href: 'tel:102' },
+        ]
+    },
+    IN: {
+        flag: '🇮🇳', name: 'India',
+        lines: [
+            { label: 'National Emergency Number', number: '112', href: 'tel:112' },
+            { label: 'ASDMA (Assam State EOC)', number: '1070', href: 'tel:1070' },
+            { label: 'NDRF 1st Bn Guwahati', number: '0361-2840284', href: 'tel:03612840284' },
+            { label: 'Indian Red Cross Assam', number: '0361-2665114', href: 'tel:03612665114' },
+            { label: 'NDMA Helpdesk', number: '1078', href: 'tel:1078' },
+        ]
+    },
+    BD: {
+        flag: '🇧🇩', name: 'Bangladesh',
+        lines: [
+            { label: 'National Emergency', number: '999', href: 'tel:999' },
+            { label: 'Disaster Management (DDM)', number: '1090', href: 'tel:1090' },
+            { label: 'Bangladesh Red Crescent', number: '+880-2-9330188', href: 'tel:+88029330188' },
+            { label: 'Fire Service & Civil Defence', number: '199', href: 'tel:199' },
+        ]
+    },
+    PK: {
+        flag: '🇵🇰', name: 'Pakistan',
+        lines: [
+            { label: 'National Disaster Emergency', number: '1700', href: 'tel:1700' },
+            { label: 'Emergency Services', number: '115', href: 'tel:115' },
+            { label: 'Pakistan Red Crescent', number: '+92-51-9257404', href: 'tel:+92519257404' },
+        ]
+    },
+    PH: {
+        flag: '🇵🇭', name: 'Philippines',
+        lines: [
+            { label: 'NDRRMC Operations Centre', number: '911', href: 'tel:911' },
+            { label: 'Philippine Red Cross', number: '143', href: 'tel:143' },
+            { label: 'DSWD Emergency', number: '+63-2-8931-8101', href: 'tel:+63289318101' },
+        ]
+    },
+    ID: {
+        flag: '🇮🇩', name: 'Indonesia',
+        lines: [
+            { label: 'BNPB Emergency', number: '117', href: 'tel:117' },
+            { label: 'National Emergency', number: '112', href: 'tel:112' },
+            { label: 'Indonesian Red Cross (PMI)', number: '021-7992325', href: 'tel:0217992325' },
+        ]
+    },
+    FJ: {
+        flag: '🇫🇯', name: 'Fiji',
+        lines: [
+            { label: 'National Disaster Management', number: '+679-3312598', href: 'tel:+6793312598' },
+            { label: 'Emergency Services', number: '911', href: 'tel:911' },
+            { label: 'Fiji Red Cross', number: '+679-3314133', href: 'tel:+6793314133' },
+        ]
+    },
+    VU: {
+        flag: '🇻🇺', name: 'Vanuatu',
+        lines: [
+            { label: 'NDMO Vanuatu', number: '+678-22506', href: 'tel:+67822506' },
+            { label: 'Emergency', number: '112', href: 'tel:112' },
+            { label: 'Vanuatu Red Cross', number: '+678-27418', href: 'tel:+67827418' },
+        ]
+    },
+    SB: {
+        flag: '🇸🇧', name: 'Solomon Islands',
+        lines: [
+            { label: 'NDMO Solomon Islands', number: '+677-28601', href: 'tel:+67728601' },
+            { label: 'Emergency', number: '999', href: 'tel:999' },
+            { label: 'Solomon Islands Red Cross', number: '+677-22682', href: 'tel:+67722682' },
+        ]
+    },
+    TO: {
+        flag: '🇹🇴', name: 'Tonga',
+        lines: [
+            { label: 'NEMO Tonga', number: '+676-23-850', href: 'tel:+67623850' },
+            { label: 'Emergency', number: '911', href: 'tel:911' },
+            { label: 'Tonga Red Cross', number: '+676-25-220', href: 'tel:+67625220' },
+        ]
+    },
+    WS: {
+        flag: '🇼🇸', name: 'Samoa',
+        lines: [
+            { label: 'Disaster Management Office', number: '+685-800-800', href: 'tel:+685800800' },
+            { label: 'Emergency', number: '994', href: 'tel:994' },
+            { label: 'Samoa Red Cross', number: '+685-22-395', href: 'tel:+68522395' },
+        ]
+    },
+    PG: {
+        flag: '🇵🇬', name: 'Papua New Guinea',
+        lines: [
+            { label: 'NDMO Papua New Guinea', number: '+675-301-4470', href: 'tel:+6753014470' },
+            { label: 'Emergency', number: '000', href: 'tel:000' },
+            { label: 'PNG Red Cross', number: '+675-321-2877', href: 'tel:+6753212877' },
+        ]
+    },
+    MG: {
+        flag: '🇲🇬', name: 'Madagascar',
+        lines: [
+            { label: 'BNGRC (Disaster Risk Bureau)', number: '+261-20-22-214-51', href: 'tel:+2612022214' },
+            { label: 'Emergency', number: '117', href: 'tel:117' },
+            { label: 'Malagasy Red Cross', number: '+261-20-22-222-11', href: 'tel:+2612022222' },
+        ]
+    },
+    MZ: {
+        flag: '🇲🇿', name: 'Mozambique',
+        lines: [
+            { label: 'INGC (Disaster Management)', number: '+258-21-490-175', href: 'tel:+25821490175' },
+            { label: 'Emergency', number: '119', href: 'tel:119' },
+            { label: 'Cruz Vermelha Mocambique', number: '+258-21-490-943', href: 'tel:+25821490943' },
+        ]
+    },
+    MU: {
+        flag: '🇲🇺', name: 'Mauritius',
+        lines: [
+            { label: 'National DRR Management', number: '+230-467-8908', href: 'tel:+2304678908' },
+            { label: 'Emergency (Police)', number: '999', href: 'tel:999' },
+            { label: 'Mauritius Red Cross', number: '+230-675-7817', href: 'tel:+2306757817' },
+        ]
+    },
+    CN: {
+        flag: '🇨🇳', name: 'China',
+        lines: [
+            { label: 'Emergency (Police)', number: '110', href: 'tel:110' },
+            { label: 'Fire & Rescue', number: '119', href: 'tel:119' },
+            { label: 'Medical Emergency', number: '120', href: 'tel:120' },
+            { label: 'Red Cross China', number: '+86-10-65139999', href: 'tel:+861065139999' },
+        ]
+    },
+    JP: {
+        flag: '🇯🇵', name: 'Japan',
+        lines: [
+            { label: 'Police', number: '110', href: 'tel:110' },
+            { label: 'Fire & Ambulance', number: '119', href: 'tel:119' },
+            { label: 'Japan Red Cross (JRC)', number: '+81-3-3438-1311', href: 'tel:+81334381311' },
+        ]
+    },
+    US: {
+        flag: '🇺🇸', name: 'United States',
+        lines: [
+            { label: 'Emergency', number: '911', href: 'tel:911' },
+            { label: 'FEMA Disaster Helpline', number: '1-800-621-3362', href: 'tel:18006213362' },
+            { label: 'American Red Cross', number: '1-800-733-2767', href: 'tel:18007332767' },
+        ]
+    },
+    MX: {
+        flag: '🇲🇽', name: 'Mexico',
+        lines: [
+            { label: 'Emergency', number: '911', href: 'tel:911' },
+            { label: 'CENAPRED (Disaster)', number: '+52-55-5004-1400', href: 'tel:+52550041400' },
+            { label: 'Cruz Roja Mexicana', number: '065', href: 'tel:065' },
+        ]
+    },
+    BR: {
+        flag: '🇧🇷', name: 'Brazil',
+        lines: [
+            { label: 'Emergency (Bombeiros)', number: '193', href: 'tel:193' },
+            { label: 'SEDEC / Civil Defence', number: '199', href: 'tel:199' },
+            { label: 'Cruz Vermelha Brasileira', number: '+55-21-3237-4747', href: 'tel:+552132374747' },
+        ]
+    },
+    AU: {
+        flag: '🇦🇺', name: 'Australia',
+        lines: [
+            { label: 'Emergency', number: '000', href: 'tel:000' },
+            { label: 'SES (State Emergency Service)', number: '132-500', href: 'tel:132500' },
+            { label: 'Australian Red Cross', number: '1800-733-276', href: 'tel:1800733276' },
+        ]
+    },
+    GB: {
+        flag: '🇬🇧', name: 'United Kingdom',
+        lines: [
+            { label: 'Emergency', number: '999', href: 'tel:999' },
+            { label: 'British Red Cross', number: '0344-871-11-11', href: 'tel:03448711111' },
+        ]
+    },
+    KE: {
+        flag: '🇰🇪', name: 'Kenya',
+        lines: [
+            { label: 'National Disaster Operations Centre', number: '+254-20-3226471', href: 'tel:+254203226471' },
+            { label: 'Emergency', number: '999', href: 'tel:999' },
+            { label: 'Kenya Red Cross', number: '1199', href: 'tel:1199' },
+        ]
+    }
+};
+
+/**
+ * Derive the ISO country code from the active event ID stored in localStorage.
+ * Event IDs follow the pattern EVENT-<COUNTRYCODE>-<REGION>-<YEAR>
+ * e.g. EVENT-NP-TIBET-2026 → NP
+ */
+function detectCountryCode() {
+    const eventId = new URLSearchParams(window.location.search).get('event')
+        || localStorage.getItem('fc_current_event_id')
+        || '';
+    const match = eventId.match(/^EVENT-([A-Z]{2})-/);
+    if (match && COUNTRY_HOTLINES[match[1]]) return match[1];
+    // Fallback: scan full event ID for any known 2-letter codes
+    for (const code of Object.keys(COUNTRY_HOTLINES)) {
+        if (eventId.includes(code)) return code;
+    }
+    return 'NP'; // default to Nepal
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    const isAssam = (new URLSearchParams(window.location.search).get('event') || '').includes('IN') ||
-                    (localStorage.getItem('fc_current_event_id') || '').includes('IN');
+    const countryCode = detectCountryCode();
+    const country = COUNTRY_HOTLINES[countryCode] || COUNTRY_HOTLINES['NP'];
     const ul = document.getElementById('offline-contacts');
-    if (ul && isAssam) {
-        ul.innerHTML = `
-            <li><strong>Go to an assistance centre</strong> in person — staff can look up cases on your behalf</li>
-            <li><strong>State Emergency Operations (ASDMA):</strong> <a href="tel:1070">1070</a></li>
-            <li><strong>National Emergency Number:</strong> <a href="tel:112">112</a></li>
-            <li><strong>NDRF 1st Bn Guwahati Control:</strong> <a href="tel:03612840284">0361-2840284</a></li>
-            <li><strong>Indian Red Cross Assam:</strong> <a href="tel:03612665114">0361-2665114</a></li>
-        `;
+    if (!ul) return;
+
+    const items = [
+        '<li><strong>Go to an assistance centre</strong> in person \u2014 staff can look up cases on your behalf</li>',
+        ...country.lines.map(l =>
+            '<li><strong>' + l.label + ':</strong> <a href="' + l.href + '">' + l.number + '</a></li>'
+        )
+    ];
+    ul.innerHTML = items.join('\n');
+
+    // Update the header hotline link to the first number for this country
+    const firstLine = country.lines[0];
+    const hotlineEl = document.querySelector('.site-header-hotline');
+    if (hotlineEl && firstLine) {
+        hotlineEl.href = firstLine.href;
+        const strong = hotlineEl.querySelector('strong');
+        if (strong) strong.textContent = firstLine.number;
     }
 });
 </script>

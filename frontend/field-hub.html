@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Field Hub Console — FamilyConnect</title>
+<meta name="description" content="Field Hub administration console. Monitor local queue, trigger upstream sync, review conflicts, and manage connected devices at this relief camp node.">
+<link rel="stylesheet" href="css/styles.css?v=20260924">
+<style>
+/* ── Field Hub Console — SPEC-011 §5.2 ─────────────────────────────────── */
+:root {
+    --hub-primary: #1e3a5f;
+    --hub-accent:  #0ea5e9;
+    --hub-warn:    #b45309;
+    --hub-ok:      #16a34a;
+    --hub-danger:  #dc2626;
+}
+
+.hub-hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #1e40af 100%);
+    color: #fff;
+    padding: 1.5rem 0;
+    border-bottom: 2px solid rgba(255,255,255,0.12);
+}
+.hub-hero-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.hub-id-pill {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 6px;
+    padding: 0.35rem 0.8rem;
+    font-family: monospace;
+    font-size: 0.82rem;
+    color: #fff;
+}
+.hub-mode-badge {
+    background: #0ea5e9;
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* Connectivity indicator */
+.conn-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+}
+.conn-online  { color: #4ade80; border-color: #4ade80; }
+.conn-offline { color: #fb923c; border-color: #fb923c; }
+
+/* Dashboard grid */
+.hub-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+.hub-stat {
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-subtle, #e5e7eb);
+    border-radius: 10px;
+    padding: 1.1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+.hub-stat .stat-val {
+    font-size: 2.1rem;
+    font-weight: 700;
+    line-height: 1;
+}
+.hub-stat .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted, #6b7280);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.hub-stat.color-blue  .stat-val { color: #0ea5e9; }
+.hub-stat.color-green .stat-val { color: #16a34a; }
+.hub-stat.color-amber .stat-val { color: #b45309; }
+.hub-stat.color-red   .stat-val { color: #dc2626; }
+.hub-stat.color-slate .stat-val { color: #475569; }
+
+/* Tab nav */
+.hub-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border-subtle, #e5e7eb);
+    margin-bottom: 1.5rem;
+}
+.hub-tab {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted, #6b7280);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    transition: color 0.15s, border-color 0.15s;
+}
+.hub-tab.active   { color: var(--primary, #0ea5e9); border-bottom-color: var(--primary, #0ea5e9); }
+.hub-tab:hover:not(.active) { color: var(--text-body, #374151); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Table */
+.hub-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border-subtle, #e5e7eb);
+    border-radius: 8px;
+}
+.hub-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+.hub-table th {
+    text-align: left;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted, #6b7280);
+    background: var(--bg-page, #f9fafb);
+    border-bottom: 1px solid var(--border-subtle, #e5e7eb);
+    white-space: nowrap;
+}
+.hub-table td {
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--border-subtle, #e5e7eb);
+    vertical-align: middle;
+}
+.hub-table tr:last-child td { border-bottom: none; }
+.hub-table tr:hover td { background: #f8fafc; }
+
+/* Status pills */
+.status-pill {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+.s-queued   { background: #fef3c7; color: #92400e; }
+.s-synced   { background: #d1fae5; color: #065f46; }
+.s-conflict { background: #fee2e2; color: #991b1b; }
+.s-blocked  { background: #f3f4f6; color: #374151; }
+.s-received { background: #dbeafe; color: #1e40af; }
+.s-approved { background: #d1fae5; color: #065f46; }
+.s-rejected { background: #fee2e2; color: #991b1b; }
+.s-pending  { background: #fef3c7; color: #92400e; }
+
+/* Action buttons */
+.btn-sync {
+    background: var(--primary, #0ea5e9);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.3rem;
+    border-radius: 7px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.btn-sync:hover { opacity: 0.88; }
+.btn-sync:disabled { opacity: 0.5; cursor: default; }
+.btn-sm {
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-subtle, #e5e7eb);
+    padding: 0.25rem 0.6rem;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.btn-sm:hover { background: #f3f4f6; }
+.btn-sm.danger { color: var(--hub-danger); border-color: #fca5a5; }
+.btn-sm.primary { color: var(--hub-accent); border-color: #bae6fd; }
+
+/* Conflict card */
+.conflict-card {
+    background: #fff5f5;
+    border: 1.5px solid #fca5a5;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+}
+.conflict-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    background: #fee2e2;
+    color: #991b1b;
+    margin-bottom: 0.5rem;
+}
+.conflict-card h4 { margin: 0 0 0.4rem; font-size: 0.9rem; }
+.conflict-card p  { margin: 0 0 0.75rem; font-size: 0.82rem; color: var(--text-muted, #6b7280); }
+.conflict-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--text-muted, #6b7280);
+}
+.empty-state .ei { font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+/* Log entry */
+.log-entry {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    margin-bottom: 0.4rem;
+    font-family: monospace;
+}
+.log-info    { background: #f0f9ff; color: #0369a1; }
+.log-success { background: #f0fdf4; color: #15803d; }
+.log-warn    { background: #fffbeb; color: #b45309; }
+.log-error   { background: #fef2f2; color: #b91c1c; }
+
+/* LAN addresses */
+.lan-address {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 6px;
+    padding: 0.4rem 0.8rem;
+    font-family: monospace;
+    font-size: 0.88rem;
+    color: #0369a1;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+</style>
+</head>
+<body>
+
+<!-- Hero bar -->
+<div class="hub-hero">
+    <div class="container hub-hero-inner">
+        <div style="display:flex;align-items:center;gap:0.85rem;flex-wrap:wrap">
+            <a href="index.html" class="site-brand" style="text-decoration:none">
+                <span class="site-brand-badge" aria-hidden="true">FC</span>
+                <span class="site-brand-text" style="color:#fff">
+                    <span class="site-brand-name">FamilyConnect</span>
+                    <span class="site-brand-tagline" style="opacity:0.75">Field Hub Console</span>
+                </span>
+            </a>
+            <span class="hub-mode-badge">Field Hub</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+            <span class="hub-id-pill" id="hero-hub-id">Loading…</span>
+            <span class="conn-indicator" id="conn-indicator">
+                <span id="conn-dot">●</span>
+                <span id="conn-text">Checking…</span>
+            </span>
+        </div>
+    </div>
+</div>
+
+<main class="container" style="padding-top:1.5rem;padding-bottom:3rem">
+
+    <!-- Hub name + LAN addresses -->
+    <div style="margin-bottom:1rem">
+        <h1 id="hub-name-heading" style="margin:0 0 0.4rem;font-size:1.25rem">Field Hub</h1>
+        <div id="lan-addresses">
+            <span style="font-size:0.85rem;color:var(--text-muted)">Detecting LAN addresses…</span>
+        </div>
+    </div>
+
+    <!-- Stats dashboard -->
+    <div class="hub-dashboard" id="hub-stats" aria-live="polite">
+        <div class="hub-stat color-blue"><div class="stat-val" id="stat-queued">—</div><div class="stat-label">Queued Records</div></div>
+        <div class="hub-stat color-green"><div class="stat-val" id="stat-synced">—</div><div class="stat-label">Synced</div></div>
+        <div class="hub-stat color-amber"><div class="stat-val" id="stat-conflicts">—</div><div class="stat-label">Conflicts</div></div>
+        <div class="hub-stat color-slate"><div class="stat-val" id="stat-blocked">—</div><div class="stat-label">Blocked</div></div>
+        <div class="hub-stat color-red"><div class="stat-val" id="stat-approvals-queued">—</div><div class="stat-label">Approval Decisions</div></div>
+    </div>
+
+    <!-- Sync action bar -->
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem;align-items:center">
+        <button class="btn-sync" id="btn-sync-now" onclick="triggerSync()">
+            <span id="sync-btn-icon">🔄</span> Sync to Cloud
+        </button>
+        <button class="btn-sm primary" onclick="loadAll()">↻ Refresh</button>
+        <span id="last-sync-text" style="font-size:0.8rem;color:var(--text-muted)">Last sync: unknown</span>
+    </div>
+
+    <!-- Sync result -->
+    <div id="sync-result" style="display:none;margin-bottom:1.5rem"></div>
+
+    <!-- Tabs -->
+    <div class="hub-tabs" role="tablist">
+        <button class="hub-tab active" role="tab" aria-selected="true"  onclick="switchTab('queue')" id="tab-queue">📤 Queue</button>
+        <button class="hub-tab"        role="tab" aria-selected="false" onclick="switchTab('approvals')" id="tab-approvals">🔏 Approvals</button>
+        <button class="hub-tab"        role="tab" aria-selected="false" onclick="switchTab('conflicts')" id="tab-conflicts">⚠️ Conflicts</button>
+        <button class="hub-tab"        role="tab" aria-selected="false" onclick="switchTab('log')" id="tab-log">📋 Sync Log</button>
+        <button class="hub-tab"        role="tab" aria-selected="false" onclick="switchTab('devices')" id="tab-devices">📡 Devices</button>
+    </div>
+
+    <!-- Queue tab -->
+    <div class="tab-panel active" id="panel-queue">
+        <div class="hub-table-wrap">
+            <table class="hub-table" aria-label="Local record queue">
+                <thead>
+                    <tr>
+                        <th>Local Ref</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Captured</th>
+                        <th>By</th>
+                    </tr>
+                </thead>
+                <tbody id="queue-tbody">
+                    <tr><td colspan="5"><div class="empty-state"><div class="ei">📭</div>Loading queue…</div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Approvals tab -->
+    <div class="tab-panel" id="panel-approvals">
+        <div class="hub-table-wrap">
+            <table class="hub-table" aria-label="Local approval decision queue">
+                <thead>
+                    <tr>
+                        <th>Local Ref</th>
+                        <th>Type</th>
+                        <th>Entity ID</th>
+                        <th>Decision</th>
+                        <th>Status</th>
+                        <th>Decided</th>
+                    </tr>
+                </thead>
+                <tbody id="approvals-tbody">
+                    <tr><td colspan="6"><div class="empty-state"><div class="ei">✅</div>No queued approvals</div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Conflicts tab -->
+    <div class="tab-panel" id="panel-conflicts">
+        <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem">
+            These records have been flagged with a conflict by the cloud server. Each requires human review before being applied.
+        </p>
+        <div id="conflicts-list">
+            <div class="empty-state"><div class="ei">✅</div><p>No pending conflicts.</p></div>
+        </div>
+    </div>
+
+    <!-- Sync log tab -->
+    <div class="tab-panel" id="panel-log">
+        <div id="sync-log-list">
+            <div class="empty-state"><div class="ei">📋</div><p>No sync runs recorded yet.</p></div>
+        </div>
+    </div>
+
+    <!-- Connected devices tab -->
+    <div class="tab-panel" id="panel-devices">
+        <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem">
+            Field workers connect their phones/tablets to this hub via the LAN URL shown below.
+            Set <strong>FC_API_BASE</strong> on their device to point to this Field Hub instead of the cloud backend.
+        </p>
+        <div id="device-lan-addresses" style="margin-bottom:1.5rem"></div>
+        <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1.25rem">
+            <h3 style="margin:0 0 0.75rem;font-size:0.95rem">Configure Tier-1 Devices</h3>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 1rem">
+                On each field worker's phone or tablet, open the FamilyConnect app and set the API base to this Field Hub's LAN address.
+            </p>
+            <div id="config-snippet" style="font-family:monospace;background:#0f172a;color:#e2e8f0;padding:1rem;border-radius:6px;font-size:0.82rem;overflow-x:auto">
+                Loading LAN address…
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script src="js/offline-queue.js"></script>
+<script>
+/**
+ * SPEC-011 §5.2 — Field Hub Admin Console
+ *
+ * When loaded on the Field Hub laptop (http://localhost:3000), calls
+ * /api/v1/hub/* endpoints to show local queue and sync status.
+ *
+ * When loaded from the cloud frontend (https://familyconnect.org),
+ * calls /api/v1/sync/* (cloud backend) to show hub registry and
+ * conflict review queue — coordinator/admin view.
+ */
+
+const isHubLocal = window.location.hostname === 'localhost'
+    || window.location.hostname === '127.0.0.1'
+    || /^192\.168\.|^10\.|^172\.(1[6-9]|2\d|3[01])\./.test(window.location.hostname);
+
+const HUB_API = isHubLocal
+    ? `${window.location.protocol}//${window.location.host}/api/v1/hub`
+    : '/api/v1/sync';
+
+let hubInfo = null;
+
+// ── Connectivity indicator ────────────────────────────────────────────────────
+function updateConnIndicator() {
+    const dot = document.getElementById('conn-dot');
+    const txt = document.getElementById('conn-text');
+    const indicator = document.getElementById('conn-indicator');
+    if (navigator.onLine) {
+        dot.style.color = '#4ade80';
+        txt.textContent = 'Online';
+        indicator.className = 'conn-indicator conn-online';
+    } else {
+        dot.style.color = '#fb923c';
+        txt.textContent = 'Offline';
+        indicator.className = 'conn-indicator conn-offline';
+    }
+}
+window.addEventListener('online', updateConnIndicator);
+window.addEventListener('offline', updateConnIndicator);
+updateConnIndicator();
+
+// ── Load all data ─────────────────────────────────────────────────────────────
+async function loadAll() {
+    await Promise.all([
+        loadIdentity(),
+        loadQueue(),
+        loadConflicts(),
+    ]);
+}
+
+async function loadIdentity() {
+    try {
+        const res = await fetch(`${HUB_API}/identity`);
+        if (!res.ok) throw new Error(`${res.status}`);
+        hubInfo = await res.json();
+
+        document.getElementById('hero-hub-id').textContent = hubInfo.hubId || 'FIELD-HUB';
+        document.getElementById('hub-name-heading').textContent = hubInfo.hubName || 'Field Hub';
+
+        // LAN addresses
+        const addrs = hubInfo.localIPs || [];
+        const lanDiv = document.getElementById('lan-addresses');
+        const devDiv = document.getElementById('device-lan-addresses');
+        const cfgDiv = document.getElementById('config-snippet');
+
+        if (addrs.length > 0) {
+            lanDiv.innerHTML = addrs.map(ip =>
+                `<span class="lan-address">🌐 http://${ip}:${window.location.port || 3000}/</span>`
+            ).join('');
+            devDiv.innerHTML = '<p style="font-size:0.85rem;font-weight:600;margin-bottom:0.5rem">LAN addresses (share with field workers):</p>'
+                + addrs.map(ip => `<span class="lan-address">🌐 http://${ip}:${window.location.port || 3000}/</span>`).join('');
+            cfgDiv.textContent = `// On each field device, set this in the browser console:
+localStorage.setItem('FC_API_BASE', 'http://${addrs[0]}:${window.location.port || 3000}/api/v1');
+// Or open the FamilyConnect app and navigate to:
+// http://${addrs[0]}:${window.location.port || 3000}/`;
+        } else {
+            lanDiv.innerHTML = '<span style="font-size:0.85rem;color:var(--text-muted)">No LAN adapters detected.</span>';
+        }
+
+        // Stats from hubInfo.queueStats
+        updateStats(hubInfo.queueStats);
+
+    } catch (err) {
+        console.warn('Hub identity load failed:', err.message);
+        document.getElementById('hero-hub-id').textContent = 'Cloud View';
+        document.getElementById('hub-name-heading').textContent = 'Field Hub Registry';
+    }
+}
+
+function updateStats(stats) {
+    if (!stats) return;
+    const records = stats.records || {};
+    const approvals = stats.approvals || {};
+    document.getElementById('stat-queued').textContent = records.QUEUED ?? '—';
+    document.getElementById('stat-synced').textContent = records.SYNCED ?? '—';
+    document.getElementById('stat-conflicts').textContent = records.CONFLICT ?? '—';
+    document.getElementById('stat-blocked').textContent = records.BLOCKED ?? '—';
+    document.getElementById('stat-approvals-queued').textContent = approvals.QUEUED ?? '—';
+}
+
+// ── Queue tab ─────────────────────────────────────────────────────────────────
+async function loadQueue() {
+    try {
+        const res = await fetch(`${HUB_API}/queue`);
+        if (!res.ok) throw new Error(`${res.status}`);
+        const data = await res.json();
+
+        renderQueueTable(data.records || []);
+        renderApprovalsTable(data.approvals || []);
+        if (data.stats) updateStats(data.stats);
+
+    } catch (err) {
+        document.getElementById('queue-tbody').innerHTML =
+            `<tr><td colspan="5"><div class="empty-state"><div class="ei">⚠️</div><p>${escHtml(err.message)}</p></div></td></tr>`;
+    }
+}
+
+function renderQueueTable(records) {
+    const tbody = document.getElementById('queue-tbody');
+    if (!records.length) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="ei">📭</div><p>Queue is empty. All records synced.</p></div></td></tr>`;
+        return;
+    }
+    tbody.innerHTML = records.map(r => {
+        const sClass = 's-' + (r.status || 'queued').toLowerCase();
+        const age = formatAge(Date.now() - new Date(r.created_at || r.captured_at).getTime());
+        return `<tr>
+            <td style="font-family:monospace;font-size:0.8rem">${escHtml(r.local_ref || r.id?.slice(0,8))}</td>
+            <td style="font-size:0.8rem">${escHtml(r.record_type)}</td>
+            <td><span class="status-pill ${sClass}">${escHtml(r.status)}</span></td>
+            <td style="font-size:0.78rem;color:var(--text-muted)">${age}</td>
+            <td style="font-size:0.78rem">${escHtml(r.captured_by || '—')}</td>
+        </tr>`;
+    }).join('');
+}
+
+function renderApprovalsTable(approvals) {
+    const tbody = document.getElementById('approvals-tbody');
+    if (!approvals.length) {
+        tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="ei">✅</div><p>No queued approval decisions.</p></div></td></tr>`;
+        return;
+    }
+    tbody.innerHTML = approvals.map(a => {
+        const sClass = 's-' + (a.status || 'queued').toLowerCase();
+        const dClass = a.decision === 'APPROVED' ? 's-approved' : a.decision === 'REJECTED' ? 's-rejected' : 's-pending';
+        const age = formatAge(Date.now() - new Date(a.decided_at).getTime());
+        return `<tr>
+            <td style="font-family:monospace;font-size:0.8rem">${escHtml(a.local_ref || a.id?.slice(0,8))}</td>
+            <td style="font-size:0.8rem">${escHtml(a.type)}</td>
+            <td style="font-family:monospace;font-size:0.78rem">${escHtml(a.entity_id || '—')}</td>
+            <td><span class="status-pill ${dClass}">${escHtml(a.decision)}</span></td>
+            <td><span class="status-pill ${sClass}">${escHtml(a.status)}</span></td>
+            <td style="font-size:0.78rem;color:var(--text-muted)">${age}</td>
+        </tr>`;
+    }).join('');
+}
+
+// ── Conflicts tab ─────────────────────────────────────────────────────────────
+async function loadConflicts() {
+    const container = document.getElementById('conflicts-list');
+    try {
+        const endpoint = isHubLocal
+            ? `${HUB_API}/queue` // Hub local — conflicts in queue data
+            : `/api/v1/sync/conflicts`;
+
+        if (!isHubLocal) {
+            const res = await fetch(endpoint);
+            if (!res.ok) throw new Error(`${res.status}`);
+            const data = await res.json();
+            renderConflicts(data.conflicts || []);
+        } else {
+            // Local hub — parse conflicts from queue records
+            const res = await fetch(`${HUB_API}/queue`);
+            const data = await res.json();
+            const conflicted = (data.records || []).filter(r => r.status === 'CONFLICT');
+            renderConflicts(conflicted.map(r => ({
+                conflict_id: r.id,
+                conflict_type: r.conflict_type || 'CONFLICT',
+                local_ref: r.local_ref,
+                record_type: r.record_type,
+                detail: {},
+                resolution: 'PENDING',
+            })));
+        }
+    } catch (err) {
+        container.innerHTML = `<div class="empty-state"><div class="ei">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+    }
+}
+
+function renderConflicts(conflicts) {
+    const container = document.getElementById('conflicts-list');
+    // Update badge on tab
+    const tabBtn = document.getElementById('tab-conflicts');
+    if (conflicts.length > 0) {
+        tabBtn.textContent = `⚠️ Conflicts (${conflicts.length})`;
+    } else {
+        tabBtn.textContent = `⚠️ Conflicts`;
+    }
+
+    if (!conflicts.length) {
+        container.innerHTML = `<div class="empty-state"><div class="ei">✅</div><p>No pending conflicts. All records clean.</p></div>`;
+        return;
+    }
+
+    const CONFLICT_LABELS = {
+        POTENTIAL_DUPLICATE: { icon: '👥', title: 'Potential Duplicate', desc: 'Same person may have been registered at two different Field Hubs.' },
+        SELF_RESOLVED: { icon: '✅', title: 'Missing → Found', desc: 'A safety declaration was received for someone with an open missing report.' },
+        STALE_APPROVAL: { icon: '⏰', title: 'Stale Approval', desc: 'Coordinator approval arrived after portal/project state had changed.' },
+        MERGE_CONFLICT: { icon: '🔀', title: 'Merge Conflict', desc: 'Two caseworkers reported conflicting infrastructure status for the same site.' },
+        DUPLICATE_NEED: { icon: '📋', title: 'Duplicate Recovery Need', desc: 'Same household submitted a recovery need twice.' },
+        CONFLICT: { icon: '⚠️', title: 'Data Conflict', desc: 'Record could not be applied without human review.' },
+    };
+
+    container.innerHTML = conflicts.map(c => {
+        const meta = CONFLICT_LABELS[c.conflict_type] || CONFLICT_LABELS.CONFLICT;
+        return `<div class="conflict-card">
+            <span class="conflict-type-badge">${meta.icon} ${escHtml(c.conflict_type || 'CONFLICT')}</span>
+            <h4>${meta.title}</h4>
+            <p>${meta.desc}</p>
+            <p style="font-family:monospace;font-size:0.78rem;color:#666">
+                Ref: ${escHtml(c.local_ref || c.conflict_id?.slice(0,8) || '—')}
+                ${c.record_type ? ` &nbsp;|&nbsp; Type: ${escHtml(c.record_type)}` : ''}
+            </p>
+            <div class="conflict-actions">
+                <button class="btn-sm primary"
+                    onclick="resolveConflict('${escHtml(c.conflict_id || c.id || '')}', 'RESOLVED')">
+                    ✅ Mark Resolved
+                </button>
+                <button class="btn-sm danger"
+                    onclick="resolveConflict('${escHtml(c.conflict_id || c.id || '')}', 'DISMISSED')">
+                    ✕ Dismiss
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+async function resolveConflict(conflictId, resolution) {
+    if (!conflictId) return;
+    try {
+        const res = await fetch(`/api/v1/sync/conflicts/${encodeURIComponent(conflictId)}/resolve`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ resolution }),
+        });
+        if (!res.ok) throw new Error(`${res.status}`);
+        await loadConflicts();
+    } catch (err) {
+        alert('Could not resolve conflict: ' + err.message);
+    }
+}
+
+// ── Sync trigger ──────────────────────────────────────────────────────────────
+async function triggerSync() {
+    const btn = document.getElementById('btn-sync-now');
+    const icon = document.getElementById('sync-btn-icon');
+    const resultDiv = document.getElementById('sync-result');
+    btn.disabled = true;
+    icon.textContent = '⏳';
+
+    const endpoint = isHubLocal ? `${HUB_API}/sync` : `${HUB_API}/batch`;
+
+    try {
+        const res = await fetch(isHubLocal ? '/api/v1/hub/sync' : '/api/v1/sync/batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: isHubLocal ? '{}' : JSON.stringify({ hubId: 'CLOUD_TRIGGERED', records: [] }),
+        });
+        const data = await res.json();
+
+        const success = data.status === 'SUCCESS' || data.status === 'NOTHING_TO_SYNC';
+        resultDiv.innerHTML = `
+            <div style="background:${success ? '#f0fdf4' : '#fef2f2'};border:1px solid ${success ? '#86efac' : '#fca5a5'};border-radius:8px;padding:0.85rem 1rem;font-size:0.85rem">
+                ${success ? '✅' : '⚠️'} <strong>${data.status}</strong>
+                ${data.summary ? ` — ${JSON.stringify(data.summary)}` : ''}
+                ${data.error ? ` — ${escHtml(data.error)}` : ''}
+            </div>`;
+        resultDiv.style.display = '';
+        document.getElementById('last-sync-text').textContent = 'Last sync: ' + new Date().toLocaleTimeString();
+
+        await loadAll();
+    } catch (err) {
+        resultDiv.innerHTML = `<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:0.85rem 1rem;font-size:0.85rem">
+            ❌ ${escHtml(err.message)}</div>`;
+        resultDiv.style.display = '';
+    } finally {
+        btn.disabled = false;
+        icon.textContent = '🔄';
+    }
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(name) {
+    document.querySelectorAll('.hub-tab').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    document.getElementById('tab-' + name).setAttribute('aria-selected', 'true');
+    document.getElementById('panel-' + name).classList.add('active');
+}
+
+// ── Utilities ─────────────────────────────────────────────────────────────────
+function formatAge(ms) {
+    const s = Math.floor(ms / 1000);
+    if (s < 60) return s + 's ago';
+    const m = Math.floor(s / 60);
+    if (m < 60) return m + 'm ago';
+    return Math.floor(m / 60) + 'h ago';
+}
+
+function escHtml(str) {
+    return String(str || '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', loadAll);
+
+// Auto-refresh every 30s
+setInterval(loadAll, 30000);
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # FamilyConnect — Crisis Response, Tracing & Humanitarian Intelligence Platform
 
-[![Node.js Tests](https://img.shields.io/badge/tests-38%20passing-brightgreen.svg)](#running-tests)
+[![Node.js Tests](https://img.shields.io/badge/tests-158%20passing-brightgreen.svg)](#running-tests)
 [![OWASP Top 10](https://img.shields.io/badge/security-OWASP%20Hardened-blue.svg)](#security-architecture--owasp-top-10)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 [![PostgreSQL](https://img.shields.io/badge/database-PostgreSQL%2016-336791.svg)](#database-architecture)
@@ -8,7 +8,7 @@
 
 **FamilyConnect** is a humanitarian crisis response platform designed to trace missing persons, verify ground-truth intelligence, distribute emergency relief, and coordinate multi-agency operations during sudden-onset disasters.
 
-Engineered under strict humanitarian data protection principles ([SPEC-001 through SPEC-007](docs/)), FamilyConnect functions as a resilient, low-bandwidth modular monolith that connects affected families, local authorities, first responders, and relief agencies.
+Engineered under strict humanitarian data protection principles ([SPEC-001 through SPEC-011](docs/)), FamilyConnect functions as a resilient, low-bandwidth modular monolith that connects affected families, local authorities, first responders, and relief agencies.
 
 ---
 
@@ -204,17 +204,27 @@ Deploy FamilyConnect to **Azure Container Apps (Consumption Plan)** backed by fr
 The test suite runs with zero third-party testing dependencies using Node's native test runner (`node --test`).
 
 ```bash
-# Run unit, integration, news crawler, and OWASP security tests (38 tests)
+# Run unit, integration, news crawler, offline sync, OCR, and OWASP security tests (158 tests)
 npm test
 
 # Run SPEC-007 integration gate tests against a live PostgreSQL instance
 npm run test:integration
 ```
 
-### Verified Test Suite
-- `test/smoke.test.js`: Core journeys, idempotent submissions, and RFC 9457 error contracts.
-- `test/news.test.js`: AI news collector, schedule phase switches (6h vs 24h), and verification queue.
-- `test/security.test.js`: OWASP Top 10 access control, IAL-2 step-up gates, audit immutability, CSPRNG validation, and brute force audit logging.
+### Verified Test Suite (158 Passing Tests across 27 Suites)
+- `test/spec011-phase1-phase2-sync.test.js`: Offline-first approval queue, Field Hub batch sync, and conflict review queue (SPEC-011).
+- `test/spec011-phase3-paper-ocr.test.js`: Paper record digitisation, 6 form extractions, and cross-script phonetic matching (SPEC-011).
+- `test/spec011-phase4-sms-ussd.test.js`: Low-tech SMS webhook and multi-turn interactive USSD state machine (SPEC-011).
+- `test/learning-evaluation.test.js`: Continuous evaluation, empirical baselines, and confounds analysis (SPEC-010).
+- `test/agent-governance.test.js`: Agentic governance, proposal lifecycle, tier-mislabeling protection, and kill switch (SPEC-009).
+- `test/phase5-ai-ops.test.js`: Module M12 gap observation loops and Gate G8 production release governance (SPEC-008).
+- `test/phase4-modules.test.js`: Infrastructure passability (M5) and statutory non-custodial funding ledger (M9, Gate G2a).
+- `test/phase3-modules.test.js`: Partner organization registry (M7), resource exchange (M6), and recovery projects (M8).
+- `test/essential-services.test.js`: Outage tracking and authoritative feed ingestion (M4).
+- `test/e2e-disaster-drill.test.js`: Full multi-hazard simulation drill from Sentinel alert to Gate G8 release.
+- `test/gate-g7-i18n.test.js`: 18-language internationalization and offline field validation.
+- `test/security.test.js`: OWASP Top 10 access control, IAL-2 step-up gates, audit immutability, and CSPRNG validation.
+- `test/smoke.test.js`: Core citizen journeys, idempotent submissions, and RFC 9457 error contracts.
 
 ---
 
@@ -243,6 +253,10 @@ The architecture, privacy models, and engineering practices of FamilyConnect are
 - **[SPEC-005: Architecture & Deployment Specification](docs/SPEC-005-Architecture-and-Deployment.md)** — Modular monolith, zero-build frontend, disaster isolation.
 - **[SPEC-006: UX, Interaction Models & Interface Constraints](docs/SPEC-006-UX-Interaction-and-Interface-Constraints.md)** — Trauma-informed design, 2G/3G network resilience.
 - **[SPEC-007: Engineering QA, Deployment & Gate Testing](docs/SPEC-007-Engineering-QA-and-Gate-Testing.md)** — Zero-dependency test harnesses, QA gate checkpoints.
+- **[SPEC-008: Community Recovery & Reconstruction](docs/SPEC-008-COMMUNITY-RECOVERY-RECONSTRUCTION-v0.2.md)** — Modules M1–M12, Essential Services (M4), Infrastructure (M5), Resource Exchange (M6), Partners (M7), Projects (M8), Funding Ledger (M9, Gate G2a), and Release Governance (Gate G8).
+- **[SPEC-009: Agentic Platform Engineering & Governance](docs/SPEC-009-Agentic-Platform-Engineering-Governance.md)** — 6-tier human authority model, proposal lifecycle, kill switch.
+- **[SPEC-010: Humanitarian Intelligence & Continuous Evaluation](docs/SPEC-010-Humanitarian-Intelligence-Evaluation-Learning.md)** — G-Learn quality gates, confounds analysis, empirical baselines.
+- **[SPEC-011: Offline-First & Paper Digitisation](docs/SPEC-011-Offline-First-Paper-Digitisation.md)** — Zero-connectivity PWA, Tier-2 Field Hub sync server, 6-form paper OCR, and SMS/USSD gateways.
 
 *(Original `.docx` documents are archived in [`docs/docx/`](docs/docx/))*
 
