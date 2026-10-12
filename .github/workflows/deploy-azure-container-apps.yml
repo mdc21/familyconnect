@@ -46,12 +46,12 @@ jobs:
       - name: Seed Test Database
         run: npm run db:seed
         env:
-          DATABASE_URL: postgres://familyconnect:familyconnect@localhost:5432/familyconnect
+          DATABASE_URL: postgres://familyconnect:familyconnect@127.0.0.1:5432/familyconnect
 
-      - name: Execute Test Suite (44 Tests)
+      - name: Execute Test Suite (Automated Gates)
         run: npm test
         env:
-          DATABASE_URL: postgres://familyconnect:familyconnect@localhost:5432/familyconnect
+          DATABASE_URL: postgres://familyconnect:familyconnect@127.0.0.1:5432/familyconnect
 
   deploy:
     name: Deploy to Azure Container Apps
