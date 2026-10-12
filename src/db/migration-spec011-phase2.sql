@@ -100,3 +100,11 @@ CREATE TABLE IF NOT EXISTS sync_batch_run (
 
 CREATE INDEX IF NOT EXISTS idx_sbr_hub ON sync_batch_run(hub_id);
 CREATE INDEX IF NOT EXISTS idx_sbr_received ON sync_batch_run(received_at DESC);
+
+-- ── Seed Standard Field Hubs ──────────────────────────────────────────────────
+INSERT INTO field_hub (hub_id, name, status, location_name)
+VALUES
+    ('HUB-NP-KTM-001', 'Kathmandu Central Field Hub', 'ACTIVE', 'Bhrikutimandap Field Office'),
+    ('HUB-NP-RASUWAGADHI-001', 'Rasuwagadhi Relief Camp Field Hub', 'ACTIVE', 'Rasuwagadhi Border Post')
+ON CONFLICT (hub_id) DO NOTHING;
+

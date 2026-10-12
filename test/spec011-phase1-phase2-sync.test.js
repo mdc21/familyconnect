@@ -100,6 +100,10 @@ before(async () => {
                 submitted_by VARCHAR(64),
                 received_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
             );
+
+            INSERT INTO field_hub (hub_id, name, status, location_name)
+            VALUES ('HUB-NP-KTM-001', 'Kathmandu Field Hub', 'ACTIVE', 'Bhrikutimandap')
+            ON CONFLICT (hub_id) DO NOTHING;
         `);
     } finally {
         client.release();

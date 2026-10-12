@@ -271,12 +271,14 @@ router.post('/batch', writeLimiter, async (req, res, next) => {
     catch (_) { return next(new ProblemError('DEGRADED_MODE', 'Database temporarily unavailable.', req.originalUrl)); }
 
     try {
-        // Update hub last_sync_at if hub is registered
+        // Ensure hub exists in registry and update last_sync_at (auto-provision offline nodes)
         if (hubId) {
             try {
                 await client.query(
-                    `UPDATE field_hub SET last_sync_at=NOW(), last_batch_id=$1 WHERE hub_id=$2`,
-                    [batchId || null, hubId]
+                    `INSERT INTO field_hub (hub_id, name, status, last_sync_at, last_batch_id)
+                     VALUES ($1, $1, 'ACTIVE', NOW(), $2)
+                     ON CONFLICT (hub_id) DO UPDATE SET last_sync_at=NOW(), last_batch_id=EXCLUDED.last_batch_id`,
+                    [hubId, batchId || null]
                 );
             } catch (_) {}
         }
