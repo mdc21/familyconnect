@@ -101,6 +101,7 @@ CREATE TABLE IF NOT EXISTS recovery_need (
     assigned_to             TEXT,
     target_completion_date  DATE,
     status                  TEXT NOT NULL DEFAULT 'REPORTED' CHECK (status IN ('REPORTED', 'ASSESSED', 'VERIFIED', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED')),
+    is_seed                 BOOLEAN NOT NULL DEFAULT FALSE,
     created_at              TIMESTAMPTZ DEFAULT now(),
     updated_at              TIMESTAMPTZ DEFAULT now()
 );
@@ -108,6 +109,7 @@ CREATE TABLE IF NOT EXISTS recovery_need (
 CREATE INDEX IF NOT EXISTS idx_recovery_need_status ON recovery_need(status);
 CREATE INDEX IF NOT EXISTS idx_recovery_need_event ON recovery_need(event_id);
 CREATE INDEX IF NOT EXISTS idx_recovery_need_data_sharing ON recovery_need(data_sharing_status);
+CREATE INDEX IF NOT EXISTS idx_recovery_need_seed ON recovery_need(is_seed);
 
 CREATE TABLE IF NOT EXISTS need_duplicate_candidate (
     candidate_id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -130,8 +132,11 @@ CREATE TABLE IF NOT EXISTS community_profile (
     min_aggregation_threshold   INT NOT NULL DEFAULT 25,
     min_aggregation_threshold_met BOOLEAN GENERATED ALWAYS AS (population_estimate >= 25) STORED,
     service_states              JSONB DEFAULT '[]'::jsonb,
+    is_seed                     BOOLEAN NOT NULL DEFAULT FALSE,
     created_at                  TIMESTAMPTZ DEFAULT now()
 );
+
+CREATE INDEX IF NOT EXISTS idx_community_profile_seed ON community_profile(is_seed);
 
 -- ─── 3. Humanitarian Intelligence & Learning (SPEC-010) ──────
 CREATE TABLE IF NOT EXISTS outcome_record (
