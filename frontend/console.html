@@ -264,13 +264,17 @@
         <a class="console-tab" href="/console/admin" data-route="admin">⚙️ Admin &amp; Roles</a>
         <a class="console-tab" href="/console/access-matrix" data-route="access-matrix">🔑 Access Matrix</a>
         <a class="console-tab" href="/console/orchestrator" data-route="orchestrator">🤖 AI Event Builder</a>
+        <a href="/scan.html" target="_blank" style="padding: 0.45rem 0.85rem; font-size: 0.8125rem; font-weight: 700; color: #0284c7; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; text-decoration: none; margin-left: auto; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap;">📄 Digitise Scans ↗</a>
     </nav>
 
     <!-- 1. OVERVIEW VIEW -->
     <div class="tab-panel active" id="view-overview">
         <div class="panel-header">
             <h2 style="margin:0">Disaster Response Situation Overview</h2>
-            <button class="btn-primary" onclick="loadOverview()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh overview</button>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+                <a href="/scan.html" class="btn-outline" style="text-decoration:none;display:inline-flex;align-items:center;gap:0.35rem;font-size:0.875rem">📄 Digitise Paper Records / Scan</a>
+                <button class="btn-primary" onclick="loadOverview()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh overview</button>
+            </div>
         </div>
         <div class="metrics-grid">
             <div class="metric-card">
@@ -344,7 +348,10 @@
     <div class="tab-panel" id="view-hospital">
         <div class="panel-header">
             <h2 style="margin:0">Hospitals, Unidentified Patients &amp; Triage</h2>
-            <button class="btn-primary" onclick="loadHospital()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+                <a href="/scan.html" class="btn-outline" style="text-decoration:none;display:inline-flex;align-items:center;gap:0.35rem;font-size:0.875rem">📄 Scan Triage / Admission Card</a>
+                <button class="btn-primary" onclick="loadHospital()" style="padding:0.35rem 0.8rem;font-size:0.875rem">Refresh</button>
+            </div>
         </div>
         <p class="field-hint">Medical triage desks at TUTH, Bir Hospital, and Rasuwa District Hospital. FamilyConnect logs unidentified admissions to match against family tracing inquiries.</p>
         <div id="hospital-container"><p style="color:var(--text-muted)">Loading hospital admissions…</p></div>
